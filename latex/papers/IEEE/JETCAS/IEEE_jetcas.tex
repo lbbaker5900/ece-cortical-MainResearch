@@ -376,6 +376,8 @@
 \sisetup{load-configurations = abbreviations}
 \usepackage{enumitem}
 \usepackage{adjustbox}
+\usepackage{acro}
+\usepackage{abbrevs}
 
 % Custom commands
 \newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{max}}\;}
@@ -405,6 +407,7 @@
 %\markboth{#1}{#1}}
 
 
+\include{abbrev}
 
 \begin{document}
 %
@@ -414,7 +417,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Multi-ANN Edge System based on a Custom 3DIC DRAM}
+\title{Multi-\ac{ann} embedded system based on a custom \ac{3ddram}}
 %
 %
 % author names and IEEE memberships
@@ -460,7 +463,7 @@ paulf@ncsu.edu}
 
 % The paper headers
 \markboth{IEEE Journal on Emerging and Selected Topics in Circuits and Systems,~Vol.~XX, No.~XX, Month~2017}%
-{Shell \MakeLowercase{\textit{et al.}}:Custom 3D-DRAM based ANN System for Edge Applications}
+{Shell \MakeLowercase{\textit{et al.}}:Custom \ac{3ddram} based \ac{ann} system for embedded applications}
 % The only time the second header will appear is for the odd numbered pages
 % after the title page when using the twoside option.
 % 
@@ -493,49 +496,36 @@ paulf@ncsu.edu}
 % in the abstract or keywords.
 \begin{abstract}
 
+This work demonstrates how a customized \ac{3ddram} with a very wide databus can be combined with application-specific layers to produce a system meeting the requirements of embedded systems employing multiple instances of disparate \acp{ann}.
+This work avoids any dependencies on \ac{sram} that might limit the size of supported \acp{ann}. 
+This work demonstrates the required utilization of the very wide \ac{dram} databus when employing instructions and data structures that facilitate operating directly out of the \ac{3ddram}.
+By allowing system functions to operate asynchronously this work is able to absorb the latencies associated with \ac{dram} and provide the bandwidth required to support multiple useful-sized disparate \acp{ann}.
+By demonstrating effective use of the very wide bus of a customized \ac{3ddram}, 
+this system demonstrates a 3X power improvement and 6X area improvement over similar \ac{ann} systems.
 
 
-Machine Learning in the form of Deep Neural Networks (DNN) have gained traction over the last few years.
+\iffalse
+Machine Learning in the form of Deep Neural Networks (\acp{dnn}) have gained traction over the last few years.
 They get good press in applications such as image recognition and speech recognition.
-\iffalse
-DNNs are constructed from a basic building block, the artificial neuron(AN).
-With popular DNNs, the artificial neural network (ANN) is often formed from tens of layers of ANs with each layer containing many ANs.
-In most cases, these layers are processed in a feed-forward manner with one layer being the inputs to the next layer.
-Therefore, useful DNNs often require hundreds of thousands of ANs and within the network, each AN can have hundreds, even thousands of feeder or pre-synaptic ANs.
-\fi
-There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases these useful ANNs have significant
-memory requirements to store the connection weights (parameters) therefore requiring Dynamic Random Access memory (DRAM) to store the AN parameters.
+There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases these useful \ac{ann}s have significant
+memory requirements to store the connection weights (parameters) therefore requiring Dynamic Random Access memory (\ac{dram}) to store the AN parameters.
 
-There have been many successful attempts to accelerate ANNs, but in most cases the focus is on a subset of the DNN known as the Convolutional Neural network (CNN).
-CNNs assume a significant amount of reuse of the weights connecting ANs and thus they can take advantage of local memory (SRAM).
+There have been many successful attempts to accelerate \acp{ann}, but in most cases the focus is on a subset of the \acp{dnn} known as the Convolutional Neural network (\ac{cnn}).
+\acp{cnn} assume a significant amount of reuse of the weights connecting ANs and thus they can take advantage of local memory (\ac{sram}).
 
-Much of the ANN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory (SRAM).
-These implementations can be shown to be effective with specific ANN architectures, such as CNNs where the ANN parameters can be stored in SRAM in a cache-like architecture avoiding constant accessing of the "slower" DRAM.
-In addition, to achieve a high performance, these rely on processing a batch of inputs, such as processing a batch of images or voice recordings using the same ANN.
+Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory (\ac{sram}).
+These implementations can be shown to be effective with specific \ac{ann} architectures, such as \acp{cnn} where the \ac{ann} parameters can be stored in \ac{sram} in a cache-like architecture avoiding constant accessing of the "slower" \ac{dram}.
+In addition, to achieve a high performance, these rely on processing a batch of inputs, such as processing a batch of images or voice recordings using the same \ac{ann}.
 
-The work in this paper considers "edge" applications which perform multiple complex functions, such as navigation, engine monitoring etc. for systems employed "in the field".
-The target application assumes that a) there is no access to cloud servers, b) the system processes a disparate set of useful sized ANNs and c) there are not opportunities to store and reuse portions of the ANN in SRAM. 
-Therefore this work makes no assumptions regarding opportunities to store and reuse portions of the ANN in local SRAM, such as with CNNs or batch processing.
-These requirements dictate the need for DRAM for ANN storage and a sustained average bandwidth of 10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when accessing that DRAM.
+The work in this paper considers ``embedded'' applications which perform multiple complex functions, such as navigation, engine monitoring etc. for systems employed in conditions with weight, size and power constraints.
+The target application assumes that a) there is no access to cloud servers, b) the system processes a disparate set of useful sized \ac{ann}s and c) there are not opportunities to store and reuse portions of the \ac{ann} in \ac{sram}. 
+Therefore this work makes no assumptions regarding opportunities to store and reuse portions of the \ac{ann} in local \ac{sram}, such as with \acp{cnn} or batch processing.
+These requirements dictate the need for \ac{dram} for \ac{ann} storage and a sustained average bandwidth of 10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when accessing that \ac{dram}.
 
-This work employs 3D integrated circuit technology and a proposed custom 3D-DRAM. By employing 3DIC technology, this work takes advantage of the reduced energy and area and increased connectivity and bandwidth to allow the DRAM to be employed efficiently.
-This work demonstrates the required average bandwidth exceeding  10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when run against various fully and locally connected ANN layers providing a potentially 10-50X performance improvement over existing ASIC/ASIPs or GPUs.
-
-\iffalse
- where there may not be opportunities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
-
-This work also does not assume the ANN is specifically a CNN but a DNN where there may not be opportunities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
-Under these circumstance, when these implemenations need to contantly load ANN parameters directly from main memory, the performance is constrained to the DRAM interface bandwidth. Therefore, the performance of SRAM-based ASIC/ASIP implementations are severely degraded to the point of being unacceptable.
-
-This work uses the DRAM as the primary processing storage 
+This work employs 3D integrated circuit technology and a proposed custom 3D-\ac{dram}. By employing 3DIC technology, this work takes advantage of the reduced energy and area and increased connectivity and bandwidth to allow the \ac{dram} to be employed efficiently.
+This work demonstrates the required average bandwidth exceeding  10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when run against various fully and locally connected \ac{ann} layers providing a potentially 10-50X performance improvement over existing ASIC/ASIPs or GPUs.
 \fi
 
-\iffalse
-a collection of testcases which  which is requred to support multiple disparate ANNs for at or near real-time performance.
-The bus efficiency is the main metric, and demonstrating sustained average bandwidth over a collection of fanins was the goal.
-
-It should be noted that this work does not design a custom 3D-DRAM but answers the question "if such a device were available, can we employ it within a useful ANN system".
-\fi
 
 
 
@@ -545,7 +535,7 @@ It should be noted that this work does not design a custom 3D-DRAM but answers t
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-machine learning, edge system, DNN, CNN, neural network
+machine learning, embedded system, \acp{dnn}, \ac{cnn}, neural network
 \end{IEEEkeywords}
 
 
@@ -581,26 +571,26 @@ machine learning, edge system, DNN, CNN, neural network
 % 
 % Here we have the typical use of a "T" for an initial drop letter
 % and "HIS" in caps to complete the first word.
-\IEEEPARstart{U}{seful} DNNs often require hundreds of thousands of ANs.
+\IEEEPARstart{U}{seful} \acp{dnn}s often require hundreds of thousands of ANs.
 Within the network, each AN can have hundreds of feeder (pre-synaptic) ANs.
-With popular DNNs, there are often tens of layers. 
-So in these ANNs, the memory requirements are significant. The storage is required for the input, the AN state and most significantly the weights for each of the ANs. This storage requirement often results in gigabytes of memory.
+With popular \acp{dnn}s, there are often tens of layers. 
+So in these \ac{ann}s, the memory requirements are significant. The storage is required for the input, the AN state and most significantly the weights for each of the ANs. This storage requirement often results in gigabytes of memory.
 
-When these ANNs are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
+When these \ac{ann}s are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
 
-In most cases, Graphics processing Units (GPU) are used to implement large ANNs. In many ANN architectures, such as Convolutional ANNs (CNN), they are quite effective. However, we should not forget they are not optimized purely for 
-NN processing and are restricted by available SRAM and they are power hungry. These limitations limit the effectiveness of GPUs.
+In most cases, Graphics processing Units (GPU) are used to implement large \ac{ann}s. In many \ac{ann} architectures, such as Convolutional \ac{ann}s (\ac{cnn}), they are quite effective. However, we should not forget they are not optimized purely for 
+NN processing and are restricted by available \ac{sram} and they are power hungry. These limitations limit the effectiveness of GPUs.
 
-Much of the ANN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. 
-These implementations can be shown to be effective with specific ANN architectures (CNN), server applications or the "toy examples" but when a system requires multiple disparate ANNs in an edge application, 
+Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or \ac{sram}. 
+These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an embedded application, 
 these implementations do not provide the required flexibility, storage capacity and deterministic performance.
 
 Another technology that has been considered over the last decade is 3D integrated circuit technology (3DIC). 
 This 3DIC technology stacks multiple die together to form a system-on-chip with potentially disparate technology for each die in the stack.
 By staying within the die footprint, 3DIC technology promises high connectivity and consequently high bandwidth along with lower power all within a smaller footprint.
 
-As a metric, this work asumes that any useful DNN will employ 100's of thousands of ANs. Although there is a lot of debate regarding number formats for ANNs, this work also assumes single-precision floating point.
-Assuming an ANN with 250K neurons and an average fanin to each AN of 2000, a system employing 10 ANNs for various disparate functions and an average processing time of \SI{10}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{16}{\tera \bit \per \second} \eqref{eq:averageBandwidth}.
+As a metric, this work asumes that any useful \acp{dnn} will employ 100's of thousands of ANs. Although there is a lot of debate regarding number formats for \ac{ann}s, this work also assumes single-precision floating point.
+Assuming an \ac{ann} with 250K neurons and an average fanin to each AN of 2000, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{10}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{16}{\tera \bit \per \second} \eqref{eq:averageBandwidth}.
 
 \begin{alignat}{2} \label{eq:averageBandwidth}
 \text{Average }&\text{Bandwidth} \notag \\
@@ -608,18 +598,18 @@ Assuming an ANN with 250K neurons and an average fanin to each AN of 2000, a sys
 = & \sum_{\mathbf{n}=0}^{\bar{\mathbf{N_n}}}\big(\frac{\Bar{\mathbf{N_a}}\cdot \Bar{\mathbf{C_p}} \cdot \bar{\mathbf{b_w}}}{\bar{\mathbf{T_p}}} \big) \notag  \\
 = & \sum_{\mathbf{n}=0}^{9}\big(\frac{\num{250d4} \cdot \num{2d3} \cdot 32}{\num{10d-3}} \big) \notag \\
 = & \SI[per-mode=symbol]{16}{\tera\bit\per\second} \\
-\text{where } &\mathbf{N}_n \text{ is the number of ANNs} \notag\\
+\text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
               &\mathbf{N}_a \text{ is the average number of ANs} \notag\\
               &\mathbf{C_p} \text{ is the average number of connections} \notag\\
 \text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
 \end{alignat}
 
-Regardless of the combination of ANNs, this work suggests that these edge systems will require memory bandwidth of the order of 10's of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
+Regardless of the combination of \ac{ann}s, this work suggests that these embedded systems will require memory bandwidth of the order of 10's of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
 
-This work demonstrates a system that is able implement multiple useful sized DNNs whilst maintaining an average memory bandwidth of $>$\SI[per-mode=symbol]{30}{\tera \bit \per \second}.
-This is made possible by ensuring the system stays within the die stack footprint of a typical 3DIC DRAM .
-This work removes a reliance on SRAM to achieve high performance thus allowing the proposed design to be utilized in edge applcations when processing multiple disparate ANNs at or near real-time.
-Although not optimized for specific ANNs, such as CNNs, this work demonstrates the potential for real-time performance at the edge when implementing fully connected DNNs or other similar ANNs such as LSTM.
+This work demonstrates a system that is able implement multiple useful sized \acp{dnn}s whilst maintaining an average memory bandwidth of $>$\SI[per-mode=symbol]{30}{\tera \bit \per \second}.
+This is made possible by ensuring the system stays within the die stack footprint of a typical 3DIC \ac{dram} .
+This work removes a reliance on \ac{sram} to achieve high performance thus allowing the proposed design to be utilized in embedded applcations when processing multiple disparate \ac{ann}s at or near real-time.
+Although not optimized for specific \ac{ann}s, such as \acp{cnn}, this work demonstrates the potential for real-time performance at the embedded when implementing fully connected \acp{dnn}s or other similar \ac{ann}s such as LSTM.
 
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> System Description <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
@@ -630,24 +620,24 @@ Although not optimized for specific ANNs, such as CNNs, this work demonstrates t
 % ----------------------------------------------------------------------------------------------------
 
 The primary objectives of this work was to a) consider systems that are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using
-local SRAM to store ANN parameters or the ANN input, b) acknowledge that DRAM is required for storage of ANN parameters, c) that many edge devices will likely apply many disparate ANNs
-to perform various system functions, and d) it is assumed that many edge applications will have space and power limitations.
+local \ac{sram} to store \ac{ann} parameters or the \ac{ann} input, b) acknowlembedded that \ac{dram} is required for storage of \ac{ann} parameters, c) that many embedded devices will likely apply many disparate \ac{ann}s
+to perform various system functions, and d) it is assumed that many embedded applications will have space and power limitations.
 
 \iffalse
-These requirements suggest that reuse opportunities will not provide significant performance boosts and therefore this work focused on using the DRAM directly as the operational
-storage and not rely on a significant amount of local SRAM.
+These requirements suggest that reuse opportunities will not provide significant performance boosts and therefore this work focused on using the \ac{dram} directly as the operational
+storage and not rely on a significant amount of local \ac{sram}.
 \fi
-This work employs 3DIC technology along with a custom 3D-DRAM. The objective was to demonstrate that a pure 3DIC system can implement multiple disparate ANNs. By staying within the 3DIC footprint and taking advantage of high
+This work employs 3DIC technology along with a custom 3D-\ac{dram}. The objective was to demonstrate that a pure 3DIC system can implement multiple disparate \ac{ann}s. By staying within the 3DIC footprint and taking advantage of high
 density through-silicon-vias (TSV) this work is able to maintain a significantly higher bandwidth over 2D or 2.5D ASIC/ASIP solutions.
 
-The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-DRAM with a system manager below and one or more processing layers below the manager.
+The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{dram} with a system manager below and one or more processing layers below the manager.
 \begin{figure}
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=1\textwidth]{StackDiagram.jpg}
   \captionsetup{justification=centering, width=.8\linewidth}
-  \caption{DRAM, Manager and PE Layers}
+  \caption{\ac{dram}, Manager and PE Layers}
   \label{fig:3DICStack}
 \end{subfigure}%
 
@@ -675,7 +665,7 @@ The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-DRAM with
 \end{figure}
 \fi
 
-3D-DRAM has recently become available in standards such as High Bandwidth Memory (HBM) and Hybrid Memory Cube (HMC) and proprietary devices such as the DiRAM4 available from Tezzaron. 
+3D-\ac{dram} has recently become available in standards such as High Bandwidth Memory (HBM) and Hybrid Memory Cube (HMC) and proprietary devices such as the DiRAM4 available from Tezzaron. 
 These technologies provide high capacity within a small footprint.
 
 In the case of HBM and DiRAM4, the technology can be combined with additional custom layers to provide a system solution.
@@ -686,16 +676,16 @@ This work targeted a baselne system with:
 \begin{itemize}
   %\itemsep0em 
   \item single precision floating point for computations
-  \item the Tezzaron DiRAM4 DRAM \cite{tezzaron:diram4}
+  \item the Tezzaron DiRAM4 \ac{dram} \cite{tezzaron:diram4}
 \iffalse
   \item target single precision floating point for computations
-  \item use the Tezzaron DiRAM4 DRAM for area estimates and memory controller design
+  \item use the Tezzaron DiRAM4 \ac{dram} for area estimates and memory controller design
 \fi
 \end{itemize}
-The work includes customizing the interface to a 3D-DRAM, researching data structures to describe storage of ANN parameters, designing a memory manager with micro-coded instructions and a processing engine (PE) layer.  
-The targeted 3D-DRAM, the Tezzaron DiRAM4 is a 3D-DRAM employs multiple memory array layers in conjunction with a control and IO layer.
+The work includes customizing the interface to a 3D-\ac{dram}, researching data structures to describe storage of \ac{ann} parameters, designing a memory manager with micro-coded instructions and a processing engine (PE) layer.  
+The targeted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs multiple memory array layers in conjunction with a control and IO layer.
 The memory is formed from 64 disjoint sub-memories each providing upwards of 1Gigabit with a total capacity of at least 64 gigabit.
-The system is designed such that a sub-system, known as a sub-system column (SSC) operates on one of the 64 disjoint memories within the 3D-DRAM (see figure \ref{fig:diram4Layout}).
+The system is designed such that a sub-system, known as a sub-system column (SSC) operates on one of the 64 disjoint memories within the 3D-\ac{dram} (see figure \ref{fig:diram4Layout}).
 
 When the sub-system columns need to share data or neuron activations, the data is passed between SSCs using a mesh connected network-on-chip (NoC).
 
@@ -707,8 +697,8 @@ A block diagram of the sub-system column can be seen in figure \ref{fig:Detailed
 An overview of the various blocks and interconnects are given below:
 
 % ----------------------------------------------------------------------------------------------------
-\subsection{3D-DRAM}
-The targeted 3D-DRAM, the Tezzaron DiRAM4 is customized to provide a 2048-bit wide bus. A read to the memory using a burst of two cycles provides access to an entire page within a bank.
+\subsection{3D-\ac{dram}}
+The targeted 3D-\ac{dram}, the Tezzaron DiRAM4 is customized to provide a 2048-bit wide bus. A read to the memory using a burst of two cycles provides access to an entire page within a bank.
 These customizations to support this very wide bus are discussed in \ref{sec:Suggested DRAM Customizations}.
 The wide bus is connected to the manager using TSVs and the manager directs portions of the wide bus to each lane to the PE.
 \begin{figure}[!t]
@@ -717,29 +707,29 @@ The wide bus is connected to the manager using TSVs and the manager directs port
 \centerline{
 \mbox{\includegraphics[width=2.5in]{DiRAM4Layout.jpg}}
 }
-\caption{DiRAM4 DRAM Physical Interface Layout\cite{tezzaron:diram4}\cite{patti2014} showing area for SSC }
+\caption{DiRAM4 \ac{dram} Physical Interface Layout\cite{tezzaron:diram4}\cite{patti2014} showing area for SSC }
 \label{fig:diram4Layout}
 \end{figure}
 
 
 % ----------------------------------------------------------------------------------------------------
 \subsection{Manager Layer}
-The Manager block is the main controller in the system. The operations required to process an ANN are formed from individual instructions which are decoded by the Manager. 
+The Manager block is the main controller in the system. The operations required to process an \ac{ann} are formed from individual instructions which are decoded by the Manager. 
 These instructions include descriptors to describe memory read operations, processing engine operations and memory write operations. The manager reads these system instructions from an instruction memory, decodes the instruction and configures the various blocks in the system.
 The configuration includes:
 \begin{itemize}
 
-      \item initiate operand reads from DRAM
+      \item initiate operand reads from \ac{dram}
       \item prepare the processing engine (PE) to operate on the operands
-      \item prepare the result processing engine to take the resulting neuron activations from the PE and write those results back to the DRAM
-      \item replicate the resulting neuron activation's to neighbor managers for processing of other ANN layers
+      \item prepare the result processing engine to take the resulting neuron activations from the PE and write those results back to the \ac{dram}
+      \item replicate the resulting neuron activation's to neighbor managers for processing of other \ac{ann} layers
 
 \end{itemize}
 
 % ----------------------------------------------------------------------------------------------------
 \subsection{Processing Layer}
 \label{ssec:Processing Layer}
-The PE is able to operate on data streamed directly from the DRAM via the Manager layer. The PE is configured by the manager to perform operations on the operand data streamed from the manager. In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. These operands typically are the pre-synaptic neuron activation's and the connection weights. The PE also performs the activation function on the result of the MAC to generate the neuron activation value. These 32 activation values are sent back to the Manager layer.
+The PE is able to operate on data streamed directly from the \ac{dram} via the Manager layer. The PE is configured by the manager to perform operations on the operand data streamed from the manager. In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. These operands typically are the pre-synaptic neuron activation's and the connection weights. The PE also performs the activation function on the result of the MAC to generate the neuron activation value. These 32 activation values are sent back to the Manager layer.
 
 % ----------------------------------------------------------------------------------------------------
 \subsection{Layer Interconnect}
@@ -762,7 +752,7 @@ This NoC has a forwarding table that can be reconfigured to provide more efficie
 \fi
 
 During configuration and/or computations, data must be transported between managers. This inter-manager communication is provided by an NoC.
-When computing an ANN across multiple processors, often neuron activation data must be shared. 
+When computing an \ac{ann} across multiple processors, often neuron activation data must be shared. 
 Each manager contains a NoC module and all the managers are connected in a mesh network.
 \iffalse
 The NoC architecture includes the ability to multicast where a NoC packet gets replicated as it traverses the mesh.
@@ -771,7 +761,7 @@ The NoC bandwidth was chosen to ensure the results can be multicast to any desti
 The NoC bus width is 64 data bits plus control signals running at the system clock rate. Future testing may require additional NoC bandwidth.
 
 \iffalse
-The SSC includes the DRAM port, the manager and the PE. 
+The SSC includes the \ac{dram} port, the manager and the PE. 
 \fi
 
 \begin{figure}[!t]
@@ -821,14 +811,14 @@ The PE has three major blocks:
   %\setlength{\baselineskip}{10pt}
   %\setlength{\itemsep}{6pt}
     \1 Streaming operation function (stOp)
-      \2 processes data from the manager on-the-fly without storing in local SRAM
+      \2 processes data from the manager on-the-fly without storing in local \ac{sram}
     \1 SIMD
       \2 processes the data from the stOp function
         \3 neuron activation function such as ReLu
         \3 perform non vector operations such as softmax conversion using local SIMD functions, such as $e^x$ and divide
       \2 sends the result back to the manager
     \1 DMA/local memory controller
-      \2 transfer configuration data to PE conroller or to store stOp results to a small local SRAM which can be used for access by SIMD or by the stOp function
+      \2 transfer configuration data to PE conroller or to store stOp results to a small local \ac{sram} which can be used for access by SIMD or by the stOp function
 \end{outline}
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
@@ -912,13 +902,13 @@ The format of a 5-tuple descriptor can be seen in figure \ref{fig:descriptorTupl
 %%%%  \subsubsection{Accessing of Pre-synaptic AN states and connection weights}
 %%%%  \label{ssec:AccessingANStates}
 %%%%  
-%%%%  As was discussed previously, the ANN input and configuration is stored in main DRAM memory. A part of the research is determining how to store the ANN input and parameters in such a way to effectively make use of main DRAM bandwidth. To provide parameters for the up to 32 execution lanes within the PE, the AN parameters are stored in consecutive address locations. A single read to the DRAM accesses 128 words. This provides four weights for each of the 32 ANs being processed. 
+%%%%  As was discussed previously, the \ac{ann} input and configuration is stored in main \ac{dram} memory. A part of the research is determining how to store the \ac{ann} input and parameters in such a way to effectively make use of main \ac{dram} bandwidth. To provide parameters for the up to 32 execution lanes within the PE, the AN parameters are stored in consecutive address locations. A single read to the \ac{dram} accesses 128 words. This provides four weights for each of the 32 ANs being processed. 
 %%%%  These weights are sent to each lane of the PE over four cycles. 
-%%%%  By taking advantage of the multiple DRAM banks along with pre-fetching and buffering, this system is able to achieve relatively high efficiency of the available maximum bandwidth.
+%%%%  By taking advantage of the multiple \ac{dram} banks along with pre-fetching and buffering, this system is able to achieve relatively high efficiency of the available maximum bandwidth.
 %%%%  
 %%%%  Although AN parameters (weights) are stored in contiguous memory locations, providing the input state to a particular AN presents us with an interesting problem.
 %%%%  
-%%%%  Most often DNNs are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the ANN.
+%%%%  Most often \acp{dnn}s are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the \ac{ann}.
 %%%%  
 %%%%  The input can be represented in the form of a 2-D array of AN states. For the sake of generality, the input array elements are considered as AN states.
 %%%%  
@@ -934,15 +924,15 @@ The format of a 5-tuple descriptor can be seen in figure \ref{fig:descriptorTupl
 %%%%  \end{figure}
 %%%%  
 %%%%  The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each ANs ROI can be stored in contiguous memory locations. 
-%%%%  An input to a ANN layer in the form of a 2-D array along with the ROI of two ANs is shown in figure \ref{fig:roiStorage}. 
+%%%%  An input to a \ac{ann} layer in the form of a 2-D array along with the ROI of two ANs is shown in figure \ref{fig:roiStorage}. 
 %%%%  Assuming the input array is stored in row-major order, an ROI is drawn from disjoint sections of memory. 
 %%%%  These disjoint sections contain a number of AN states and the sections are separated by a gap of a number of memory addresses. When the parameters are accessed the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. 
 %%%%  \iffalse
-%%%%  Now this looks problematic, and it is, but in practice groups of ANs share a common ROI. So once we solve the problem of efficiently reading an ROI from the DRAM, that ROI can be shared across a group of ANs
+%%%%  Now this looks problematic, and it is, but in practice groups of ANs share a common ROI. So once we solve the problem of efficiently reading an ROI from the \ac{dram}, that ROI can be shared across a group of ANs
 %%%%  \fi
 %%%%  
 %%%%  This work proposes a data structure to describe these ROI storage locations.  
-%%%%  The ROI is read efficiently by taking advantage of the DRAMs banks and pages.
+%%%%  The ROI is read efficiently by taking advantage of the \ac{dram}s banks and pages.
 %%%%  
 %%%%  Although disparate groups of ANs may have a different start addresses for their ROI, a commonality is observed in the ROI section lengths and gaps. So for each AN group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
 %%%%  
@@ -968,9 +958,9 @@ The format of a 5-tuple descriptor can be seen in figure \ref{fig:descriptorTupl
 \subsubsection{Write Back to Memory}
 \label{ssec:writingANStates}
 
-When the PE has processed the group of ANs, the new AN states are sent back to the manager for storing in the DRAM. 
+When the PE has processed the group of ANs, the new AN states are sent back to the manager for storing in the \ac{dram}. 
 \iffalse
-The manager will store these back to DRAM most likely in the array format as described earlier.
+The manager will store these back to \ac{dram} most likely in the array format as described earlier.
 For any given operation, the system is writing far less than is being read. 
 \fi
 
@@ -979,12 +969,12 @@ For example, the ROI and parameters are usually vectors that will typically exce
 \fi
 
 \iffalse
-Now that sounds like writing back has a very small impact on performance but with DRAMs that's not always true.
+Now that sounds like writing back has a very small impact on performance but with \ac{dram}s that's not always true.
 \fi
 
 \iffalse
-When the system writes the result of an operation back to memory, it is typically writing a small portion of a DRAM page and the nature of the DRAM protocol means this is a very inefficient use of DRAM bandwidth. 
-So although the amount of data written is small the performance impact cannot be ignored.
+When the system writes the result of an operation back to memory, it is typically writing a small portion of a \ac{dram} page and the nature of the \ac{dram} protocol means this is a very inefficient use of \ac{dram} bandwidth. 
+So although the amount of data written is small the performance impact c\ac{ann}ot be ignored.
 \fi
 
 In many cases the AN activations from a particular PE have to be replicated not only to the local manager but also to other managers. This is handled with the network-on-chip (NoC).
@@ -1034,28 +1024,28 @@ In addition, the length of the vector of operands is contained in the configurat
 \bigskip
 A detailed block diagram of the sub-system column (SSC) can be seen in figure \ref{fig:DetailedFlowDiagram}.
 
-% >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DRAM Customizable <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
+% >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \ac{dram} Customizable <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
 \section{Suggested DRAM Customizations}
 \label{sec:Suggested DRAM Customizations}
 
-Accessing a "typical" DRAM involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page.
+Accessing a "typical" \ac{dram} involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page.
 
 Typically a bank may contain of the order of a few thousand pages and a page may contain of the order of a few thousand bits.
 
-Once the page is open, the user accesses a portion of the requested page over a bus. With PCB based DRAMs the bus might vary from four to 16 bits wide, but with 3D DRAMs, such as HBM the bus might be up to 128 bits wide.
+Once the page is open, the user accesses a portion of the requested page over a bus. With PCB based \ac{dram}s the bus might vary from four to 16 bits wide, but with 3D \ac{dram}s, such as HBM the bus might be up to 128 bits wide.
 
 \iffalse
-Figure \ref{fig:dramBlockDiagram} shows a block diagram of a typical DRAM.
+Figure \ref{fig:\ac{dram}BlockDiagram} shows a block diagram of a typical \ac{dram}.
 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
 \centering
 \captionsetup{justification=centering}
 \centerline{
-\mbox{\includegraphics[width=2.75in]{DRAMBlockDiagram.jpg}}
+\mbox{\includegraphics[width=2.75in]{\ac{dram}BlockDiagram.jpg}}
 }
-\center\caption{Typical DRAM Block Diagram}
-\label{fig:dramBlockDiagram}
+\center\caption{Typical \ac{dram} Block Diagram}
+\label{fig:\ac{dram}BlockDiagram}
 \end{figure}
 
 \fi
@@ -1063,10 +1053,10 @@ Figure \ref{fig:dramBlockDiagram} shows a block diagram of a typical DRAM.
 \subsection{Expose more of the Page}
 \label{sec:exposeMorePage}
 
-This work achieves the increase in bandwidth by proposing that the DRAM expose more of its currently open page.
+This work achieves the increase in bandwidth by proposing that the \ac{dram} expose more of its currently open page.
 
 Without the limitations of having to transfer data beyond the chip stack, this work suggests exposing a larger portion of the page over a 2048-bit wide bus. By staying within the 3D footprint, this bus can be implemented using fine pitch TSVs.
-(see figure \ref{fig:dramBusChange}).
+(see figure \ref{fig:DRAMBusChange}).
 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
@@ -1074,16 +1064,16 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 \captionsetup{justification=centering}
 \captionsetup{width=.9\linewidth}
 \centerline{
-\mbox{\includegraphics[width=2.75in]{DRAMBusChange.jpg}}
+\mbox{\includegraphics[width=2.75in]{dramBusChange.jpg}}
 }
-\center\caption{Exposing more of the DRAM page}
-\label{fig:dramBusChange}
+\center\caption{Exposing more of the \ac{dram} page}
+\label{fig:DRAMBusChange}
 \end{figure}
 
 \subsection{DRAM Write Mask}
-\label{sec:dramWriteMask}
+\label{sec:DRAMWriteMask}
 \iffalse
-When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed.
+When processing an \ac{ann}, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed.
 \fi
 For every group of ANs processed, the state of the group of ANs is written back to memory.
 
@@ -1091,8 +1081,8 @@ For every group of ANs processed, the state of the group of ANs is written back 
 Because of the high average pre-synaptic fanin, the ratio of reading AN states and connection weights to writing back the AN states is high, 100's or 1000's to one. 
 This results in the system often having to write a portion of a page back to memory. 
 \fi
-Typically this would require a read/modify/write of a DRAM cacheline. In the case writing back 32 AN states into a 4096 bit cacheline means the read/modify/write is inefficient.
-To minimize the inefficiency, a customization to the DRAM is the addition of a write data mask to the DRAM write path eliminating the additional read.
+Typically this would require a read/modify/write of a \ac{dram} cacheline. In the case writing back 32 AN states into a 4096 bit cacheline means the read/modify/write is inefficient.
+To minimize the inefficiency, a customization to the \ac{dram} is the addition of a write data mask to the \ac{dram} write path eliminating the additional read.
 
 
 % #######################################################################################################################################
@@ -1180,14 +1170,14 @@ Note that other types of stOp includes a NOP with a destination of local memory.
 
 \subsubsection{Argument Decode}
 \label{ssec:argumentDecode}
-The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
+The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from \ac{dram} to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the \ac{dram} read protocol.
 
 As soon as read data is sent back to the MRC via the MMC, that data is aligned with to the 32 Streaming Operations inside the PE.
 
 
 \subsubsection{Result data Processing}
 \label{ssec:resultDataprocessing}
-The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
+The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from \ac{dram} to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the \ac{dram} read protocol.
 
 As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
 
@@ -1199,7 +1189,7 @@ The Memory Write Controller (MWC) receives data from to sources, the NoC via the
 
 In both cases, the MWC read the actual storage descriptor from their local memory and immediately start forming data that will be written back to main memory.
 
-When the data is formed, a write command is sent to the memory via the MMC. Again, the MMC is not shown in the diagram but takes the memory write requests along with the data and converts them into the DRAM write protocol.
+When the data is formed, a write command is sent to the memory via the MMC. Again, the MMC is not shown in the diagram but takes the memory write requests along with the data and converts them into the \ac{dram} write protocol.
 
 The MWC can only operate on one of the two sources at any one time. However, there are four 4096-bit holding registers where data is formed prior to the write request.
 
@@ -1221,8 +1211,8 @@ The stOp\_CNTL configures the:
 \begin{outline}
     \1 Operation type
     \1 Number of active execution lanes
-    \1 Source of the argument data, which can be downstream data from the manager or from the small local SRAM
-    \1 Destination of the result data, which can be the SIMD or the small local SRAM
+    \1 Source of the argument data, which can be downstream data from the manager or from the small local \ac{sram}
+    \1 Destination of the result data, which can be the SIMD or the small local \ac{sram}
 \end{outline}
 
 The SIMD operation pointer is sent to the SIMD.
@@ -1230,9 +1220,9 @@ The SIMD operation pointer is sent to the SIMD.
 \subsubsection{Streaming Operations}
 \label{ssec:stOps}
 
-The streaming Operations (stOp) are designed to operate on data passed from the Manager at or near line-rate. If line-rate cannot be maintained, a flow-control mechanism is employed to slow the data from the Manager.
+The streaming Operations (stOp) are designed to operate on data passed from the Manager at or near line-rate. If line-rate c\ac{ann}ot be maintained, a flow-control mechanism is employed to slow the data from the Manager.
 
-Once the stOp has processed the data, it passes the result to the SIMD. Note in some cases the result can be placed in local SRAM or sent to both SIMD and SRAM.
+Once the stOp has processed the data, it passes the result to the SIMD. Note in some cases the result can be placed in local \ac{sram} or sent to both SIMD and \ac{sram}.
 
 It should also be stated that while the stOp is processing the current data, the SIMD may be operating on the result of the previous operation. It is expected the SIMD will have completed the previous operation before the stOp completes the current operation, but again, if necessary a flow control mechanism between SIMD and stOP will be engaged if the SIMD is not ready.
 
@@ -1241,7 +1231,7 @@ It should also be stated that while the stOp is processing the current data, the
 
 The SIMD takes the result data and performs the operation starting at the program counter (PC) indicated by the SIMD operation pointer provided by the PE\_CNTL.
 
-The stOp provides the result to the SIMD via a local register. The result is also written, in most cases to the small local SRAM.
+The stOp provides the result to the SIMD via a local register. The result is also written, in most cases to the small local \ac{sram}.
 
 The SIMD performs the specified operation on the data provided by the stOp.
 
@@ -1261,20 +1251,20 @@ The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upst
 % >>>>>>>>>>>>>>>>>>>>>>>>>>> Results <<<<<<<<<<<<<<<<<<<<<<
 \section{Results}
 \label{sec:Results}
-The objectives of this work was to design a system able to accelerate ANNs in customer facing systems implemented at the edge. 
+The objectives of this work was to design a system able to accelerate \ac{ann}s in customer facing systems implemented at the embedded. 
 \iffalse
 This means systems that are not designed to process multiple requests of essentially the same operation.
 \fi
-Given that these systems cannot effectively utilize SRAM, the main objective was to demonstrate a system that can operate efficiently using 3D-DRAM.
+Given that these systems c\ac{ann}ot effectively utilize \ac{sram}, the main objective was to demonstrate a system that can operate efficiently using 3D-\ac{dram}.
 
 The system decodes instructions, sends configuration to various functions, pre-fetchs and pipelines data.
 This parallelism allows the system to constantly stream data whilst results from previous operations are being operated on.
 
-To demonstrate such a system, this work targeted 3DIC technology including 3D-DRAM. This work proposes that if a system can be purely in 3DIC, the system can take advantage of the benefits
+To demonstrate such a system, this work targeted 3DIC technology including 3D-\ac{dram}. This work proposes that if a system can be purely in 3DIC, the system can take advantage of the benefits
 of 3DIC which includes reduced energy, area and high bandwidth.
-In addition, this work proposes that given the system is 3DIC, then a customized DRAM would provide a significant bandwidth boost over typical implementations using standard DRAM.
+In addition, this work proposes that given the system is 3DIC, then a customized \ac{dram} would provide a significant bandwidth boost over typical implementations using standard \ac{dram}.
 \iffalse
-To ensure the system was purely 3DIC, the area of the system Manager and Processing Engine has to stay within the physical footprint of the DRAM.
+To ensure the system was purely 3DIC, the area of the system Manager and Processing Engine has to stay within the physical footprint of the \ac{dram}.
 \fi
 
 The target technology node was 28nm because its the technology node employed for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
@@ -1288,7 +1278,7 @@ It has been synthesized using a 65nm technology node.
 Initial synthesis timing closure at a frequency of \SI{500}{\mega\hertz} is complete.
 
 \iffalse
-As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
+As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized \ac{ann}s requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
 \fi
 
 %%%%The approximate design targets are shown in Table \ref{tab:DesignTargets}.
@@ -1331,7 +1321,7 @@ The area contribution of each block within the Manager and PE can be seen in tab
     \begin{adjustbox}{width=0.75\textwidth}
       \begin{tabular}{ccc}
         \toprule
-                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                            % \multicolumn{4}{c}{3D-\ac{dram} Simulation-based estimates}   \\
                          &          &                                         \\  %\cline{1-1}
             Block        &Instances &Percentage                               \\  %\cline{1-1}
             Name         &          &Contribution                             \\  %\cline{1-1}
@@ -1357,7 +1347,7 @@ The area contribution of each block within the Manager and PE can be seen in tab
     \begin{adjustbox}{width=0.85\textwidth}
       \begin{tabular}{ccc}
         \toprule
-                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                            % \multicolumn{4}{c}{3D-\ac{dram} Simulation-based estimates}   \\
                          &          &                                          \\  %\cline{1-1}
             Block        &Instances & Percentage                               \\  %\cline{1-1}
             Name         &          & Contribution                             \\  %\cline{1-1}
@@ -1393,7 +1383,7 @@ Additional testcases were employed representing pre-synaptic fanins of 294, 300,
 The results showing sustained average bandwidth can be seen in table \ref{tab:Bandwidth Estimates}.
 
 The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
-The DRAM accesses were captured and DRAM energy dissipation calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
+The \ac{dram} accesses were captured and \ac{dram} energy dissipation calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
 These estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz}.
 The estimated overall power along with per block contribution are shown in table \ref{tab:Simulation-based estimates}.
 
@@ -1411,7 +1401,7 @@ The estimated overall power along with per block contribution are shown in table
     \begin{adjustbox}{width=0.85\textwidth}
       \begin{tabular}{cccc}
         \toprule
-                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                            % \multicolumn{4}{c}{3D-\ac{dram} Simulation-based estimates}   \\
                          &                       & Total    &                                          \\  %\cline{1-1}
             Technology   & Clock                 & Expected &                                          \\  %\cline{1-1}
                 Node     & Frequency             &  Power   &  Testcase                                \\  %\cline{1-1}
@@ -1432,15 +1422,15 @@ The estimated overall power along with per block contribution are shown in table
     \begin{adjustbox}{width=0.55\textwidth}
       \begin{tabular}{cc}
         \toprule
-                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                            % \multicolumn{4}{c}{3D-\ac{dram} Simulation-based estimates}   \\
                          &                                          \\  %\cline{1-1}
             Block        & Percentage                               \\  %\cline{1-1}
             Name         & Contribution                             \\  %\cline{1-1}
         \hline  % instead of \midrule %midrule doesnt overlap with column lines
                 Manager  & \SI[per-mode=symbol]{66.6}{\percent}  \\ 
                      PE  & \SI[per-mode=symbol]{28.0}{\percent}  \\
-                   DRAM  & \SI[per-mode=symbol]{ 2.5}{\percent}  \\
-              DRAM TSVs  & \SI[per-mode=symbol]{ 1.8}{\percent}  \\
+                   \ac{dram}  & \SI[per-mode=symbol]{ 2.5}{\percent}  \\
+              \ac{dram} TSVs  & \SI[per-mode=symbol]{ 1.8}{\percent}  \\
          Stack Bus TSVs  & \SI[per-mode=symbol]{ 1.2}{\percent}  \\
         \bottomrule
       \end{tabular}
@@ -1464,20 +1454,21 @@ As bus efficiency is the main metric, table \ref{tab:Bandwidth Estimates} shows 
     \begin{adjustbox}{width=0.37\textwidth}
       \begin{tabular}{ccc}
         \toprule
-                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                            % \multicolumn{4}{c}{3D-\ac{dram} Simulation-based estimates}   \\
                                                        &                                         \multicolumn{2}{c}{Average Bandwidth}                      \\  %\cline{1-1}
                                                        &                                         \multicolumn{2}{c}{At Frequency}                                      \\  %\cline{1-1}
                    Test                                &        \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\  %\cline{1-1}
         \hline  % instead of \midrule %midrule doesnt ove        
-                   CONV2 \cite{krizhevsky2012imagenet} &\ \SI[per-mode=symbol]{\sim 22}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-294                            &\ \SI[per-mode=symbol]{\sim 23}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-300                            &\ \SI[per-mode=symbol]{\sim 25}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 34}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-500                            &\ \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-1000                           &\ \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 41}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-350                              &\ \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 36}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-500                              &\ \SI[per-mode=symbol]{\sim 27}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-1000                             &\ \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 42}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-7 \cite{krizhevsky2012imagenet}  &\ \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV2 \cite{krizhevsky2012imagenet} &\ \SI[per-mode=symbol]{\sim 25}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 35}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-294                            &\ \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 37}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-300                            &\ \SI[per-mode=symbol]{\sim 27}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 37}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-500                            &\ \SI[per-mode=symbol]{\sim 29}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 41}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-1000                           &\ \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-2500                           &\ \SI[per-mode=symbol]{\sim 32}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 45}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-350                              &\ \SI[per-mode=symbol]{\sim 28}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 39}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-500                              &\ \SI[per-mode=symbol]{\sim 29}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 41}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-1000                             &\ \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-7 \cite{krizhevsky2012imagenet}  &\ \SI[per-mode=symbol]{\sim 32}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 45}{\tera\bit\per\second} \\ %\cline{2-2}
         \bottomrule
       \end{tabular}
     \end{adjustbox}
@@ -1497,7 +1488,7 @@ As bus efficiency is the main metric, table \ref{tab:Bandwidth Estimates} shows 
 %%%%          \toprule
 %%%%                            %& \multicolumn{4}{c}{Technology}   \\
 %%%%                            &       &       &  Usable    &          &  \\  %\cline{1-1}
-%%%%                            &       &       &   DRAM     & Expected &  \\  %\cline{1-1}
+%%%%                            &       &       &   \ac{dram}     & Expected &  \\  %\cline{1-1}
 %%%%                            & Tech  & Freq  & Bandwidth  &  Power   &  \\  %\cline{1-1}
 %%%%          \hline  % instead of \midrule %midrule doesnt overlap with column lines
 %%%%                  3D-System & 28    & \SI{700}{\mega\hertz}      &       \SI[per-mode=symbol]{\sim 64}{\tera\bit\per\second}   &  73W   &  \\ %\cline{2-2}
@@ -1551,7 +1542,7 @@ As bus efficiency is the main metric, table \ref{tab:Bandwidth Estimates} shows 
 %%%%                    DMA  &               & 368000  \\
 %%%%      Memory Controller  &               & 294000  \\
 %%%%                Control  &               & 1032000 \\
-%%%%                   SRAM  &               & 740098  \\
+%%%%                   \ac{sram}  &               & 740098  \\
 %%%%                    FMA  &               &              & 405440 \\
 %%%%          \bottomrule
 %%%%        \end{tabular}
@@ -1575,7 +1566,7 @@ As bus efficiency is the main metric, table \ref{tab:Bandwidth Estimates} shows 
 %%%%          \toprule
 %%%%                            %& \multicolumn{4}{c}{Technology}   \\
 %%%%                            &       &  Usable    &          &  \\  %\cline{1-1}
-%%%%                            &       &   DRAM     & Expected &  \\  %\cline{1-1}
+%%%%                            &       &   \ac{dram}     & Expected &  \\  %\cline{1-1}
 %%%%                            & Tech  & Bandwidth  &  Power   &  \\  %\cline{1-1}
 %%%%          \hline  % instead of \midrule %midrule doesnt overlap with column lines
 %%%%                  3D-System & 28    &       \SI[per-mode=symbol]{\sim 64}{\tera\bit\per\second}   &  73W   &  \\ %\cline{2-2}
@@ -1600,39 +1591,40 @@ As bus efficiency is the main metric, table \ref{tab:Bandwidth Estimates} shows 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>> Conclusions and Further Work <<<<<<<<<<<<<<<<<<<<<<
 \section{Conclusions}
 \label{sec:Conclusions}
-There have been many attempts to accelerate ANNs. Many have shown excellent performance mainly when implementing CNNs. The improvement mostly comes from the ability to 
-hold kernel weights and/or AN activations in local SRAM. Another method of employing local memory is often due to pooling of batch requests, especially in server applications.
-This local storage allows the system to take advantage of the low latency and random access benefits of SRAM whilst performing multiple operations on that data.
+There have been many attempts to accelerate \acp{ann}. Many have shown excellent performance mainly when implementing \acp{cnn}. The improvement mostly comes from the ability to 
+hold kernel weights and/or AN activations in local \ac{sram}. Another method of employing local memory is often due to pooling of batch requests, especially in server applications.
+This local storage allows the system to take advantage of the low latency and random access benefits of \ac{sram} whilst performing multiple operations on that data.
 When considering applications where this local storage cannot be used effectively, all these implementations suffer a large degradation in performance.
 
 
-This work considers edge applications where a system is processing requests with a disparate set of ANNs. The assumption is that local SRAM is no longer effective and performance is based on DRAM bandwidth.
-This work considers 3DIC technology and a customized 3D-DRAM is proposed. 
+This work considers embedded applications where a system is processing requests with a disparate set of \acp{ann}. The assumption is that local \ac{sram} is no longer effective and performance is based on \ac{dram} bandwidth.
+This work considers 3DIC technology and a customized 3D-\ac{dram} is proposed. 
 
-The customized 3D-DRAM combined with a design based on custom instructions and operation descriptors allows the system to achieve high levels of memory bandwidth efficiency.
+The customized 3D-\ac{dram} combined with a design based on custom instructions and operation descriptors allows the system to achieve high levels of memory bandwidth efficiency.
 
-There is no doubt existing CNN accelerators that take advantage of batch processing achieve a performance that is difficult to better, but applying these systems to this works target application exposes those systems DRAM bandwidth limitations.
+There is no doubt existing \ac{cnn} accelerators that take advantage of batch processing achieve a performance that is difficult to better, but applying these systems to this works target application exposes those systems \ac{dram} bandwidth limitations.
 
-This work demonstrates a 3D-DRAM system that 
+This work demonstrates a \ac{3dic} system that at the surface provides relatively low \ac{flops}, but considering the target application is memory bound, this work demonstrates a 3X power improvement and 6X area improvement over similar \ac{ann} systems \cite{chen2016diannao}\cite{azarkhish2017neurostream}\cite{kim2016neurocube}\cite{gao2017tetris}.
+This work demonstrates a \ac{3ddram} system that 
 \iffalse
 at the surface has a relatively low FLOPs, but considering the target applcation is memory bound this work potentially provides a 10-50X improvement over existing ASIC/ASIPs or GPUs.
 \else
 given the target application, provides a potentially 10-50X performance improvement over existing ASIC/ASIPs or GPUs.
 \fi
 
-\section{Acknowledgements}
-\label{sec:Acknowledgements}
+\section{Acknowlembeddedments}
+\label{sec:Acknowlembeddedments}
 This work was funded in part by DARPA and AFRL under FA8650-15-1-7518 and DARPA and ONR under N00014-17-1-3013, as part of the CHIPS program.
 
 \iffalse
 \section{Further Work}
 \label{sec:Further Work}
 This work does not put a high level of importance to the processing engine. The choice of using single-precision floating point format was in some part convenient. In fact, half-precision might have been a better choice especially as there
-is a level of acceptance that lower precision is acceptable in ANN inference.
+is a level of acceptance that lower precision is acceptable in \ac{ann} inference.
 Therefore, further work should include :
 \begin {outline}
   \1 Manager changes to support half-precision format
-    \2 supports 16-bit FP would require additional muxing logic when directing words in the wide DRAM bus to execution lanes, but the bulk of the design should remain relatively intact.
+    \2 supports 16-bit FP would require additional muxing logic when directing words in the wide \ac{dram} bus to execution lanes, but the bulk of the design should remain relatively intact.
   \1 Half-Precision PE
     \2 modifying the PE to support 16-bit FP would be relatively trivial
   \1 Additional PE pipelining
@@ -1641,7 +1633,7 @@ Therefore, further work should include :
       \3 using a reduction array would effectively double the FLOPs
       \3 looking at storing weights and inputs for a pipelined PE would be required and the manager would likely be customized to the PE, but the belief is the Manager design and complexity should be similar
   \1 Systolic PE
-    \2 systolic arrays have shown efficacy when used in server applications such as TPU, but its not clear how effective they would be in an edge application
+    \2 systolic arrays have shown efficacy when used in server applications such as TPU, but its not clear how effective they would be in an embedded application
       \3 consider how to effectively feed a systolic array PE
       \3 consider types of systolic array
       \3 consider situations such as multiple Managers feeding a single PE. For example, a systolic PE might use two managers to feed X and Y inputs of the array

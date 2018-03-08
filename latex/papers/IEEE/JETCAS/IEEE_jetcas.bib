@@ -1,3 +1,36 @@
+@book{aizenberg2013multi,
+  title={Multi-Valued and Universal Binary Neurons: Theory, Learning and Applications},
+  author={Aizenberg, Igor and Aizenberg, Naum N and Vandewalle, Joos PL},
+  year={2013},
+  publisher={Springer Science \& Business Media}
+}
+
+
+@article{standard2007jedec,
+  title={DDR3 SDRAM Standard},
+  author={{Standard, JEDEC}},
+  journal={JESD79-3, Jun},
+  year={2007}
+}
+
+
+@manual{micron_ddr3,
+    organization  = "Micron Technology Inc.",
+    title         = "DDR3L SDRAM",
+    number        = "D 8/17 EN",
+    year          =  2015
+}
+
+@article{hochreiter1997long,
+  title={Long short-term memory},
+  author={Hochreiter, Sepp and Schmidhuber, J{\"u}rgen},
+  journal={Neural computation},
+  volume={9},
+  number={8},
+  pages={1735--1780},
+  year={1997},
+  publisher={MIT Press}
+}
 
 @inproceedings{liu2012compact,
   title={A compact low-power 3D I/O in 45nm CMOS},
@@ -8,17 +41,6 @@
   organization={IEEE}
 }
 
-
-@article{patti2014,
-  title={2.5 D and 3D Integration Technology Update},
-  author={Patti, Robert},
-  journal={Additional Papers and Presentations},
-  volume={2014},
-  number={DPC},
-  pages={1--35},
-  year={2014},
-  publisher={International Microelectronics Assembly and Packaging Society}
-}
 
 @ARTICLE{patti2006,
 author={R. S. Patti},
@@ -32,6 +54,22 @@ keywords={integrated circuit interconnections;system-on-chip;3D integrated circu
 doi={10.1109/JPROC.2006.873612},
 ISSN={0018-9219},
 month={June},}
+
+@article{doi:10.1162/neco.2006.18.7.1527,
+author = { Geoffrey E. Hinton and  Simon Osindero and  Yee-Whye Teh},
+title = {A Fast Learning Algorithm for Deep Belief Nets},
+journal = {Neural Computation},
+volume = {18},
+number = {7},
+pages = {1527-1554},
+year = {2006},
+doi = {10.1162/neco.2006.18.7.1527},
+note ={PMID: 16764513},
+URL = {https://doi.org/10.1162/neco.2006.18.7.1527},
+eprint = {https://doi.org/10.1162/neco.2006.18.7.1527},
+abstract = { We show how to use âcomplementary priorsâ to eliminate the explaining-away effects that make inference difficult in densely connected belief nets that have many hidden layers. Using complementary priors, we derive a fast, greedy algorithm that can learn deep, directed belief networks one layer at a time, provided the top two layers form an undirected associative memory. The fast, greedy algorithm is used to initialize a slower learning procedure that fine-tunes the weights using a contrastive version of the wake-sleep algorithm. After fine-tuning, a network with three hidden layers forms a very good generative model of the joint distribution of handwritten digit images and their labels. This generative model gives better digit classification than the best discriminative learning algorithms. The low-dimensional manifolds on which the digits lie are modeled by long ravines in the free-energy landscape of the top-level associative memory, and it is easy to explore these ravines by using the directed connections to display what the associative memory has in mind. }
+}
+
 
 @inproceedings{krizhevsky2012imagenet,
   title={Imagenet classification with deep convolutional neural networks},
@@ -48,6 +86,20 @@ month={June},}
   note = {Accessed: 2016-08-30}
 }
 
+@misc{stanford_softmax,
+  title = {Softmax regression},
+  author={Various},
+  howpublished = {\url{http://ufldl.stanford.edu/tutorial/supervised/SoftmaxRegression/}},
+  note = {Accessed: 2018-02-16}
+}
+
+@misc{stanford_pooling,
+  title = {Pooling Overview},
+  author={Various},
+  howpublished = {\url{http://ufldl.stanford.edu/tutorial/supervised/Pooling/}},
+  note = {Accessed: 2018-02-16}
+}
+
 @article{galal2011energy,
   title={Energy-efficient floating-point unit design},
   author={Galal, Sameh and Horowitz, Mark},
@@ -59,21 +111,49 @@ month={June},}
   publisher={IEEE}
 }
 
-
-@manual{schabel2014energy,
-  title={Predictive energy-Per-Op scaling for exploring the design space},
-  author={Schabel, Joshua and Park, Jong Beom and Davis, Rhett William and Franzon, Paul D.},
-  year={2014},
-  organization={ECE Dept., North Carolina State University, Box 7911, Raleigh},
-  address={Box 7911, Raleigh, NC, 27695-7911}
+@misc{nvidia_gpi_comparison,
+  title = {Nvidia Pushes Deep Learning Inference With New Pascal GPUs},
+  author={Morgan, Timothy},
+  howpublished = {\url{https://www.nextplatform.com/2016/09/13/nvidia-pushes-deep-learning-inference-new-pascal-gpus}},
+  note = {Accessed: 2018-02-21}
 }
+
+
+@inproceedings{schabel2016processor,
+  title={Processor-in-memory support for artificial neural networks},
+  author={Schabel, Joshua and Baker, Lee and Dey, Sumon and Li, Weifu and Franzon, Paul D},
+  booktitle={Rebooting Computing (ICRC), IEEE International Conference on},
+  pages={1--8},
+  year={2016},
+  organization={IEEE}
+}
+
+@phdthesis{schabel2014diss,
+  title={Design of an Application-Specific Instruction Set Processor for the Sparse Neural Network Design Space},
+  author={Schabel, Joshua C.},
+  year={2017},
+  publisher={Electrical and Computer Engineering},
+  organization={North Carolina State University},
+  address={Box 7911, Raleigh, NC 27695-7911}
+}
+
+@techreport{schabel2017energy,
+  title={Predictive energy-Per-Op scaling for exploring the design space},
+  author={Schabel, Joshua C. and Park, Jong Beom and Davis, Rhett William and Franzon, Paul D.},
+  year={2014},
+  publisher={Electrical and Computer Engineering},
+  organization={North Carolina State University},
+  address={Box 7911, Raleigh, NC 27695-7911}
+}
+
 
 @manual{park2015data,
   title={Three-Dimensional DRAM Area, Timing and Energy Model},
   author={Park, Jong Beom},
   year={2015},
-  organization={ECE Dept., North Carolina State University, Box 7911, Raleigh},
-  address={Box 7911, Raleigh, NC, 27695-7911}
+  school={Electrical and Computer Engineering},
+  organization={North Carolina State University},
+  address={Box 7911, Raleigh, NC 27695-7911}
 }
 
 @manual{tezzaron:diram4,
@@ -84,6 +164,26 @@ month={June},}
     month         =  "July",    
     note          = "Rev. 0.04"
 }
+
+%http://www.imapsource.org/action/showCitFormats?doi=10.4071%2F2014DPC-ta12
+@article{patti2014,
+author = { Robert  Patti },
+organization  = "Tezzaron Semiconductor",
+title = {2.5D and 3D Integration Technology Update},
+journal = {Additional Conferences (Device Packaging, HiTEC, HiTEN, \& CICMT)},
+volume = {2014},
+number = {DPC},
+pages = {1-35},
+year = {2014},
+doi = {10.4071/2014DPC-ta12},
+URL = { 
+        https://doi.org/10.4071/2014DPC-ta12
+},
+eprint = { 
+        https://doi.org/10.4071/2014DPC-ta12
+}
+}
+
 
 @article{qiu2013parallel,
   title={A parallel neuromorphic text recognition system and its implementation on a heterogeneous high-performance computing cluster},
@@ -138,11 +238,21 @@ month={June},}
 }
 
 @inproceedings{kim2016neurocube,
-  title={Neurocube: A Programmable Digital Neuromorphic Architecture with High-Density 3D Memory},
-  author={Kim, Duckhwan and Kung, JH and Chai, Sek and Yalamanchili, Sudhakar and Mukhopadhyay, Saibal},
-  booktitle={Proceedings of ISCA},
-  volume={43},
-  year={2016}
+  title={Neurocube: A programmable digital neuromorphic architecture with high-density 3D memory},
+  author={Kim, Duckhwan and Kung, Jaeha and Chai, Sek and Yalamanchili, Sudhakar and Mukhopadhyay, Saibal},
+  booktitle={Computer Architecture (ISCA), 2016 ACM/IEEE 43rd Annual International Symposium on},
+  pages={380--392},
+  year={2016},
+  organization={IEEE}
+}
+
+@inproceedings{gao2017tetris,
+  title={Tetris: Scalable and efficient neural network acceleration with 3d memory},
+  author={Gao, Mingyu and Pu, Jing and Yang, Xuan and Horowitz, Mark and Kozyrakis, Christos},
+  booktitle={Proceedings of the Twenty-Second International Conference on Architectural Support for Programming Languages and Operating Systems},
+  pages={751--764},
+  year={2017},
+  organization={ACM}
 }
 
 @article{kyo2011imapcar,
@@ -159,10 +269,19 @@ month={June},}
 @inproceedings{farabet2011neuflow,
   title={Neuflow: A runtime reconfigurable dataflow processor for vision},
   author={Farabet, Cl{\'e}ment and Martini, Berin and Corda, Benoit and Akselrod, Polina and Culurciello, Eugenio and LeCun, Yann},
-  booktitle={Cvpr 2011 Workshops},
+  booktitle={Computer Vision and Pattern Recognition Workshops (CVPRW), 2011 IEEE Computer Society Conference on},
   pages={109--116},
   year={2011},
   organization={IEEE}
+}
+
+@inproceedings{maas2013rectifier,
+  title={Rectifier nonlinearities improve neural network acoustic models},
+  author={Maas, Andrew L and Hannun, Awni Y and Ng, Andrew Y},
+  booktitle={Proc. ICML},
+  volume={30},
+  number={1},
+  year={2013}
 }
 
 @inproceedings{gokhale2014240,
@@ -171,6 +290,13 @@ month={June},}
   booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops},
   pages={682--687},
   year={2014}
+}
+
+@article{azarkhish2017neurostream,
+  title={Neurostream: Scalable and Energy Efficient Deep Learning with Smart Memory Cubes},
+  author={Azarkhish, Erfan and Rossi, Davide and Loi, Igor and Benini, Luca},
+  journal={arXiv preprint arXiv:1701.06420},
+  year={2017}
 }
 
 @inproceedings{chen2014diannao,
@@ -183,6 +309,51 @@ month={June},}
   year={2014},
   organization={ACM}
 }
+
+@article{chen2016diannao,
+ author = {Chen, Yunji and Chen, Tianshi and Xu, Zhiwei and Sun, Ninghui and Temam, Olivier},
+ title = {DianNao Family: Energy-efficient Hardware Accelerators for Machine Learning},
+ journal = {Commun. ACM},
+ issue_date = {November 2016},
+ volume = {59},
+ number = {11},
+ month = oct,
+ year = {2016},
+ issn = {0001-0782},
+ pages = {105--112},
+ numpages = {8},
+ url = {http://doi.acm.org/10.1145/2996864},
+ doi = {10.1145/2996864},
+ acmid = {2996864},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+} 
+
+@INPROCEEDINGS{dadiannao2014,
+author={Y. Chen and T. Luo and S. Liu and S. Zhang and L. He and J. Wang and L. Li and T. Chen and Z. Xu and N. Sun and O. Temam},
+booktitle={47th Annual IEEE/ACM International Symposium on Microarchitecture},
+title={DaDianNao: A Machine-Learning Supercomputer},
+year={2014},
+volume={},
+number={},
+pages={609-622},
+keywords={learning (artificial intelligence);mainframes;neural nets;parallel machines;CNN-DNN algorithmic characteristics;DaDianNao;GPU;computational capacity-area ratio;computational units;convolutional neural network;custom storage;deep neural network;general-purpose workloads;high-degree parallelism;industry-grade interconnects;machine-learning supercomputer;multichip machine-learning architecture;multichip system;neural network accelerators;Bandwidth;Biological neural networks;Computer architecture;Graphics processing units;Hardware;Kernel;Neurons;accelerator;computer architecture;machine learning;neural network},
+doi={10.1109/MICRO.2014.58},
+ISSN={1072-4451},
+month={Dec},}
+
+@ARTICLE{dadiannao2017,
+author={T. Luo and S. Liu and L. Li and Y. Wang and S. Zhang and T. Chen and Z. Xu and O. Temam and Y. Chen},
+journal={IEEE Transactions on Computers},
+title={DaDianNao: A Neural Network Supercomputer},
+year={2017},
+volume={66},
+number={1},
+pages={73-88},
+keywords={feedforward neural nets;graphics processing units;learning (artificial intelligence);multiprocessor interconnection networks;parallel machines;CNN;DNN;DaDianNao;GPU;computational capacity-area ratio;convolutional neural networks;custom multichip machine-learning architecture;deep neural networks;electrical interchip interconnects;general-purpose workloads;machine-learning algorithms;memory footprint;multichip system;neural network accelerators;neural network supercomputer;on-chip storage;optical interchip interconnects;Biological neural networks;Computer architecture;Graphics processing units;Hardware;Kernel;Neurons;Supercomputers;CNN;DNN;Machine learning;interconnect;multi-chip;neuron network;supercomputer},
+doi={10.1109/TC.2016.2574353},
+ISSN={0018-9340},
+month={Jan},}
 
 @inproceedings{chen201614,
   title={14.5 Eyeriss: An energy-efficient reconfigurable accelerator for deep convolutional neural networks},
@@ -212,12 +383,105 @@ month={June},}
   note = {Accessed: 2016-09-08}
 }
 
+@misc{Nvidia_p100_summary_datasheet,
+  title = {NVidia Tesla P100 Datasheet},
+  author={Nvidia\textregistered},
+  howpublished = {\url{http://images.nvidia.com/content/tesla/pdf/nvidia-tesla-p100-datasheet.pdf}},
+  note = {Accessed: 2017-12-29}
+}
+
 @misc{wccftechpascal,
   title = {Nvidia : Pascal Is 10x Faster Than Maxwell},
   author={WCCF Tech},
   howpublished = {\url{http://wccftech.com/nvidia-pascal-gpu-gtc-2015/}},
   note = {Accessed: 2016-09-08}
 }
+
+@misc{NNintro_Bullinaria,
+  title = {Introduction to Neural Computation : Neural Computation},
+  author={Dr John A. Bullinaria},
+  howpublished = {\url{http://www.cs.bham.ac.uk/~jxb/inc.html}},
+  note = {Accessed: 2017-09-08}
+}
+
+@misc{NNintro_Nielsen,
+  title = {NNs and DL},
+  author={Michael Nielsen},
+  howpublished = {\url{http://www.neuralnetworksanddeeplearning.com/index.html}},
+  note = {Accessed: 2018-01-02}
+}
+%  title = {Neural Networks and Deep Learning},
+
+@misc{wikipedia_softmax,
+  title = {Softmax function},
+  author={Various},
+  howpublished = {\url{https://en.wikipedia.org/wiki/Softmax_function}},
+  note = {Accessed: 2018-01-02}
+}
+
+@misc{wikipedia_neuron,
+  title = {Neuron},
+  author={Various},
+  howpublished = {\url{https://en.wikipedia.org/wiki/Neuron}},
+  note = {Accessed: 2018-01-02}
+}
+
+@misc{wikipedia_deep_learning,
+  title = {Neuron},
+  author={Various},
+  howpublished = {\url{https://en.wikipedia.org/wiki/Deep_learning}},
+  note = {Accessed: 2018-01-02}
+}
+
+@misc{wikipedia_back_propagation,
+  title = {Backpropagation},
+  author={Various},
+  howpublished = {\url{https://en.wikipedia.org/wiki/Backpropagation}},
+  note = {Accessed: 2018-01-02}
+}
+
+@misc{wikipedia_sgd,
+  title = {Stochastic gradient descent},
+  author={Various},
+  howpublished = {\url{https://en.wikipedia.org/wiki/Stochastic_gradient_descent}},
+  note = {Accessed: 2018-01-02}
+}
+
+@misc{deeplearning4j,
+  title = {Introduction to Deep Neural Networks},
+  author={{Deeplearning4j Development Team}},
+  publisher={Open-source distributed deep learning for the JVM, Apache Software Foundation License 2.0},
+  howpublished = {\url{http://deeplearning4j.org}},
+  note = {Accessed: 2018-01-02}
+}
+
+@Inbook{Kwolek2005,
+author="Kwolek, Bogdan",
+editor="Duch, W{\l}odzis{\l}aw
+and Kacprzyk, Janusz
+and Oja, Erkki
+and Zadro{\.{z}}ny, S{\l}awomir",
+title="Face Detection Using Convolutional Neural Networks and Gabor Filters",
+bookTitle="Artificial Neural Networks: Biological Inspirations -- ICANN 2005: 15th International Conference, Warsaw, Poland, September 11-15, 2005. Proceedings, Part I",
+year="2005",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="551--556",
+abstract="This paper proposes a method for detecting facial regions by combining a Gabor filter and a convolutional neural network. The first stage uses the Gabor filter which extracts intrinsic facial features. As a result of this transformation we obtain four subimages. The second stage of the method concerns the application of the convolutional neural network to these four images. The approach presented in this paper yields better classification performance in comparison to the results obtained by the convolutional neural network alone.",
+isbn="978-3-540-28754-4",
+doi="10.1007/11550822_86",
+url="https://doi.org/10.1007/11550822_86"
+}
+
+@inproceedings{jouppi2017datacenter,
+  title={In-datacenter performance analysis of a tensor processing unit},
+  author={Jouppi, Norman P and Young, Cliff and Patil, Nishant and Patterson, David and Agrawal, Gaurav and Bajwa, Raminder and Bates, Sarah and Bhatia, Suresh and Boden, Nan and Borchers, Al and others},
+  booktitle={Proceedings of the 44th Annual International Symposium on Computer Architecture},
+  pages={1--12},
+  year={2017},
+  organization={ACM}
+}
+
 
 @misc{tensorflow2015-whitepaper,
 title={{TensorFlow}: Large-Scale Machine Learning on Heterogeneous Systems},
@@ -267,6 +531,14 @@ author={
   year={2015},
 }
 
+@inproceedings{le2013building,
+  title={Building high-level features using large scale unsupervised learning},
+  author={Le, Quoc V},
+  booktitle={Acoustics, Speech and Signal Processing (ICASSP), 2013 IEEE International Conference on},
+  pages={8595--8598},
+  year={2013},
+  organization={IEEE}
+}
 
 @article{lecun1989bp,
 	Annote = {doi: 10.1162/neco.1989.1.4.541},
@@ -329,13 +601,6 @@ year = {2014}
   year      = 2007
 }
 
-@article{jouppi2017datacenter,
-  title={In-datacenter performance analysis of a tensor processing unit},
-  author={Jouppi, Norman P and Young, Cliff and Patil, Nishant and Patterson, David and Agrawal, Gaurav and Bajwa, Raminder and Bates, Sarah and Bhatia, Suresh and Boden, Nan and Borchers, Al and others},
-  journal={arXiv preprint arXiv:1704.04760},
-  year={2017}
-}
-
 @ARTICLE{5604678,
 author={G. Van der Plas and P. Limaye and I. Loi and A. Mercha and H. Oprins and C. Torregiani and S. Thijs and D. Linten and M. Stucchi and G. Katti and D. Velenis and V. Cherman and B. Vandevelde and V. Simons and I. De Wolf and R. Labie and D. Perry and S. Bronckers and N. Minas and M. Cupac and W. Ruythooren and J. Van Olmen and A. Phommahaxay and M. de Potter de ten Broeck and A. Opdebeeck and M. Rakowski and B. De Wachter and M. Dehan and M. Nelis and R. Agarwal and A. Pullini and F. Angiolini and L. Benini and W. Dehaene and Y. Travaly and E. Beyne and P. Marchal},
 journal={IEEE Journal of Solid-State Circuits},
@@ -362,6 +627,63 @@ doi={10.1109/TNN.2004.832719},
 ISSN={1045-9227},
 month={Sept},}
 
+@incollection{paugam2012computing,
+  title={Computing with spiking neuron networks},
+  author={Paugam-Moisy, H{\'e}lene and Bohte, Sander},
+  booktitle={Handbook of natural computing},
+  pages={335--376},
+  year={2012},
+  publisher={Springer}
+}
+
+@Inbook{Han1995,
+author="Han, Jun
+and Moraga, Claudio",
+editor="Mira, Jos{\'e}
+and Sandoval, Francisco",
+title="The influence of the sigmoid function parameters on the speed of backpropagation learning",
+bookTitle="From Natural to Artificial Neural Computation: International Workshop on Artificial Neural Networks Malaga-Torremolinos, Spain, June 7--9, 1995 Proceedings",
+year="1995",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="195--201",
+abstract="Sigmoid function is the most commonly known function used in feed forward neural networks because of its nonlinearity and the computational simplicity of its derivative. In this paper we discuss a variant sigmoid function with three parameters that denote the dynamic range, symmetry and slope of the function respectively. We illustrate how these parameters influence the speed of backpropagation learning and introduce a hybrid sigmoidal network with different parameter configuration in different layers. By regulating and modifying the sigmoid function parameter configuration in different layers the error signal problem, oscillation problem and asymmetrical input problem can be reduced. To compare the learning capabilities and the learning rate of the hybrid sigmoidal networks with the conventional networks we have tested the two-spirals benchmark that is known to be a very difficult task for backpropagation and their relatives.",
+isbn="978-3-540-49288-7",
+doi="10.1007/3-540-59497-3_175",
+url="https://doi.org/10.1007/3-540-59497-3_175"
+}
+
+@Article{Brunel2007,
+author="Brunel, Nicolas
+and van Rossum, Mark C. W.",
+title="Lapicque's 1907 paper: from frogs to integrate-and-fire",
+journal="Biological Cybernetics",
+year="2007",
+month="Dec",
+day="01",
+volume="97",
+number="5",
+pages="337--339",
+abstract="Exactly 100 years ago, Louis Lapicque published a paper on the excitability of nerves that is often cited in the context of integrate-and-fire neurons. We discuss Lapicque's contributions along with a translation of the original publication.",
+issn="1432-0770",
+doi="10.1007/s00422-007-0190-0",
+url="https://doi.org/10.1007/s00422-007-0190-0"
+}
+
+
+@ARTICLE{10.3389/fnsys.2015.00151,
+AUTHOR={Brette, Romain},   
+TITLE={Philosophy of the Spike: Rate-Based vs. Spike-Based Theories of the Brain},      
+JOURNAL={Frontiers in Systems Neuroscience},      
+VOLUME={9},      
+PAGES={151},     
+YEAR={2015},      
+URL={https://www.frontiersin.org/article/10.3389/fnsys.2015.00151},       
+DOI={10.3389/fnsys.2015.00151},      
+ISSN={1662-5137},   
+ABSTRACT={Does the brain use a firing rate code or a spike timing code? Considering this controversial question from an epistemological perspective, I argue that progress has been hampered by its problematic phrasing. It takes the perspective of an external observer looking at whether those two observables vary with stimuli, and thereby misses the relevant question: which one has a causal role in neural activity? When rephrased in a more meaningful way, the rate-based view appears as an ad hoc methodological postulate, one that is practical but with virtually no empirical or theoretical support.}
+}
+
 @INPROCEEDINGS{Kim2016,
 author={S. W. Kim and M. Detalle and L. Peng and P. Nolmans and N. Heylen and D. Velenis and A. Miller and G. Beyer and E. Beyne},
 booktitle={2016 IEEE 66th Electronic Components and Technology Conference (ECTC)},
@@ -376,9 +698,40 @@ ISSN={},
 month={May},}
 
 @misc{itrs2015_interconn,
-title={International Technology Roadmap for Semiconductors 2.0},
+title={International Technology Roadmap for Semiconductors 2.0, Interconnect},
 url={http://www.itrs2.net/itrs-reports.html},
 author={ITRS},
   year={2015},
 }
+
+@book{carnevale2006neuron,
+  title={The NEURON Book},
+  author={Carnevale, N.T. and Hines, M.L.},
+  isbn={9781139447836},
+  url={https://books.google.com/books?id=YzcOyjKBPHgC},
+  year={2006},
+  publisher={Cambridge University Press}
+}
+
+@book{Jacob:2007:MSC:1543376,
+ author = {Jacob, Bruce and Ng, Spencer and Wang, David},
+ title = {Memory Systems: Cache, DRAM, Disk},
+ year = {2007},
+ isbn = {0123797519, 9780123797513},
+ publisher = {Morgan Kaufmann Publishers Inc.},
+ address = {San Francisco, CA, USA},
+} 
+
+@ARTICLE{Bamberg2017,
+author={L. Bamberg and A. Garcia-Ortiz},
+journal={IEEE Transactions on Very Large Scale Integration (VLSI) Systems},
+title={High-Level Energy Estimation for Submicrometric TSV Arrays},
+year={2017},
+volume={25},
+number={10},
+pages={2856-2866},
+keywords={CMOS integrated circuits;encoding;energy consumption;integrated circuit modelling;low-power electronics;regression analysis;three-dimensional integrated circuits;3D integration;CMOS technologies;MOS capacitances;TSV energy consumption;TSV energy model;bit probabilities;capacitive coupling;coding efficiency;encoder complexity;high-level energy estimation;interconnect delay problem;low-power codes;pattern-dependent energy consumption;planar metal wires;regression method;size 65 nm;submicrometric TSV arrays;temporal misalignment;through silicon vias;voltage-dependent metal-oxide-semiconductor;Capacitance;Couplings;Encoding;Energy consumption;Integrated circuit modeling;Substrates;Through-silicon vias;3-D integrated circuits (3-D ICs);3-D integration;high-level power/energy estimation;low-power coding;through silicon vias (TSVs)},
+doi={10.1109/TVLSI.2017.2713601},
+ISSN={1063-8210},
+month={Oct},}
 
