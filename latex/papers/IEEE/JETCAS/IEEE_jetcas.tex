@@ -52,35 +52,6 @@
 
 \documentclass[journal]{IEEEtran}
 %
-% If IEEEtran.cls has not been installed into the LaTeX system files,
-% manually specify the path to it like:
-% \documentclass[journal]{../sty/IEEEtran}
-
-
-
-
-
-% Some very useful LaTeX packages include:
-% (uncomment the ones you want to load)
-
-
-% *** MISC UTILITY PACKAGES ***
-%
-%\usepackage{ifpdf}
-% Heiko Oberdiek's ifpdf.sty is very useful if you need conditional
-% compilation based on whether the output is pdf or dvi.
-% usage:
-% \ifpdf
-%   % pdf code
-% \else
-%   % dvi code
-% \fi
-% The latest version of ifpdf.sty can be obtained from:
-% http://www.ctan.org/pkg/ifpdf
-% Also, note that IEEEtran.cls V1.7 and later provides a builtin
-% \ifCLASSINFOpdf conditional that works the same way.
-% When switching from latex to pdflatex and vice-versa, the compiler may
-% have to be run twice to clear warning/error messages.
 
 \usepackage{booktabs}  % professionally typeset tables
 \usepackage{amsmath}%,amssymb,amsfonts}
@@ -101,32 +72,6 @@
     width=0.8\textwidth,
 ]{caption}
 \usepackage[list=true]{subcaption}
-
-
-
-
-
-
-% *** CITATION PACKAGES ***
-%
-%\usepackage{cite}
-% cite.sty was written by Donald Arseneau
-% V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
-% \cite{} output to follow that of the IEEE. Loading the cite package will
-% result in citation numbers being automatically sorted and properly
-% "compressed/ranged". e.g., [1], [9], [2], [7], [5], [6] without using
-% cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
-% \cite will automatically add leading space, if needed. Use cite.sty's
-% noadjust option (cite.sty V3.8 and later) if you want to turn this off
-% such as if a citation ever needs to be enclosed in parenthesis.
-% cite.sty is already installed on most LaTeX systems. Be sure and use
-% version 5.0 (2009-03-20) and later if using hyperref.sty.
-% The latest version can be obtained at:
-% http://www.ctan.org/pkg/cite
-% The documentation is contained in the cite.sty file itself.
-
-
-
 
 
 
@@ -155,201 +100,12 @@
   % every instance of \includegraphics
   \DeclareGraphicsExtensions{.eps}
 \fi
-% graphicx was written by David Carlisle and Sebastian Rahtz. It is
-% required if you want graphics, photos, etc. graphicx.sty is already
-% installed on most LaTeX systems. The latest version and documentation
-% can be obtained at: 
-% http://www.ctan.org/pkg/graphicx
-% Another good source of documentation is "Using Imported Graphics in
-% LaTeX2e" by Keith Reckdahl which can be found at:
-% http://www.ctan.org/pkg/epslatex
-%
-% latex, and pdflatex in dvi mode, support graphics in encapsulated
-% postscript (.eps) format. pdflatex in pdf mode supports graphics
-% in .pdf, .jpeg, .png and .mps (metapost) formats. Users should ensure
-% that all non-photo figures use a vector format (.eps, .pdf, .mps) and
-% not a bitmapped formats (.jpeg, .png). The IEEE frowns on bitmapped formats
-% which can result in "jaggedy"/blurry rendering of lines and letters as
-% well as large increases in file sizes.
-%
-% You can find documentation about the pdfTeX application at:
-% http://www.tug.org/applications/pdftex
-
-
 
 
 
 % *** MATH PACKAGES ***
 %
 \usepackage{amsmath}
-% A popular package from the American Mathematical Society that provides
-% many useful and powerful commands for dealing with mathematics.
-%
-% Note that the amsmath package sets \interdisplaylinepenalty to 10000
-% thus preventing page breaks from occurring within multiline equations. Use:
-%\interdisplaylinepenalty=2500
-% after loading amsmath to restore such page breaks as IEEEtran.cls normally
-% does. amsmath.sty is already installed on most LaTeX systems. The latest
-% version and documentation can be obtained at:
-% http://www.ctan.org/pkg/amsmath
-
-
-
-
-
-% *** SPECIALIZED LIST PACKAGES ***
-%
-%\usepackage{algorithmic}
-% algorithmic.sty was written by Peter Williams and Rogerio Brito.
-% This package provides an algorithmic environment fo describing algorithms.
-% You can use the algorithmic environment in-text or within a figure
-% environment to provide for a floating algorithm. Do NOT use the algorithm
-% floating environment provided by algorithm.sty (by the same authors) or
-% algorithm2e.sty (by Christophe Fiorio) as the IEEE does not use dedicated
-% algorithm float types and packages that provide these will not provide
-% correct IEEE style captions. The latest version and documentation of
-% algorithmic.sty can be obtained at:
-% http://www.ctan.org/pkg/algorithms
-% Also of interest may be the (relatively newer and more customizable)
-% algorithmicx.sty package by Szasz Janos:
-% http://www.ctan.org/pkg/algorithmicx
-
-
-
-
-% *** ALIGNMENT PACKAGES ***
-%
-%\usepackage{array}
-% Frank Mittelbach's and David Carlisle's array.sty patches and improves
-% the standard LaTeX2e array and tabular environments to provide better
-% appearance and additional user controls. As the default LaTeX2e table
-% generation code is lacking to the point of almost being broken with
-% respect to the quality of the end results, all users are strongly
-% advised to use an enhanced (at the very least that provided by array.sty)
-% set of table tools. array.sty is already installed on most systems. The
-% latest version and documentation can be obtained at:
-% http://www.ctan.org/pkg/array
-
-
-% IEEEtran contains the IEEEeqnarray family of commands that can be used to
-% generate multiline equations as well as matrices, tables, etc., of high
-% quality.
-
-
-
-
-% *** SUBFIGURE PACKAGES ***
-%\ifCLASSOPTIONcompsoc
-%  \usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
-%\else
-%  \usepackage[caption=false,font=footnotesize]{subfig}
-%\fi
-% subfig.sty, written by Steven Douglas Cochran, is the modern replacement
-% for subfigure.sty, the latter of which is no longer maintained and is
-% incompatible with some LaTeX packages including fixltx2e. However,
-% subfig.sty requires and automatically loads Axel Sommerfeldt's caption.sty
-% which will override IEEEtran.cls' handling of captions and this will result
-% in non-IEEE style figure/table captions. To prevent this problem, be sure
-% and invoke subfig.sty's "caption=false" package option (available since
-% subfig.sty version 1.3, 2005/06/28) as this is will preserve IEEEtran.cls
-% handling of captions.
-% Note that the Computer Society format requires a larger sans serif font
-% than the serif footnote size font used in traditional IEEE formatting
-% and thus the need to invoke different subfig.sty package options depending
-% on whether compsoc mode has been enabled.
-%
-% The latest version and documentation of subfig.sty can be obtained at:
-% http://www.ctan.org/pkg/subfig
-
-
-
-
-% *** FLOAT PACKAGES ***
-%
-%\usepackage{fixltx2e}
-% fixltx2e, the successor to the earlier fix2col.sty, was written by
-% Frank Mittelbach and David Carlisle. This package corrects a few problems
-% in the LaTeX2e kernel, the most notable of which is that in current
-% LaTeX2e releases, the ordering of single and double column floats is not
-% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
-% single column figure to be placed prior to an earlier double column
-% figure.
-% Be aware that LaTeX2e kernels dated 2015 and later have fixltx2e.sty's
-% corrections already built into the system in which case a warning will
-% be issued if an attempt is made to load fixltx2e.sty as it is no longer
-% needed.
-% The latest version and documentation can be found at:
-% http://www.ctan.org/pkg/fixltx2e
-
-
-%\usepackage{stfloats}
-% stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
-% the ability to do double column floats at the bottom of the page as well
-% as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
-% LaTeX2e). It also provides a command:
-%\fnbelowfloat
-% to enable the placement of footnotes below bottom floats (the standard
-% LaTeX2e kernel puts them above bottom floats). This is an invasive package
-% which rewrites many portions of the LaTeX2e float routines. It may not work
-% with other packages that modify the LaTeX2e float routines. The latest
-% version and documentation can be obtained at:
-% http://www.ctan.org/pkg/stfloats
-% Do not use the stfloats baselinefloat ability as the IEEE does not allow
-% \baselineskip to stretch. Authors submitting work to the IEEE should note
-% that the IEEE rarely uses double column equations and that authors should try
-% to avoid such use. Do not be tempted to use the cuted.sty or midfloat.sty
-% packages (also by Sigitas Tolusis) as the IEEE does not format its papers in
-% such ways.
-% Do not attempt to use stfloats with fixltx2e as they are incompatible.
-% Instead, use Morten Hogholm'a dblfloatfix which combines the features
-% of both fixltx2e and stfloats:
-%
-% \usepackage{dblfloatfix}
-% The latest version can be found at:
-% http://www.ctan.org/pkg/dblfloatfix
-
-
-
-
-%\ifCLASSOPTIONcaptionsoff
-%  \usepackage[nomarkers]{endfloat}
-% \let\MYoriglatexcaption\caption
-% \renewcommand{\caption}[2][\relax]{\MYoriglatexcaption[#2]{#2}}
-%\fi
-% endfloat.sty was written by James Darrell McCauley, Jeff Goldberg and 
-% Axel Sommerfeldt. This package may be useful when used in conjunction with 
-% IEEEtran.cls'  captionsoff option. Some IEEE journals/societies require that
-% submissions have lists of figures/tables at the end of the paper and that
-% figures/tables without any captions are placed on a page by themselves at
-% the end of the document. If needed, the draftcls IEEEtran class option or
-% \CLASSINPUTbaselinestretch interface can be used to increase the line
-% spacing as well. Be sure and use the nomarkers option of endfloat to
-% prevent endfloat from "marking" where the figures would have been placed
-% in the text. The two hack lines of code above are a slight modification of
-% that suggested by in the endfloat docs (section 8.4.1) to ensure that
-% the full captions always appear in the list of figures/tables - even if
-% the user used the short optional argument of \caption[]{}.
-% IEEE papers do not typically make use of \caption[]'s optional argument,
-% so this should not be an issue. A similar trick can be used to disable
-% captions of packages such as subfig.sty that lack options to turn off
-% the subcaptions:
-% For subfig.sty:
-% \let\MYorigsubfloat\subfloat
-% \renewcommand{\subfloat}[2][\relax]{\MYorigsubfloat[]{#2}}
-% However, the above trick will not work if both optional arguments of
-% the \subfloat command are used. Furthermore, there needs to be a
-% description of each subfigure *somewhere* and endfloat does not add
-% subfigure captions to its list of figures. Thus, the best approach is to
-% avoid the use of subfigure captions (many IEEE journals avoid them anyway)
-% and instead reference/explain all the subfigures within the main caption.
-% The latest version of endfloat.sty and its documentation can obtained at:
-% http://www.ctan.org/pkg/endfloat
-%
-% The IEEEtran \ifCLASSOPTIONcaptionsoff conditional can also be used
-% later in the document, say, to conditionally put the References on a 
-% page by themselves.
-
-
 
 
 % *** PDF, URL AND HYPERLINK PACKAGES ***
@@ -378,18 +134,12 @@
 \usepackage{adjustbox}
 \usepackage{acro}
 \usepackage{abbrevs}
+\usepackage{rotating}
+\usepackage{multirow}
 
 % Custom commands
 \newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{max}}\;}
 \long\def\comment#1{}
-
-
-% *** Do not adjust lengths that control margins, column widths, etc. ***
-% *** Do not use packages that alter fonts (such as pslatex).         ***
-% There should be no need to do such things with IEEEtran.cls V1.6 and later.
-% (Unless specifically asked to do so by the journal or conference you plan
-% to submit to, of course. )
-
 
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor}
@@ -410,23 +160,8 @@
 \include{abbrev}
 
 \begin{document}
+\title{Multi-\acs{ann} embedded system based on a custom \acs{3ddram}}
 %
-% paper title
-% Titles are generally capitalized except for words such as a, an, and, as,
-% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
-% not capitalized unless they are the first or last word of the title.
-% Linebreaks \\ can be used within to get better formatting as desired.
-% Do not put math or special symbols in the title.
-\title{Multi-\ac{ann} embedded system based on a custom \ac{3ddram}}
-%
-%
-% author names and IEEE memberships
-% note positions of commas and nonbreaking spaces ( ~ ) LaTeX will not break
-% a structure at a ~ so this keeps an author's name from being broken across
-% two lines.
-% use \thanks{} to gain access to the first footnote area
-% a separate \thanks must be used for each paragraph as LaTeX2e's \thanks
-% was not built to handle multiple paragraphs
 %
 \author{{Lee B. Baker, Paul Franzon~\IEEEmembership{Fellow,~IEEE}}%
 
@@ -441,53 +176,10 @@ paulf@ncsu.edu}
 
 \thanks{Manuscript received Month Day, 2016; revised Month Day, 2016.}}
 
-% note the % following the last \IEEEmembership and also \thanks - 
-% these prevent an unwanted space from occurring between the last author name
-% and the end of the author line. i.e., if you had this:
-% 
-% \author{....lastname \thanks{...} \thanks{...} }
-%                     ^------------^------------^----Do not want these spaces!
-%
-% a space would be appended to the last name and could cause every name on that
-% line to be shifted left slightly. This is one of those "LaTeX things". For
-% instance, "\textbf{A} \textbf{B}" will typeset as "A B" not "AB". To get
-% "AB" then you have to do: "\textbf{A}\textbf{B}"
-% \thanks is no different in this regard, so shield the last } of each \thanks
-% that ends a line with a % and do not let a space in before the next \thanks.
-% Spaces after \IEEEmembership other than the last one are OK (and needed) as
-% you are supposed to have spaces between the names. For what it is worth,
-% this is a minor point as most people would not even notice if the said evil
-% space somehow managed to creep in.
-
-
 
 % The paper headers
 \markboth{IEEE Journal on Emerging and Selected Topics in Circuits and Systems,~Vol.~XX, No.~XX, Month~2017}%
-{Shell \MakeLowercase{\textit{et al.}}:Custom \ac{3ddram} based \ac{ann} system for embedded applications}
-% The only time the second header will appear is for the odd numbered pages
-% after the title page when using the twoside option.
-% 
-% *** Note that you probably will NOT want to include the author's ***
-% *** name in the headers of peer review papers.                   ***
-% You can use \ifCLASSOPTIONpeerreview for conditional compilation here if
-% you desire.
-
-
-
-
-% If you want to put a publisher's ID mark on the page you can do it like
-% this:
-%\IEEEpubid{0000--0000/00\$00.00~\copyright~2015 IEEE}
-% Remember, if you use this you must call \IEEEpubidadjcol in the second
-% column for its text to clear the IEEEpubid mark.
-
-
-
-% use for special paper notices
-%\IEEEspecialpapernotice{(Invited Paper)}
-
-
-
+{Shell \MakeLowercase{\textit{et al.}}:Custom \acs{3ddram} based \acs{ann} system for embedded applications}
 
 % make the title area
 \maketitle
@@ -496,40 +188,12 @@ paulf@ncsu.edu}
 % in the abstract or keywords.
 \begin{abstract}
 
-This work demonstrates how a customized \ac{3ddram} with a very wide databus can be combined with application-specific layers to produce a system meeting the requirements of embedded systems employing multiple instances of disparate \acp{ann}.
+This work demonstrates how a customized \acf{3ddram} with a very wide databus can be combined with application-specific layers to produce a system meeting the requirements of embedded systems employing multiple instances of disparate \acfp{ann}.
 This work avoids any dependencies on \ac{sram} that might limit the size of supported \acp{ann}. 
 This work demonstrates the required utilization of the very wide \ac{dram} databus when employing instructions and data structures that facilitate operating directly out of the \ac{3ddram}.
 By allowing system functions to operate asynchronously this work is able to absorb the latencies associated with \ac{dram} and provide the bandwidth required to support multiple useful-sized disparate \acp{ann}.
 By demonstrating effective use of the very wide bus of a customized \ac{3ddram}, 
 this system demonstrates a 3X power improvement and 6X area improvement over similar \ac{ann} systems.
-
-
-\iffalse
-Machine Learning in the form of Deep Neural Networks (\acp{dnn}) have gained traction over the last few years.
-They get good press in applications such as image recognition and speech recognition.
-There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases these useful \ac{ann}s have significant
-memory requirements to store the connection weights (parameters) therefore requiring Dynamic Random Access memory (\ac{dram}) to store the AN parameters.
-
-There have been many successful attempts to accelerate \acp{ann}, but in most cases the focus is on a subset of the \acp{dnn} known as the Convolutional Neural network (\ac{cnn}).
-\acp{cnn} assume a significant amount of reuse of the weights connecting ANs and thus they can take advantage of local memory (\ac{sram}).
-
-Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory (\ac{sram}).
-These implementations can be shown to be effective with specific \ac{ann} architectures, such as \acp{cnn} where the \ac{ann} parameters can be stored in \ac{sram} in a cache-like architecture avoiding constant accessing of the "slower" \ac{dram}.
-In addition, to achieve a high performance, these rely on processing a batch of inputs, such as processing a batch of images or voice recordings using the same \ac{ann}.
-
-The work in this paper considers ``embedded'' applications which perform multiple complex functions, such as navigation, engine monitoring etc. for systems employed in conditions with weight, size and power constraints.
-The target application assumes that a) there is no access to cloud servers, b) the system processes a disparate set of useful sized \ac{ann}s and c) there are not opportunities to store and reuse portions of the \ac{ann} in \ac{sram}. 
-Therefore this work makes no assumptions regarding opportunities to store and reuse portions of the \ac{ann} in local \ac{sram}, such as with \acp{cnn} or batch processing.
-These requirements dictate the need for \ac{dram} for \ac{ann} storage and a sustained average bandwidth of 10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when accessing that \ac{dram}.
-
-This work employs 3D integrated circuit technology and a proposed custom 3D-\ac{dram}. By employing 3DIC technology, this work takes advantage of the reduced energy and area and increased connectivity and bandwidth to allow the \ac{dram} to be employed efficiently.
-This work demonstrates the required average bandwidth exceeding  10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when run against various fully and locally connected \ac{ann} layers providing a potentially 10-50X performance improvement over existing ASIC/ASIPs or GPUs.
-\fi
-
-
-
-
-
 
 \end{abstract}
 
@@ -538,78 +202,108 @@ This work demonstrates the required average bandwidth exceeding  10's of \SI[det
 machine learning, embedded system, \acp{dnn}, \ac{cnn}, neural network
 \end{IEEEkeywords}
 
-
-
-
-
-
-% For peer review papers, you can put extra information on the cover
-% page as needed:
-% \ifCLASSOPTIONpeerreview
-% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
-% \fi
-%
 % For peerreview papers, this IEEEtran command inserts a page break and
 % creates the second title. It will be ignored for other modes.
 \IEEEpeerreviewmaketitle
 
 
-
 \section{Introduction}
-% The very first letter is a 2 line initial drop letter followed
-% by the rest of the first word in caps.
-% 
-% form to use if the first word consists of a single letter:
-% \IEEEPARstart{A}{demo} file is ....
-% 
-% form to use if you need the single drop letter followed by
-% normal text (unknown if ever used by the IEEE):
-% \IEEEPARstart{A}{}demo file is ....
-% 
-% Some journals put the first two words in caps:
-% \IEEEPARstart{T}{his demo} file is ....
-% 
-% Here we have the typical use of a "T" for an initial drop letter
-% and "HIS" in caps to complete the first word.
-\IEEEPARstart{U}{seful} \acp{dnn}s often require hundreds of thousands of ANs.
-Within the network, each AN can have hundreds of feeder (pre-synaptic) ANs.
+\IEEEPARstart{U}{seful} \acp{dnn}s often require hundreds of thousands of \acp{an}.
+Within the network, each \ac{an} can have hundreds of feeder (pre-synaptic) \acp{an}.
 With popular \acp{dnn}s, there are often tens of layers. 
-So in these \ac{ann}s, the memory requirements are significant. The storage is required for the input, the AN state and most significantly the weights for each of the ANs. This storage requirement often results in gigabytes of memory.
-
+So in these \ac{ann}s, the memory requirements are significant. The storage is required for the input, the \ac{an} state and most significantly the pre-synapic \ac{an} connection weights for each of the \acp{an}. This storage requirement often results in gigabytes of memory.
 When these \ac{ann}s are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
-
-In most cases, Graphics processing Units (GPU) are used to implement large \ac{ann}s. In many \ac{ann} architectures, such as Convolutional \ac{ann}s (\ac{cnn}), they are quite effective. However, we should not forget they are not optimized purely for 
-NN processing and are restricted by available \ac{sram} and they are power hungry. These limitations limit the effectiveness of GPUs.
+In most cases, Graphics processing Units (GPU) are used to implement large \ac{ann}s. In many \ac{ann} architectures, such as Convolutional \ac{ann}s (\ac{cnn}), they are quite effective. 
+However, we should not forget they are not optimized purely for \ac{ann} processing and are restricted by available \ac{sram} and they are power hungry. These limitations limit the effectiveness of \acp{gpu}.
 
 Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or \ac{sram}. 
-These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an embedded application, 
-these implementations do not provide the required flexibility, storage capacity and deterministic performance.
+These implementations can be shown to be effective when there are reuse opportiunities such as with \acp{cnn} or applications that have batch processing opportunities, such as cloud applications.
+But given an embedded system requiring multiple disparate \acp{ann}, where reuse opportunities do not exist, these implementations do not provide the required performance.
+Another technology that has been considered over the last decade is \ac{3dic}.
+Implementations such as Neurostream \cite{azarkhish2017neurostream}, NeuroCube\cite{kim2016neurocube} and Tetris \cite{gao2017tetris} employ \ac{hmc} \ac{3ddram} in a \ac{3dic} system, and all have demonstrated improvements over non-\ac{3dic} systems and \acp{gpu}.
 
-Another technology that has been considered over the last decade is 3D integrated circuit technology (3DIC). 
-This 3DIC technology stacks multiple die together to form a system-on-chip with potentially disparate technology for each die in the stack.
-By staying within the die footprint, 3DIC technology promises high connectivity and consequently high bandwidth along with lower power all within a smaller footprint.
+This work considers future embedded systems where multiple \acp{ann} are employed \cite{bojarski2016end} and that each of the \acp{ann} will be of similar size to useful-sized \acp{ann} \cite{krizhevsky2012imagenet}.
+In additon, as \acp{ann} fulfill their potential and users start to employ them in various applications, there is no reason to believe these applications will exhibit the same stationary characteristcs that make \acp{cnn} effective in image processing.
+Therefore, this work provides support to \acp{dnn} that do not provide \ac{ann} parameter reuse \cite{coates2013deep} and suggests that these types of applications will require that ``all'' \ac{ann} parameters in main memory be accessed in real-time.
+This work coins the phrase ``goldilocks bandwidth'' when applied to \ac{ann} systems where the system provides the bandwidth required to read all \ac{ann} parameters in a real-time sampling rate of \SI{16}{\milli\second}. 
+Anything exceeding the required bandwidth is considered ``too hot'' and therefore a waste and anything less than the required bandwidth is ``too cold'' and therefore inadequate.
 
-As a metric, this work asumes that any useful \acp{dnn} will employ 100's of thousands of ANs. Although there is a lot of debate regarding number formats for \ac{ann}s, this work also assumes single-precision floating point.
-Assuming an \ac{ann} with 250K neurons and an average fanin to each AN of 2000, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{10}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{16}{\tera \bit \per \second} \eqref{eq:averageBandwidth}.
+As a metric, this work assumes that any useful \acp{dnn} will employ 100's of thousands of \acp{an} \cite{krizhevsky2012imagenet}. 
+Although there is a lot of debate regarding number formats for \ac{ann}s, this work also assumes single-precision floating point.
+Assuming that any useful \ac{ann} will be of a similar size to \cite{krizhevsky2012imagenet}, this work employs a baseline \ac{ann} similar to that shown in Table \cite{tab:Baseline Layer Configuration},
+with 772 thousand \acp{an} and an average fanin to each \ac{an} of 1650. However, the assumption is the convolutional layers employ kernels with non-shared weights.
+A system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} will require an average or ``goldilocks'' bandwidth of \SI[per-mode=symbol]{26}{\tera \bit \per \second} \eqref{eq:maximumBandwidth} and a capacity of \SI[per-mode=symbol]{8.0}{\giga\byte} \eqref{eq:memoryRequired}.
+\begin{figure*}[!htbp]
+  %\begin{adjustbox}{angle=0, width=1.0\textwidth}
+    \centering
+    \captionsetup{justification=centering}
+    \begin{minipage}{1.0\textwidth}
+      %\captionsetup{justification=centering, skip=-5pt}
+      \centering
+      %\begin{center}
+       % [lr] ~ left align col 0 and right align col 1
+       % e.g. 4 columns could be lccr
+      \begin{adjustbox}{width=1\textwidth}
+        \begin{tabular}{|r|c|c|c|c|c|c|c|c|c|c|c|c|c}\cline{3-13}
+          %\toprule
+           \multicolumn{2}{c|}  {\multirow{2}{*}{}}    & \multicolumn{11}{c|}{Layers}    \\\cline{3-13}
+           \multicolumn{2}{c|}{}                       &  1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11  \\\cline{3-13} \cline{1-13}
+           \multicolumn{2}{|r|}{Type}                  &  Input          & Locally      & Pooling           & Locally             & Pooling             & Locally             & Locally             & Locally             &  Fully              &  Fully                 &  Fully         &                                    \\\cline{1-13}
+           \multirow{3}{*}{Dimensions}               &X& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{      4096}    & \num{     4096}        & \num{    1024} &                                    \\
+                                                     &Y& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\
+                                                     &Z& \num{         3}& \num{     96}& \num{    96}      & \num{    256}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{    256}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\\cline{1-13}
+           \multirow{3}{*}{Filter Dimensions}        &X&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{     4096}        & \num{    4096} &                                    \\
+                                                     &Y&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{        1}        & \num{       1} &                                    \\
+                                                     &Z&    na           & \num{      3}& \num{     1}      & \num{     96}       & \num{      1}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{       256}    & \num{        1}        & \num{       1} &                                    \\\cline{1-14}
+            \multicolumn{2}{|r|}{Stride           }    &    na           & \num{      4}& \num{     2}      & \num{      2}       & \num{      2}       & \num{      1}       & \num{      1}       & \num{      1}       &              na     &             na         &            na  & \multicolumn{1}{c|}{Aggregate    } \\\cline{14-14}
+            \multicolumn{2}{|r|}{Pre-synaptic Fanin}   &    na           & \num{    363}& \num{     4}      & \num{   2400}       & \num{      4}       & \num{   2304}       & \num{   3456}       & \num{   3456}       & \num{     43264}    & \num{     4096}        & \num{    4096} & \multicolumn{1}{c|}{$\Bar{\num{   1650}}$} \\
+            \multicolumn{2}{|r|}{Number of \ac{an}}    & \num{    196608}& \num{ 290400}& \num{ 69984}      & \num{ 186624}       & \num{  43264}       & \num{  64896}       & \num{  64896}       & \num{  43264}       & \num{      4096}    & \num{     4096}        & \num{    1024} & \multicolumn{1}{c|}{\num{ 772544}} \\
+            \multicolumn{2}{|r|}{Number of Weights}    &    na           & \num{  34848}& na                & \num{ 614400}       & na                  & \num{ 884736}       & \num{ 1327104}      & \num{ 884736}       & \num{ 177209344}    & \num{ 16777216}        & \num{ 4194304} & \multicolumn{1}{c|}{\num{ 2.02e8}} \\\hline
+        \end{tabular}
+      \end{adjustbox}
+      \captionsetup{justification=centering, skip=9pt}
+      \vspace{0.5cm}
+      %\captionof{table}{Baseline \ac{ann} layer configuration \cite{krizhevsky2012imagenet}}
+      \captionof{table}{Baseline \ac{ann} layer configuration \cite{krizhevsky2012imagenet}}
+      \label{tab:Baseline Layer Configuration}
+      %  \end{center}
+    \end{minipage}
+\end{figure*}
 
-\begin{alignat}{2} \label{eq:averageBandwidth}
-\text{Average }&\text{Bandwidth} \notag \\
-% size(int)=2 and size(float)=4
-= & \sum_{\mathbf{n}=0}^{\bar{\mathbf{N_n}}}\big(\frac{\Bar{\mathbf{N_a}}\cdot \Bar{\mathbf{C_p}} \cdot \bar{\mathbf{b_w}}}{\bar{\mathbf{T_p}}} \big) \notag  \\
-= & \sum_{\mathbf{n}=0}^{9}\big(\frac{\num{250d4} \cdot \num{2d3} \cdot 32}{\num{10d-3}} \big) \notag \\
-= & \SI[per-mode=symbol]{16}{\tera\bit\per\second} \\
-\text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
-              &\mathbf{N}_a \text{ is the average number of ANs} \notag\\
-              &\mathbf{C_p} \text{ is the average number of connections} \notag\\
-\text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
+\begin{figure}[!htbp]
+\begin{alignat}{2}  \label{eq:maximumBandwidth}
+  \text{Maximum }& \text{bandwidth} \notag \\
+        = & \sum_{\mathbf{n}=0}^{\mathbf{N_n}}\Big(\frac{\mathbf{\overline{N}_a}\cdot \mathbf{\overline{C}_p} \cdot \mathbf{b_w}}{\mathbf{\overline{T}_p}} \Big) \SI[per-mode=symbol]{}{\bit\per\second} \notag  \\
+        = & \sum_{\mathbf{n}=0}^{9}\Big(\frac{\num{772e3} \cdot \num{1.65d3} \cdot (32+1)}{\num{16d-3}} \Big) \notag \\
+        = & \sum_{\mathbf{n}=0}^{9} \SI[per-mode=symbol]{2.63}{\tera \bit \per \second}  \notag \\
+  \approx & \SI[per-mode=symbol]{26}{\tera\bit\per\second} \\
+  \text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
+                &\mathbf{N}_a \text{ is the average number of \ac{an}s} \notag\\
+                &\mathbf{C_p} \text{ is the average number of connections} \notag\\
+                &\mathbf{b_w} \text{ is the number of bits per parameter} \notag\\
+  \text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
 \end{alignat}
+\end{figure}
 
-Regardless of the combination of \ac{ann}s, this work suggests that these embedded systems will require memory bandwidth of the order of 10's of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
+\begin{figure}[!htbp]
+\begin{alignat}{2} 
+  \label{eq:memoryRequired}
+  \text{\ac{ann} }&\text{Memory} = \sum_{\mathbf{n}=0}^{\mathbf{N_n}}\Big(\big({\mathbf{\overline{N}_p}} + \mathbf{\overline{N}_a} \big) \cdot \mathbf{b_w}\Big) \SI[per-mode=symbol]{}{\giga\bit} \notag  \\
+  = & \sum_{\mathbf{n}=0}^{9}\Big(\big(\num{202e6} + \num{772d3}\big) \cdot 32 \notag \\
+  = & \sum_{\mathbf{n}=0}^{9} \SI[per-mode=symbol]{6.49}{\giga\bit}  \notag \\
+  = & \SI[per-mode=symbol]{64.9}{\giga\bit} \, \equiv \, \SI[per-mode=symbol]{8.1}{\giga\byte}\\
+  \text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
+                &\mathbf{N}_p \text{ is the number of parameters per \ac{ann}} \notag\\
+                &\mathbf{N}_a \text{ is the number of \ac{an}s per \ac{ann}} \notag\\
+  \text{and }   &\mathbf{b_w} \text{ is the number of bits per parameter} \notag
+\end{alignat}
+\end{figure}
 
-This work demonstrates a system that is able implement multiple useful sized \acp{dnn}s whilst maintaining an average memory bandwidth of $>$\SI[per-mode=symbol]{30}{\tera \bit \per \second}.
-This is made possible by ensuring the system stays within the die stack footprint of a typical 3DIC \ac{dram} .
+
+By employing a \ac{3dic} system along with customizations to a standard \ac{3ddram}, this work demonstrates a system that is able implement multiple useful sized \acp{dnn}s whilst maintaining the required average (``goldilocks'') memory bandwidth of \SI[per-mode=symbol]{26}{\tera \bit \per \second}.
+This work provides at least a 6X power improvement and a 3X area improvement over similar state of the art systems \cite{azarkhish2017neurostream}\cite{kim2016neurocube}\cite{gao2017tetris}\cite{chen2016diannao} when those systems are scaled to meet the requirements of these embedded applications.
 This work removes a reliance on \ac{sram} to achieve high performance thus allowing the proposed design to be utilized in embedded applcations when processing multiple disparate \ac{ann}s at or near real-time.
-Although not optimized for specific \ac{ann}s, such as \acp{cnn}, this work demonstrates the potential for real-time performance at the embedded when implementing fully connected \acp{dnn}s or other similar \ac{ann}s such as LSTM.
+Although not optimized for specific \ac{ann}s, such as \acp{cnn}, this work demonstrates the potential for real-time performance at the embedded when implementing fully connected \acp{dnn}s or other similar \ac{ann}s such as \ac{lstm}.
 
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> System Description <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
@@ -685,13 +379,13 @@ This work targeted a baselne system with:
 The work includes customizing the interface to a 3D-\ac{dram}, researching data structures to describe storage of \ac{ann} parameters, designing a memory manager with micro-coded instructions and a processing engine (PE) layer.  
 The targeted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs multiple memory array layers in conjunction with a control and IO layer.
 The memory is formed from 64 disjoint sub-memories each providing upwards of 1Gigabit with a total capacity of at least 64 gigabit.
-The system is designed such that a sub-system, known as a sub-system column (SSC) operates on one of the 64 disjoint memories within the 3D-\ac{dram} (see figure \ref{fig:diram4Layout}).
+The system is designed such that a sub-system, known as a sub-system column (SSC) operates on one of the 64 disjoint memories within the 3D-\ac{dram} (see Figure \ref{fig:diram4Layout}).
 
 When the sub-system columns need to share data or neuron activations, the data is passed between SSCs using a mesh connected network-on-chip (NoC).
 
 \bigskip
-A control and data block diagram of the 3DIC stack showing the 64 sub-system columns can be seen in figure \ref{fig:FlowDiagram}.
-A block diagram of the sub-system column can be seen in figure \ref{fig:DetailedFlowDiagram}. \iffalse and \ref{fig:DetailedBlockDiagram} respectively. \fi
+A control and data block diagram of the 3DIC stack showing the 64 sub-system columns can be seen in Figure \ref{fig:FlowDiagram}.
+A block diagram of the sub-system column can be seen in Figure \ref{fig:DetailedFlowDiagram}. \iffalse and \ref{fig:DetailedBlockDiagram} respectively. \fi
 
 \bigskip
 An overview of the various blocks and interconnects are given below:
@@ -779,14 +473,14 @@ The SSC includes the \ac{dram} port, the manager and the PE.
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> System Operations <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
 \section{System Operations}
 \label{sec:System Operations}
-In the context of this system and AN state calculation, the basic operations to determine the state of a neuron is to:
+In the context of this system and \ac{an} state calculation, the basic operations to determine the state of a neuron is to:
 
 \begin{itemize}
     \item Inform the Manager and PE which operations are to be performed
     \item Instruct the manager to access the states of the pre-synaptic neurons
-    \item Instruct the manager to access the weights of the connections from the pre-synaptic ANs
+    \item Instruct the manager to access the weights of the connections from the pre-synaptic \acp{an}
     \item Provide the pre-synaptic neuron weights and states to the processing engine execution lanes
-    \item Instruct the manager where to store the resulting AN state back to memory
+    \item Instruct the manager where to store the resulting \ac{an} state back to memory
 \end{itemize}
 
 This work has researched an instruction architecture to describe the above operations. 
@@ -843,7 +537,7 @@ The instructions include information to control the following operations.
   %\setlength{\itemindent}{\leftmargin}
   %\setlength{\leftmargin}{0pt}
         \1 To the Manager
-            \2 ROI Storage descriptor
+            \2 \ac{roi} Storage descriptor
             \2 Parameter/Weight Storage Descriptor
                 \3 Broadcast or Vectored
             \2 Result write storage descriptor
@@ -857,7 +551,7 @@ The instructions include information to control the following operations.
 
 
 Instructions contain sub-instructions called descriptors. 
-These descriptors contain the information to control the various operations associated with the processing of a group of ANs.
+These descriptors contain the information to control the various operations associated with the processing of a group of \acp{an}.
 The group size is related to the number of execution lanes which for the baseline system is 32. A group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
 
 An instruction will typically have four descriptors:
@@ -870,7 +564,7 @@ An instruction will typically have four descriptors:
     \1 Result Write
 \end{outline}
 
-The instruction is an n-tuple where the tuple elements are descriptors and the number of elements can vary based on the operation being performed. In figure \ref{fig:instructionTuple} is shown the format of a 4-tuple instruction which is used to perform an activation calculation for a group of neurons.
+The instruction is an n-tuple where the tuple elements are descriptors and the number of elements can vary based on the operation being performed. In Figure \ref{fig:instructionTuple} is shown the format of a 4-tuple instruction which is used to perform an activation calculation for a group of neurons.
 
 \begin{figure}[!t]
 \centerline{
@@ -887,7 +581,7 @@ Within a descriptor there are fields to describe the various options such as sto
 The fields within the descriptor are n-tuples where the first tuple element describes the descriptors operation followed by an m-tuple whose elements contain the options required for the operation.
 
 These option elements are a two-tuple with option and associated value.
-The format of a 5-tuple descriptor can be seen in figure \ref{fig:descriptorTuple} .
+The format of a 5-tuple descriptor can be seen in Figure \ref{fig:descriptorTuple} .
 
 \begin{figure}[!t]
 \centerline{
@@ -899,20 +593,20 @@ The format of a 5-tuple descriptor can be seen in figure \ref{fig:descriptorTupl
 
 %%%% Feedback from Paul
 %%%%  % ----------------------------------------------------------------------------------------------------
-%%%%  \subsubsection{Accessing of Pre-synaptic AN states and connection weights}
+%%%%  \subsubsection{Accessing of Pre-synaptic \ac{an} states and connection weights}
 %%%%  \label{ssec:AccessingANStates}
 %%%%  
-%%%%  As was discussed previously, the \ac{ann} input and configuration is stored in main \ac{dram} memory. A part of the research is determining how to store the \ac{ann} input and parameters in such a way to effectively make use of main \ac{dram} bandwidth. To provide parameters for the up to 32 execution lanes within the PE, the AN parameters are stored in consecutive address locations. A single read to the \ac{dram} accesses 128 words. This provides four weights for each of the 32 ANs being processed. 
+%%%%  As was discussed previously, the \ac{ann} input and configuration is stored in main \ac{dram} memory. A part of the research is determining how to store the \ac{ann} input and parameters in such a way to effectively make use of main \ac{dram} bandwidth. To provide parameters for the up to 32 execution lanes within the PE, the \ac{an} parameters are stored in consecutive address locations. A single read to the \ac{dram} accesses 128 words. This provides four weights for each of the 32 \acp{an} being processed. 
 %%%%  These weights are sent to each lane of the PE over four cycles. 
 %%%%  By taking advantage of the multiple \ac{dram} banks along with pre-fetching and buffering, this system is able to achieve relatively high efficiency of the available maximum bandwidth.
 %%%%  
-%%%%  Although AN parameters (weights) are stored in contiguous memory locations, providing the input state to a particular AN presents us with an interesting problem.
+%%%%  Although \ac{an} parameters (weights) are stored in contiguous memory locations, providing the input state to a particular \ac{an} presents us with an interesting problem.
 %%%%  
-%%%%  Most often \acp{dnn}s are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the \ac{ann}.
+%%%%  Most often \acp{dnn}s are represented by layers of \acp{an} whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the \ac{ann}.
 %%%%  
-%%%%  The input can be represented in the form of a 2-D array of AN states. For the sake of generality, the input array elements are considered as AN states.
+%%%%  The input can be represented in the form of a 2-D array of \ac{an} states. For the sake of generality, the input array elements are considered as \ac{an} states.
 %%%%  
-%%%%  Any given AN operates on a region of interest (ROI) within the layers input array.
+%%%%  Any given \ac{an} operates on a region of interest (ROI) within the layers input array.
 %%%%  
 %%%%  
 %%%%  \begin{figure}[!t]
@@ -923,22 +617,22 @@ The format of a 5-tuple descriptor can be seen in figure \ref{fig:descriptorTupl
 %%%%  \label{fig:roiStorage}
 %%%%  \end{figure}
 %%%%  
-%%%%  The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each ANs ROI can be stored in contiguous memory locations. 
-%%%%  An input to a \ac{ann} layer in the form of a 2-D array along with the ROI of two ANs is shown in figure \ref{fig:roiStorage}. 
+%%%%  The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each \acp{an} ROI can be stored in contiguous memory locations. 
+%%%%  An input to a \ac{ann} layer in the form of a 2-D array along with the ROI of two \acp{an} is shown in Figure \ref{fig:roiStorage}. 
 %%%%  Assuming the input array is stored in row-major order, an ROI is drawn from disjoint sections of memory. 
-%%%%  These disjoint sections contain a number of AN states and the sections are separated by a gap of a number of memory addresses. When the parameters are accessed the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. 
+%%%%  These disjoint sections contain a number of \ac{an} states and the sections are separated by a gap of a number of memory addresses. When the parameters are accessed the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. 
 %%%%  \iffalse
-%%%%  Now this looks problematic, and it is, but in practice groups of ANs share a common ROI. So once we solve the problem of efficiently reading an ROI from the \ac{dram}, that ROI can be shared across a group of ANs
+%%%%  Now this looks problematic, and it is, but in practice groups of \acp{an} share a common ROI. So once we solve the problem of efficiently reading an ROI from the \ac{dram}, that ROI can be shared across a group of \acp{an}
 %%%%  \fi
 %%%%  
 %%%%  This work proposes a data structure to describe these ROI storage locations.  
 %%%%  The ROI is read efficiently by taking advantage of the \ac{dram}s banks and pages.
 %%%%  
-%%%%  Although disparate groups of ANs may have a different start addresses for their ROI, a commonality is observed in the ROI section lengths and gaps. So for each AN group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
+%%%%  Although disparate groups of \acp{an} may have a different start addresses for their ROI, a commonality is observed in the ROI section lengths and gaps. So for each \ac{an} group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
 %%%%  
 %%%%  This storage descriptor contains the start address of the ROI and a pointer to a section/gap descriptor. 
 %%%%  \iffalse
-%%%%  Many storage descriptors point to a common section/gap descriptor. This avoids having to have a unique section/gap descriptors for each AN group.
+%%%%  Many storage descriptors point to a common section/gap descriptor. This avoids having to have a unique section/gap descriptors for each \ac{an} group.
 %%%%  \fi
 %%%%  
 %%%%  Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor. The SOD, MOD and EOD are used to delineate each descriptor in memory and stand for start-of-descriptor, middle-of-descriptor and end-of-descriptor.
@@ -958,7 +652,7 @@ The format of a 5-tuple descriptor can be seen in figure \ref{fig:descriptorTupl
 \subsubsection{Write Back to Memory}
 \label{ssec:writingANStates}
 
-When the PE has processed the group of ANs, the new AN states are sent back to the manager for storing in the \ac{dram}. 
+When the PE has processed the group of \acp{an}, the new \ac{an} states are sent back to the manager for storing in the \ac{dram}. 
 \iffalse
 The manager will store these back to \ac{dram} most likely in the array format as described earlier.
 For any given operation, the system is writing far less than is being read. 
@@ -977,7 +671,7 @@ When the system writes the result of an operation back to memory, it is typicall
 So although the amount of data written is small the performance impact c\ac{ann}ot be ignored.
 \fi
 
-In many cases the AN activations from a particular PE have to be replicated not only to the local manager but also to other managers. This is handled with the network-on-chip (NoC).
+In many cases the \ac{an} activations from a particular PE have to be replicated not only to the local manager but also to other managers. This is handled with the network-on-chip (NoC).
 \iffalse
 The result storage directives are communicated by using the same storage descriptor mechanism. When the result has to be replicated to other managers, the storage descriptors are sent, along with the data to all destination managers.
 \else
@@ -994,10 +688,10 @@ When the result has to be replicated to other managers, the data is sent, along 
 \label{ssec:streamingOps}
 The operations performed by the stOp are primarily multiple-accumulate with a transfer to the SIMD or to local memory.
 \iffalse
-Even though the baseline system focuses on the AN multiply-accumulate followed by a ReLu activation function, the system has built in flexibility into the stOp function to allow other functions to be added
+Even though the baseline system focuses on the \ac{an} multiply-accumulate followed by a ReLu activation function, the system has built in flexibility into the stOp function to allow other functions to be added
 \fi
 
-In most cases, the stOp module will operate on the AN state and weights provided by the manager and provide the result to the SIMD.
+In most cases, the stOp module will operate on the \ac{an} state and weights provided by the manager and provide the result to the SIMD.
 % ----------------------------------------------------------------------------------------------------
 \subsubsection{SIMD}
 \label{ssec:SIMD}
@@ -1022,7 +716,7 @@ In addition, the length of the vector of operands is contained in the configurat
 \fi
 
 \bigskip
-A detailed block diagram of the sub-system column (SSC) can be seen in figure \ref{fig:DetailedFlowDiagram}.
+A detailed block diagram of the sub-system column (SSC) can be seen in Figure \ref{fig:DetailedFlowDiagram}.
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \ac{dram} Customizable <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
 \section{Suggested DRAM Customizations}
@@ -1056,7 +750,7 @@ Figure \ref{fig:\ac{dram}BlockDiagram} shows a block diagram of a typical \ac{dr
 This work achieves the increase in bandwidth by proposing that the \ac{dram} expose more of its currently open page.
 
 Without the limitations of having to transfer data beyond the chip stack, this work suggests exposing a larger portion of the page over a 2048-bit wide bus. By staying within the 3D footprint, this bus can be implemented using fine pitch TSVs.
-(see figure \ref{fig:DRAMBusChange}).
+(see Figure \ref{fig:DRAMBusChange}).
 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
@@ -1073,15 +767,15 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 \subsection{DRAM Write Mask}
 \label{sec:DRAMWriteMask}
 \iffalse
-When processing an \ac{ann}, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed.
+When processing an \ac{ann}, to compute the activation of an individual \ac{an} involves reading the pre-synaptic \ac{an} activation's and the weights of the connections between the pre-synaptic \acp{an} and the \ac{an} being processed.
 \fi
-For every group of ANs processed, the state of the group of ANs is written back to memory.
+For every group of \acp{an} processed, the state of the group of \acp{an} is written back to memory.
 
 \iffalse
-Because of the high average pre-synaptic fanin, the ratio of reading AN states and connection weights to writing back the AN states is high, 100's or 1000's to one. 
+Because of the high average pre-synaptic fanin, the ratio of reading \ac{an} states and connection weights to writing back the \ac{an} states is high, 100's or 1000's to one. 
 This results in the system often having to write a portion of a page back to memory. 
 \fi
-Typically this would require a read/modify/write of a \ac{dram} cacheline. In the case writing back 32 AN states into a 4096 bit cacheline means the read/modify/write is inefficient.
+Typically this would require a read/modify/write of a \ac{dram} cacheline. In the case writing back 32 \ac{an} states into a 4096 bit cacheline means the read/modify/write is inefficient.
 To minimize the inefficiency, a customization to the \ac{dram} is the addition of a write data mask to the \ac{dram} write path eliminating the additional read.
 
 
@@ -1127,7 +821,7 @@ To minimize the inefficiency, a customization to the \ac{dram} is the addition o
 \section{Detailed System Description}
 \label{sec:detailedSystemDescription}
 
-A detailed flow diagram and block diagram of the sub-system column can be seen in figures \ref{fig:DetailedFlowDiagram} and \ref{fig:DetailedBlockDiagram} respectively.
+A detailed flow diagram and block diagram of the sub-system column can be seen in Figures \ref{fig:DetailedFlowDiagram} and \ref{fig:DetailedBlockDiagram} respectively.
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
 \centering
@@ -1157,7 +851,7 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 \subsubsection{Operation Decode}
 \label{ssec:operationDecode}
 
-In figure \ref{fig:DetailedBlockDiagram}, instructions are read from instruction memory and passed to the instruction decoder.
+In Figure \ref{fig:DetailedBlockDiagram}, instructions are read from instruction memory and passed to the instruction decoder.
 
 The operation tuple is decoded and a streaming operation (stOp) pointer and a SIMD operation pointer are sent to the PE inside an OOB control packet.
 
@@ -1170,14 +864,14 @@ Note that other types of stOp includes a NOP with a destination of local memory.
 
 \subsubsection{Argument Decode}
 \label{ssec:argumentDecode}
-The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from \ac{dram} to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the \ac{dram} read protocol.
+The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from \ac{dram} to the stOp within the PE. In the case of a \ac{an} activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the \ac{dram} read protocol.
 
 As soon as read data is sent back to the MRC via the MMC, that data is aligned with to the 32 Streaming Operations inside the PE.
 
 
 \subsubsection{Result data Processing}
 \label{ssec:resultDataprocessing}
-The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from \ac{dram} to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the \ac{dram} read protocol.
+The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from \ac{dram} to the stOp within the PE. In the case of a \ac{an} activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the \ac{dram} read protocol.
 
 As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
 
@@ -1235,7 +929,7 @@ The stOp provides the result to the SIMD via a local register. The result is als
 
 The SIMD performs the specified operation on the data provided by the stOp.
 
-In most cases this will be the AN activation function and in the baseline system is the Rectified Linear function (ReLu).
+In most cases this will be the \ac{an} activation function and in the baseline system is the Rectified Linear function (ReLu).
 
 When the SIMD has completed its operation, it passes the result to the SIMD Upstream controller to be returned to the Manager.
 
@@ -1305,8 +999,8 @@ As mention previously \eqref{eq:averageBandwidth}, to process multiple useful si
 %%%%%  \end{center}
 %%%%\end{table}
 
-Initial place and route for the Manager and PE are shown in figure \ref{fig:Manager and PE Die layouts}. 
-The area contribution of each block within the Manager and PE can be seen in table \ref{tab:Area contribution}.
+Initial place and route for the Manager and PE are shown in Figure \ref{fig:Manager and PE Die layouts}. 
+The area contribution of each block within the Manager and PE can be seen in Table \ref{tab:Area contribution}.
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
   \captionsetup{justification=centering, skip=3pt}
@@ -1380,12 +1074,12 @@ parasitics were extracted from these layouts and simulated against a group of op
 The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. 
 These testcases were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
 Additional testcases were employed representing pre-synaptic fanins of 294, 300, 500 and 1000. Both locally connected (CONV) and fully connected (FC) type fanins were tested.
-The results showing sustained average bandwidth can be seen in table \ref{tab:Bandwidth Estimates}.
+The results showing sustained average bandwidth can be seen in Table \ref{tab:Bandwidth Estimates}.
 
 The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
 The \ac{dram} accesses were captured and \ac{dram} energy dissipation calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
 These estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz}.
-The estimated overall power along with per block contribution are shown in table \ref{tab:Simulation-based estimates}.
+The estimated overall power along with per block contribution are shown in Table \ref{tab:Simulation-based estimates}.
 
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
@@ -1442,7 +1136,7 @@ The estimated overall power along with per block contribution are shown in table
   \end{subtable}
   \end{table}
 
-As bus efficiency is the main metric, table \ref{tab:Bandwidth Estimates} shows sustained average bandwidth over the fanin testcases.
+As bus efficiency is the main metric, Table \ref{tab:Bandwidth Estimates} shows sustained average bandwidth over the fanin testcases.
 
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
@@ -1592,7 +1286,7 @@ As bus efficiency is the main metric, table \ref{tab:Bandwidth Estimates} shows 
 \section{Conclusions}
 \label{sec:Conclusions}
 There have been many attempts to accelerate \acp{ann}. Many have shown excellent performance mainly when implementing \acp{cnn}. The improvement mostly comes from the ability to 
-hold kernel weights and/or AN activations in local \ac{sram}. Another method of employing local memory is often due to pooling of batch requests, especially in server applications.
+hold kernel weights and/or \ac{an} activations in local \ac{sram}. Another method of employing local memory is often due to pooling of batch requests, especially in server applications.
 This local storage allows the system to take advantage of the low latency and random access benefits of \ac{sram} whilst performing multiple operations on that data.
 When considering applications where this local storage cannot be used effectively, all these implementations suffer a large degradation in performance.
 
@@ -1604,7 +1298,7 @@ The customized 3D-\ac{dram} combined with a design based on custom instructions 
 
 There is no doubt existing \ac{cnn} accelerators that take advantage of batch processing achieve a performance that is difficult to better, but applying these systems to this works target application exposes those systems \ac{dram} bandwidth limitations.
 
-This work demonstrates a \ac{3dic} system that at the surface provides relatively low \ac{flops}, but considering the target application is memory bound, this work demonstrates a 3X power improvement and 6X area improvement over similar \ac{ann} systems \cite{chen2016diannao}\cite{azarkhish2017neurostream}\cite{kim2016neurocube}\cite{gao2017tetris}.
+This work demonstrates a \ac{3dic} system that at the surface provides relatively low \ac{flops}, but considering the target application is memory bound, this work demonstrates a 3X power improvement and 6X area improvement over similar \ac{ann} systems \cite{chen2016diannao,azarkhish2017neurostream,kim2016neurocube,gao2017tetris}.
 This work demonstrates a \ac{3ddram} system that 
 \iffalse
 at the surface has a relatively low FLOPs, but considering the target applcation is memory bound this work potentially provides a 10-50X improvement over existing ASIC/ASIPs or GPUs.
