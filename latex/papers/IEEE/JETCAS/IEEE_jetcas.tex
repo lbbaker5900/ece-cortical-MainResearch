@@ -208,15 +208,15 @@ machine learning, embedded system, \acp{dnn}, \ac{cnn}, neural network
 
 
 \section{Introduction}
-\IEEEPARstart{U}{seful} \acp{dnn}s often require hundreds of thousands of \acp{an}.
+\IEEEPARstart{U}{seful} \acp{dnn} often require hundreds of thousands of \acp{an}.
 Within the network, each \ac{an} can have hundreds of feeder (pre-synaptic) \acp{an}.
-With popular \acp{dnn}s, there are often tens of layers. 
-So in these \ac{ann}s, the memory requirements are significant. The storage is required for the input, the \ac{an} state and most significantly the pre-synapic \ac{an} connection weights for each of the \acp{an}. This storage requirement often results in gigabytes of memory.
-When these \ac{ann}s are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
-In most cases, Graphics processing Units (GPU) are used to implement large \ac{ann}s. In many \ac{ann} architectures, such as Convolutional \ac{ann}s (\ac{cnn}), they are quite effective. 
+With popular \acp{dnn}, there are often tens of layers. 
+So in these \acp{ann}, the memory requirements are significant. The storage is required for the input, the \ac{an} state and most significantly the pre-synapic \ac{an} connection weights for each of the \acp{an}. This storage requirement often results in gigabytes of memory.
+When these \acp{ann} are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
+In most cases, \acp{gpu} are used to implement large \acp{ann}. In many \ac{ann} architectures, such as Convolutional \acp{ann} (\ac{cnn}), they are quite effective. 
 However, we should not forget they are not optimized purely for \ac{ann} processing and are restricted by available \ac{sram} and they are power hungry. These limitations limit the effectiveness of \acp{gpu}.
 
-Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or \ac{sram}. 
+Much of the \ac{ann} \ac{asic} and \ac{asip} research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or \ac{sram}. 
 These implementations can be shown to be effective when there are reuse opportiunities such as with \acp{cnn} or applications that have batch processing opportunities, such as cloud applications.
 But given an embedded system requiring multiple disparate \acp{ann}, where reuse opportunities do not exist, these implementations do not provide the required performance.
 Another technology that has been considered over the last decade is \ac{3dic}.
@@ -224,15 +224,15 @@ Implementations such as Neurostream \cite{azarkhish2017neurostream}, NeuroCube\c
 
 This work considers future embedded systems where multiple \acp{ann} are employed \cite{bojarski2016end} and that each of the \acp{ann} will be of similar size to useful-sized \acp{ann} \cite{krizhevsky2012imagenet}.
 In additon, as \acp{ann} fulfill their potential and users start to employ them in various applications, there is no reason to believe these applications will exhibit the same stationary characteristcs that make \acp{cnn} effective in image processing.
-Therefore, this work provides support to \acp{dnn} that do not provide \ac{ann} parameter reuse \cite{coates2013deep} and suggests that these types of applications will require that ``all'' \ac{ann} parameters in main memory be accessed in real-time.
+Therefore, this work provides support to \acp{dnn} that do not provide \ac{ann} parameter reuse \cite{coates2013deep} and suggests that these types of applications will require that all \ac{ann} parameters in main memory be accessed in real-time.
 This work coins the phrase ``goldilocks bandwidth'' when applied to \ac{ann} systems where the system provides the bandwidth required to read all \ac{ann} parameters in a real-time sampling rate of \SI{16}{\milli\second}. 
 Anything exceeding the required bandwidth is considered ``too hot'' and therefore a waste and anything less than the required bandwidth is ``too cold'' and therefore inadequate.
 
 As a metric, this work assumes that any useful \acp{dnn} will employ 100's of thousands of \acp{an} \cite{krizhevsky2012imagenet}. 
-Although there is a lot of debate regarding number formats for \ac{ann}s, this work also assumes single-precision floating point.
-Assuming that any useful \ac{ann} will be of a similar size to \cite{krizhevsky2012imagenet}, this work employs a baseline \ac{ann} similar to that shown in Table \cite{tab:Baseline Layer Configuration},
+Although there is a lot of debate regarding number formats for \acp{ann}, this work also assumes single-precision floating point.
+Assuming that any useful \ac{ann} will be of a similar size to \cite{krizhevsky2012imagenet}, this work employs a baseline \ac{ann} similar to that shown in Table \ref{tab:Baseline Layer Configuration},
 with 772 thousand \acp{an} and an average fanin to each \ac{an} of 1650. However, the assumption is the convolutional layers employ kernels with non-shared weights.
-A system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} will require an average or ``goldilocks'' bandwidth of \SI[per-mode=symbol]{26}{\tera \bit \per \second} \eqref{eq:maximumBandwidth} and a capacity of \SI[per-mode=symbol]{8.0}{\giga\byte} \eqref{eq:memoryRequired}.
+A system employing 10 \acp{ann} for various disparate functions and an average processing time of \SI{16}{\milli\second} will require an average or ``goldilocks'' bandwidth of \SI[per-mode=symbol]{26}{\tera \bit \per \second} \eqref{eq:maximumBandwidth} and a capacity of \SI[per-mode=symbol]{8.0}{\giga\byte} \eqref{eq:memoryRequired}.
 \begin{figure*}[!htbp]
   %\begin{adjustbox}{angle=0, width=1.0\textwidth}
     \centering
@@ -277,8 +277,8 @@ A system employing 10 \ac{ann}s for various disparate functions and an average p
         = & \sum_{\mathbf{n}=0}^{9}\Big(\frac{\num{772e3} \cdot \num{1.65d3} \cdot (32+1)}{\num{16d-3}} \Big) \notag \\
         = & \sum_{\mathbf{n}=0}^{9} \SI[per-mode=symbol]{2.63}{\tera \bit \per \second}  \notag \\
   \approx & \SI[per-mode=symbol]{26}{\tera\bit\per\second} \\
-  \text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
-                &\mathbf{N}_a \text{ is the average number of \ac{an}s} \notag\\
+  \text{where } &\mathbf{N}_n \text{ is the number of \acp{ann}} \notag\\
+                &\mathbf{N}_a \text{ is the average number of \acp{an}} \notag\\
                 &\mathbf{C_p} \text{ is the average number of connections} \notag\\
                 &\mathbf{b_w} \text{ is the number of bits per parameter} \notag\\
   \text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
@@ -292,18 +292,18 @@ A system employing 10 \ac{ann}s for various disparate functions and an average p
   = & \sum_{\mathbf{n}=0}^{9}\Big(\big(\num{202e6} + \num{772d3}\big) \cdot 32 \notag \\
   = & \sum_{\mathbf{n}=0}^{9} \SI[per-mode=symbol]{6.49}{\giga\bit}  \notag \\
   = & \SI[per-mode=symbol]{64.9}{\giga\bit} \, \equiv \, \SI[per-mode=symbol]{8.1}{\giga\byte}\\
-  \text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
+  \text{where } &\mathbf{N}_n \text{ is the number of \acp{ann}} \notag\\
                 &\mathbf{N}_p \text{ is the number of parameters per \ac{ann}} \notag\\
-                &\mathbf{N}_a \text{ is the number of \ac{an}s per \ac{ann}} \notag\\
+                &\mathbf{N}_a \text{ is the number of \acp{an} per \ac{ann}} \notag\\
   \text{and }   &\mathbf{b_w} \text{ is the number of bits per parameter} \notag
 \end{alignat}
 \end{figure}
 
 
-By employing a \ac{3dic} system along with customizations to a standard \ac{3ddram}, this work demonstrates a system that is able implement multiple useful sized \acp{dnn}s whilst maintaining the required average (``goldilocks'') memory bandwidth of \SI[per-mode=symbol]{26}{\tera \bit \per \second}.
+By employing a \ac{3dic} system along with customizations to a standard \ac{3ddram}, this work demonstrates a system that is able implement multiple useful sized \acp{dnn} whilst maintaining the required average (``goldilocks'') memory bandwidth of \SI[per-mode=symbol]{26}{\tera \bit \per \second}.
 This work provides at least a 6X power improvement and a 3X area improvement over similar state of the art systems \cite{azarkhish2017neurostream}\cite{kim2016neurocube}\cite{gao2017tetris}\cite{chen2016diannao} when those systems are scaled to meet the requirements of these embedded applications.
-This work removes a reliance on \ac{sram} to achieve high performance thus allowing the proposed design to be utilized in embedded applcations when processing multiple disparate \ac{ann}s at or near real-time.
-Although not optimized for specific \ac{ann}s, such as \acp{cnn}, this work demonstrates the potential for real-time performance at the embedded when implementing fully connected \acp{dnn}s or other similar \ac{ann}s such as \ac{lstm}.
+This work removes a reliance on \ac{sram} to achieve high performance thus allowing the proposed design to be utilized in embedded applcations when processing multiple disparate \acp{ann} at or near real-time.
+Although not optimized for specific \acp{ann}, such as \acp{cnn}, this work demonstrates the potential for real-time performance when implementing multiple fully connected \acp{dnn} or other similar \acp{ann} such as \ac{lstm}.
 
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> System Description <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
@@ -314,15 +314,15 @@ Although not optimized for specific \ac{ann}s, such as \acp{cnn}, this work demo
 % ----------------------------------------------------------------------------------------------------
 
 The primary objectives of this work was to a) consider systems that are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using
-local \ac{sram} to store \ac{ann} parameters or the \ac{ann} input, b) acknowlembedded that \ac{dram} is required for storage of \ac{ann} parameters, c) that many embedded devices will likely apply many disparate \ac{ann}s
+local \ac{sram} to store \ac{ann} parameters or the \ac{ann} input, b) acknowlembedded that \ac{dram} is required for storage of \ac{ann} parameters, c) that many embedded devices will likely apply many disparate \acp{ann}
 to perform various system functions, and d) it is assumed that many embedded applications will have space and power limitations.
 
 \iffalse
 These requirements suggest that reuse opportunities will not provide significant performance boosts and therefore this work focused on using the \ac{dram} directly as the operational
 storage and not rely on a significant amount of local \ac{sram}.
 \fi
-This work employs 3DIC technology along with a custom 3D-\ac{dram}. The objective was to demonstrate that a pure 3DIC system can implement multiple disparate \ac{ann}s. By staying within the 3DIC footprint and taking advantage of high
-density through-silicon-vias (TSV) this work is able to maintain a significantly higher bandwidth over 2D or 2.5D ASIC/ASIP solutions.
+This work employs 3DIC technology along with a custom 3D-\ac{dram}. The objective was to demonstrate that a pure 3DIC system can implement multiple disparate \acp{ann}. By staying within the 3DIC footprint and taking advantage of high
+density through-silicon-vias (TSV) this work is able to maintain a significantly higher bandwidth over 2D or 2.5D \ac{asic}/\ac{asip} solutions.
 
 The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{dram} with a system manager below and one or more processing layers below the manager.
 \begin{figure}
@@ -504,15 +504,15 @@ The PE has three major blocks:
 \begin{outline}
   %\setlength{\baselineskip}{10pt}
   %\setlength{\itemsep}{6pt}
-    \1 Streaming operation function (stOp)
+    \1 \ac{stop} 
       \2 processes data from the manager on-the-fly without storing in local \ac{sram}
-    \1 SIMD
-      \2 processes the data from the stOp function
+    \1 \ac{simd}
+      \2 processes the data from the \ac{stop} function
         \3 neuron activation function such as ReLu
-        \3 perform non vector operations such as softmax conversion using local SIMD functions, such as $e^x$ and divide
+        \3 perform non vector operations such as softmax conversion using local \ac{simd} functions, such as $e^x$ and divide
       \2 sends the result back to the manager
     \1 DMA/local memory controller
-      \2 transfer configuration data to PE conroller or to store stOp results to a small local \ac{sram} which can be used for access by SIMD or by the stOp function
+      \2 transfer configuration data to PE conroller or to store \ac{stop} results to a small local \ac{sram} which can be used for access by \ac{simd} or by the \ac{stop} function
 \end{outline}
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
@@ -543,8 +543,8 @@ The instructions include information to control the following operations.
             \2 Result write storage descriptor
                 \3 include descriptors for all destination managers
         \1 To the PE
-            \2 stOp operation
-            \2 SIMD operation
+            \2 \ac{stop} operation
+            \2 \ac{simd} operation
             \2 Number of active lanes
             \2 Operand Vector length
 \end{outline}
@@ -684,21 +684,21 @@ When the result has to be replicated to other managers, the data is sent, along 
 \label{sec:PE Operations}
 
 % ----------------------------------------------------------------------------------------------------
-\subsubsection{Streaming Operations (stOp)}
+\subsubsection{\acf{stop}}
 \label{ssec:streamingOps}
-The operations performed by the stOp are primarily multiple-accumulate with a transfer to the SIMD or to local memory.
+The operations performed by the \ac{stop} are primarily multiple-accumulate with a transfer to the \ac{simd} or to local memory.
 \iffalse
-Even though the baseline system focuses on the \ac{an} multiply-accumulate followed by a ReLu activation function, the system has built in flexibility into the stOp function to allow other functions to be added
+Even though the baseline system focuses on the \ac{an} multiply-accumulate followed by a ReLu activation function, the system has built in flexibility into the \ac{stop} function to allow other functions to be added
 \fi
 
-In most cases, the stOp module will operate on the \ac{an} state and weights provided by the manager and provide the result to the SIMD.
+In most cases, the \ac{stop} module will operate on the \ac{an} state and weights provided by the manager and provide the result to the \ac{simd}.
 % ----------------------------------------------------------------------------------------------------
 \subsubsection{SIMD}
 \label{ssec:SIMD}
 
-The SIMD is a 32-lane processor with some builtin special functions including $e^x$ and divide to allow on-the-fly operations. 
+The \ac{simd} is a 32-lane processor with some builtin special functions including $e^x$ and divide to allow on-the-fly operations. 
 
-The SIMD will take the result provided by the stOp and perform additonal operations such as neuron activation, pooling or softMax. The result will then be transmitted back to the manager.
+The \ac{simd} will take the result provided by the \ac{stop} and perform additonal operations such as neuron activation, pooling or softMax. The result will then be transmitted back to the manager.
 \iffalse
 In some cases, the manager uses the result from a previous instruction on a following instruction, an example being a softMax operation.
 \fi
@@ -707,7 +707,7 @@ In some cases, the manager uses the result from a previous instruction on a foll
 \subsubsection{Configuration}
 \label{ssec:peConfiguration}
 
-To configure the PE operations, the manager extracts two pointers from the instruction and sends them in a configuration packet to the PE. These pointers index into a small local memory which provides a program counter (PC) to the function to be performed by the SIMD and a configuration entry for the operation to be performed by the stOp.
+To configure the PE operations, the manager extracts two pointers from the instruction and sends them in a configuration packet to the PE. These pointers index into a small local memory which provides a program counter (PC) to the function to be performed by the \ac{simd} and a configuration entry for the operation to be performed by the stOp.
  
 \iffalse
 The PE is able to perform its operation concurrently on 32-lanes. 
@@ -853,11 +853,11 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 
 In Figure \ref{fig:DetailedBlockDiagram}, instructions are read from instruction memory and passed to the instruction decoder.
 
-The operation tuple is decoded and a streaming operation (stOp) pointer and a SIMD operation pointer are sent to the PE inside an OOB control packet.
+The operation tuple is decoded and a streaming operation (stOp) pointer and a \ac{simd} operation pointer are sent to the PE inside an OOB control packet.
 
 The stOp pointer specifies what streaming operation is to take place on the data directly streamed to the PE. In the baseline system, typically this would be a floating-point multiply accumulate on two arguments, the pre-synaptic neuron states and the pre-synaptic weights.
 
-The SIMD pointer is essentially a program counter that will be invoked when the stOp result is passed to the SIMD.
+The \ac{simd} pointer is essentially a program counter that will be invoked when the stOp result is passed to the \ac{simd}.
 
 Note that other types of stOp includes a NOP with a destination of local memory. This allows us to transfer block of instruction or data from the manager to the PE.
 
@@ -896,7 +896,7 @@ The holding registers have the potential in future to allow aggregation of data 
 \subsubsection{Configuration}
 \label{ssec:peConfiguration}
 
-A configuration controller within the PE (PE\_CNTL) takes the OOB packet from the Manager and extracts the stOp and SIMD operation pointers.
+A configuration controller within the PE (PE\_CNTL) takes the OOB packet from the Manager and extracts the stOp and \ac{simd} operation pointers.
 
 The stOp pointer is used to point to a local stOp configuration memory. The memory contains the various configuration data required by the streaming operation controller (stOp\_CNTL). The stOp\_CNTL is not shown.
 
@@ -906,37 +906,37 @@ The stOp\_CNTL configures the:
     \1 Operation type
     \1 Number of active execution lanes
     \1 Source of the argument data, which can be downstream data from the manager or from the small local \ac{sram}
-    \1 Destination of the result data, which can be the SIMD or the small local \ac{sram}
+    \1 Destination of the result data, which can be the \ac{simd} or the small local \ac{sram}
 \end{outline}
 
-The SIMD operation pointer is sent to the SIMD.
+The \ac{simd} operation pointer is sent to the \ac{simd}.
 
 \subsubsection{Streaming Operations}
 \label{ssec:stOps}
 
 The streaming Operations (stOp) are designed to operate on data passed from the Manager at or near line-rate. If line-rate c\ac{ann}ot be maintained, a flow-control mechanism is employed to slow the data from the Manager.
 
-Once the stOp has processed the data, it passes the result to the SIMD. Note in some cases the result can be placed in local \ac{sram} or sent to both SIMD and \ac{sram}.
+Once the stOp has processed the data, it passes the result to the \ac{simd}. Note in some cases the result can be placed in local \ac{sram} or sent to both \ac{simd} and \ac{sram}.
 
-It should also be stated that while the stOp is processing the current data, the SIMD may be operating on the result of the previous operation. It is expected the SIMD will have completed the previous operation before the stOp completes the current operation, but again, if necessary a flow control mechanism between SIMD and stOP will be engaged if the SIMD is not ready.
+It should also be stated that while the stOp is processing the current data, the \ac{simd} may be operating on the result of the previous operation. It is expected the \ac{simd} will have completed the previous operation before the stOp completes the current operation, but again, if necessary a flow control mechanism between \ac{simd} and stOP will be engaged if the \ac{simd} is not ready.
 
 \subsubsection{SIMD}
 \label{ssec:simd}
 
-The SIMD takes the result data and performs the operation starting at the program counter (PC) indicated by the SIMD operation pointer provided by the PE\_CNTL.
+The \ac{simd} takes the result data and performs the operation starting at the program counter (PC) indicated by the \ac{simd} operation pointer provided by the PE\_CNTL.
 
-The stOp provides the result to the SIMD via a local register. The result is also written, in most cases to the small local \ac{sram}.
+The stOp provides the result to the \ac{simd} via a local register. The result is also written, in most cases to the small local \ac{sram}.
 
-The SIMD performs the specified operation on the data provided by the stOp.
+The \ac{simd} performs the specified operation on the data provided by the stOp.
 
 In most cases this will be the \ac{an} activation function and in the baseline system is the Rectified Linear function (ReLu).
 
-When the SIMD has completed its operation, it passes the result to the SIMD Upstream controller to be returned to the Manager.
+When the \ac{simd} has completed its operation, it passes the result to the \ac{simd} Upstream controller to be returned to the Manager.
 
 \subsubsection{Result Data}
 \label{ssec:result}
 
-The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upstream packet. Included in the packet is the tag required by the Return Data processor within the Manager.
+The \ac{simd} Upstream Controller (SUI) takes the data and encapsulates it in an Upstream packet. Included in the packet is the tag required by the Return Data processor within the Manager.
 
 \fi
 
@@ -945,7 +945,7 @@ The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upst
 % >>>>>>>>>>>>>>>>>>>>>>>>>>> Results <<<<<<<<<<<<<<<<<<<<<<
 \section{Results}
 \label{sec:Results}
-The objectives of this work was to design a system able to accelerate \ac{ann}s in customer facing systems implemented at the embedded. 
+The objectives of this work was to design a system able to accelerate \acp{ann} in customer facing systems implemented at the embedded. 
 \iffalse
 This means systems that are not designed to process multiple requests of essentially the same operation.
 \fi
@@ -961,7 +961,7 @@ In addition, this work proposes that given the system is 3DIC, then a customized
 To ensure the system was purely 3DIC, the area of the system Manager and Processing Engine has to stay within the physical footprint of the \ac{dram}.
 \fi
 
-The target technology node was 28nm because its the technology node employed for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
+The target technology node was 28nm because its the technology node employed for some recent \acp{gpu} and other \acp{asic} such as \cite{jouppi2017datacenter}.
 As a 28nm was not available to this team, the design was synthesized using an available 65nm technology node and then scaled to 28nm.
 
 The primary control and datapaths of the system have been simulated in a system verilog environment. 
@@ -972,7 +972,7 @@ It has been synthesized using a 65nm technology node.
 Initial synthesis timing closure at a frequency of \SI{500}{\mega\hertz} is complete.
 
 \iffalse
-As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized \ac{ann}s requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
+As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized \acp{ann} requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
 \fi
 
 %%%%The approximate design targets are shown in Table \ref{tab:DesignTargets}.
@@ -1052,7 +1052,7 @@ The area contribution of each block within the Manager and PE can be seen in Tab
         SIMD             & 1&\SI[per-mode=symbol]{19.3}{\percent}  \\
   Streaming Operations   &32&\SI[per-mode=symbol]{43.3}{\percent}  \\
   Streaming Op Control   & 1&\SI[per-mode=symbol]{ 2.1}{\percent}  \\
- Local Memory + Control\footnote{A small amount of scratchpad memory was provided between stOps and SIMD but in practice could be much smaller. It is not used in any of the fanin tests.}  & 1&\SI[per-mode=symbol]{17.7}{\percent}  \\ 
+ Local Memory + Control\footnote{A small amount of scratchpad memory was provided between stOps and \ac{simd} but in practice could be much smaller. It is not used in any of the fanin tests.}  & 1&\SI[per-mode=symbol]{17.7}{\percent}  \\ 
         Misc             & 1&\SI[per-mode=symbol]{ 4.6}{\percent}  \\
         \bottomrule
       \end{tabular}
@@ -1299,12 +1299,6 @@ The customized 3D-\ac{dram} combined with a design based on custom instructions 
 There is no doubt existing \ac{cnn} accelerators that take advantage of batch processing achieve a performance that is difficult to better, but applying these systems to this works target application exposes those systems \ac{dram} bandwidth limitations.
 
 This work demonstrates a \ac{3dic} system that at the surface provides relatively low \ac{flops}, but considering the target application is memory bound, this work demonstrates a 3X power improvement and 6X area improvement over similar \ac{ann} systems \cite{chen2016diannao,azarkhish2017neurostream,kim2016neurocube,gao2017tetris}.
-This work demonstrates a \ac{3ddram} system that 
-\iffalse
-at the surface has a relatively low FLOPs, but considering the target applcation is memory bound this work potentially provides a 10-50X improvement over existing ASIC/ASIPs or GPUs.
-\else
-given the target application, provides a potentially 10-50X performance improvement over existing ASIC/ASIPs or GPUs.
-\fi
 
 \section{Acknowlembeddedments}
 \label{sec:Acknowlembeddedments}
