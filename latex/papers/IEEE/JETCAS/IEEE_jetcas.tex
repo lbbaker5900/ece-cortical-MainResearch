@@ -223,14 +223,13 @@ Another technology that has been considered over the last decade is \ac{3dic}.
 Implementations such as Neurostream \cite{azarkhish2017neurostream}, NeuroCube\cite{kim2016neurocube} and Tetris \cite{gao2017tetris} employ \ac{hmc} \ac{3ddram} in a \ac{3dic} system, and all have demonstrated improvements over non-\ac{3dic} systems and \acp{gpu}.
 
 This work considers future embedded systems where multiple \acp{ann} are employed \cite{bojarski2016end} and that each of the \acp{ann} will be of similar size to useful-sized \acp{ann} \cite{krizhevsky2012imagenet}.
-In additon, as \acp{ann} fulfill their potential and users start to employ them in various applications, there is no reason to believe these applications will exhibit the same stationary characteristcs that make \acp{cnn} effective in image processing.
+In addition, as \acp{ann} fulfill their potential and users start to employ them in various applications, there is no reason to believe these applications will exhibit the same stationary characteristcs that make \acp{cnn} effective in image processing.
 Therefore, this work provides support to \acp{dnn} that do not provide \ac{ann} parameter reuse \cite{coates2013deep} and suggests that these types of applications will require that all \ac{ann} parameters in main memory be accessed in real-time.
 This work coins the phrase ``goldilocks bandwidth'' when applied to \ac{ann} systems where the system provides the bandwidth required to read all \ac{ann} parameters in a real-time sampling rate of \SI{16}{\milli\second}. 
 Anything exceeding the required bandwidth is considered ``too hot'' and therefore a waste and anything less than the required bandwidth is ``too cold'' and therefore inadequate.
 
-As a metric, this work assumes that any useful \acp{dnn} will employ 100's of thousands of \acp{an} \cite{krizhevsky2012imagenet}. 
 Although there is a lot of debate regarding number formats for \acp{ann}, this work also assumes single-precision floating point.
-Assuming that any useful \ac{ann} will be of a similar size to \cite{krizhevsky2012imagenet}, this work employs a baseline \ac{ann} similar to that shown in Table \ref{tab:Baseline Layer Configuration},
+This work assumes any useful \ac{ann} will be of a similar size to \cite{krizhevsky2012imagenet}, this work employs a baseline \ac{ann} similar to that shown in Table \ref{tab:Baseline Layer Configuration},
 with 772 thousand \acp{an} and an average fanin to each \ac{an} of 1650. However, the assumption is the convolutional layers employ kernels with non-shared weights.
 A system employing 10 \acp{ann} for various disparate functions and an average processing time of \SI{16}{\milli\second} will require an average or ``goldilocks'' bandwidth of \SI[per-mode=symbol]{26}{\tera \bit \per \second} \eqref{eq:maximumBandwidth} and a capacity of \SI[per-mode=symbol]{8.0}{\giga\byte} \eqref{eq:memoryRequired}.
 \begin{figure*}[!htbp]
@@ -313,17 +312,10 @@ Although not optimized for specific \acp{ann}, such as \acp{cnn}, this work demo
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
 
-The primary objectives of this work was to a) consider systems that are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using
-local \ac{sram} to store \ac{ann} parameters or the \ac{ann} input, b) acknowlembedded that \ac{dram} is required for storage of \ac{ann} parameters, c) that many embedded devices will likely apply many disparate \acp{ann}
-to perform various system functions, and d) it is assumed that many embedded applications will have space and power limitations.
-
-\iffalse
-These requirements suggest that reuse opportunities will not provide significant performance boosts and therefore this work focused on using the \ac{dram} directly as the operational
-storage and not rely on a significant amount of local \ac{sram}.
-\fi
-This work employs 3DIC technology along with a custom 3D-\ac{dram}. The objective was to demonstrate that a pure 3DIC system can implement multiple disparate \acp{ann}. By staying within the 3DIC footprint and taking advantage of high
-density through-silicon-vias (TSV) this work is able to maintain a significantly higher bandwidth over 2D or 2.5D \ac{asic}/\ac{asip} solutions.
-
+The primary objectives of this work was to consider applications that are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using local \ac{sram},
+consider embedded devices that will apply many disparate \acp{ann} to perform various system functions, and assume that embedded applications have space and power limitations.
+This work employs 3DIC technology along with a proposed custom very wide databus 3D-\ac{dram}.
+The objective was to demonstrate that this very wide databus \ac{3ddram} can be used effectively and demonstrate that such a system can stay within the 3DIC footprint of the \ac{dram}.
 The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{dram} with a system manager below and one or more processing layers below the manager.
 \begin{figure}
 \centering
@@ -349,16 +341,6 @@ The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{dram}
 \label{fig:3DICStack}
 \end{figure}
 
-\iffalse
-\begin{figure}[!t]
-\centerline{
-\mbox{\includegraphics[width=2.75in]{StackDiagram.jpg}}
-}
-\caption{3DIC System Stack}
-\label{fig:3DICStack}
-\end{figure}
-\fi
-
 3D-\ac{dram} has recently become available in standards such as High Bandwidth Memory (HBM) and Hybrid Memory Cube (HMC) and proprietary devices such as the DiRAM4 available from Tezzaron. 
 These technologies provide high capacity within a small footprint.
 
@@ -366,7 +348,7 @@ In the case of HBM and DiRAM4, the technology can be combined with additional cu
 
 The question becomes, can a useful system coexist within the same 3D footprint?
 
-This work targeted a baselne system with:
+This work targeted a baseline system with:
 \begin{itemize}
   %\itemsep0em 
   \item single precision floating point for computations
@@ -505,14 +487,14 @@ The PE has three major blocks:
   %\setlength{\baselineskip}{10pt}
   %\setlength{\itemsep}{6pt}
     \1 \ac{stop} 
-      \2 processes data from the manager on-the-fly without storing in local \ac{sram}
+      \2 Processes data from the manager on-the-fly without storing in local \ac{sram}
     \1 \ac{simd}
-      \2 processes the data from the \ac{stop} function
-        \3 neuron activation function such as ReLu
-        \3 perform non vector operations such as softmax conversion using local \ac{simd} functions, such as $e^x$ and divide
-      \2 sends the result back to the manager
+      \2 Processes the data from the \ac{stop} function
+        \3 Neuron activation function such as ReLu
+        \3 Perform non vector operations such as softmax conversion using local \ac{simd} functions, such as $e^x$ and divide
+      \2 Sends the result back to the manager
     \1 DMA/local memory controller
-      \2 transfer configuration data to PE conroller or to store \ac{stop} results to a small local \ac{sram} which can be used for access by \ac{simd} or by the \ac{stop} function
+      \2 Transfer configuration data to PE conroller or to store \ac{stop} results to a small local \ac{sram} which can be used for access by \ac{simd} or by the \ac{stop} function
 \end{outline}
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
@@ -766,15 +748,7 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 
 \subsection{DRAM Write Mask}
 \label{sec:DRAMWriteMask}
-\iffalse
-When processing an \ac{ann}, to compute the activation of an individual \ac{an} involves reading the pre-synaptic \ac{an} activation's and the weights of the connections between the pre-synaptic \acp{an} and the \ac{an} being processed.
-\fi
 For every group of \acp{an} processed, the state of the group of \acp{an} is written back to memory.
-
-\iffalse
-Because of the high average pre-synaptic fanin, the ratio of reading \ac{an} states and connection weights to writing back the \ac{an} states is high, 100's or 1000's to one. 
-This results in the system often having to write a portion of a page back to memory. 
-\fi
 Typically this would require a read/modify/write of a \ac{dram} cacheline. In the case writing back 32 \ac{an} states into a 4096 bit cacheline means the read/modify/write is inefficient.
 To minimize the inefficiency, a customization to the \ac{dram} is the addition of a write data mask to the \ac{dram} write path eliminating the additional read.
 
@@ -945,24 +919,44 @@ The \ac{simd} Upstream Controller (SUI) takes the data and encapsulates it in an
 % >>>>>>>>>>>>>>>>>>>>>>>>>>> Results <<<<<<<<<<<<<<<<<<<<<<
 \section{Results}
 \label{sec:Results}
-The objectives of this work was to design a system able to accelerate \acp{ann} in customer facing systems implemented at the embedded. 
-\iffalse
-This means systems that are not designed to process multiple requests of essentially the same operation.
-\fi
-Given that these systems c\ac{ann}ot effectively utilize \ac{sram}, the main objective was to demonstrate a system that can operate efficiently using 3D-\ac{dram}.
+The objective of this work was to design a system able to accelerate multiple disparate \acp{ann} in embedded systems.
+Given that these systems cannot effectively utilize \ac{sram}, the main objective was to demonstrate a system that can operate efficiently using a customized \ac{3ddram} with a very wide data-bus.
+\ac{3dic} technology was exploited, including \ac{3ddram}, because a major theme of this work is that \ac{3dic} provides many benefits, including reduced energy use, lower area requirements, and high bandwidth. 
+It was necessary to show that the proposed system can maintain the required data bandwidth while staying within the physical footprint of the \ac{3ddram}. 
 
-The system decodes instructions, sends configuration to various functions, pre-fetchs and pipelines data.
-This parallelism allows the system to constantly stream data whilst results from previous operations are being operated on.
+Because its the technology node employed for some recent \acp{gpu} and other \acp{asic} such as \cite{jouppi2017datacenter}, the target technology chosen was 28nm.
+The 28nm standard cell library available to this team did not have register files, therefore the design was synthesized using an available 65nm technology node and then scaled to 28nm.
+Some representative portions of the design were synthesized using the \SI{28}{\nano\meter} libraries to obtain scaling numbers.
+The final scaling numbers are shown in Table \ref{tab:Scaling numbers}.
 
-To demonstrate such a system, this work targeted 3DIC technology including 3D-\ac{dram}. This work proposes that if a system can be purely in 3DIC, the system can take advantage of the benefits
-of 3DIC which includes reduced energy, area and high bandwidth.
-In addition, this work proposes that given the system is 3DIC, then a customized \ac{dram} would provide a significant bandwidth boost over typical implementations using standard \ac{dram}.
-\iffalse
-To ensure the system was purely 3DIC, the area of the system Manager and Processing Engine has to stay within the physical footprint of the \ac{dram}.
-\fi
-
-The target technology node was 28nm because its the technology node employed for some recent \acp{gpu} and other \acp{asic} such as \cite{jouppi2017datacenter}.
-As a 28nm was not available to this team, the design was synthesized using an available 65nm technology node and then scaled to 28nm.
+\begin{figure*}[!htbp]
+  % the [] contains position info e.g. [!t] means here
+  \centering
+  \captionsetup{justification=centering}
+    \begin{minipage}{0.85\textwidth}
+        \vspace{5mm}
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1.3cm}|>{\centering}m{1.3cm}|>{\centering}m{1cm}|>{\centering}m{1.3cm}|m{1.3cm}|}\cline{3-8}
+              %\hline
+              %\rowcolor{gray!50}
+              %\multicolumn{5}{|c|}{Power } \\
+              %\hline
+              %\rowcolor{gray!25}  
+         \multicolumn{2}{c|}{}                                          & \multicolumn{3}{c|}{Logic power}                                                                  &  \multicolumn{3}{c|}{Memory power}                                                                                                                                  \\\cline{1-8}
+         Logic Area                  & Memory Area                      & Internal                            & Net switching                  & Leakage                    & Internal                                                                                                              & Net switching                  & Leakage    \\\cline{1-8}
+          \num{2.68}                 & \num{2.78}                       &  \num{5.07}                         & \num{1.21}                     & \num{4.12e-4}              &  \num{5.07}  & NA                             & NA         \\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+      %\subcaption{Example design area}
+      %\label{tab:Example design area}
+  \end{minipage}
+  \captionsetup{justification=centering, skip=9pt}
+  \vspace{0.0cm}
+  \captionof{table}{\SI{68}{\nano\meter} to \SI{28}{\nano\meter} scaling numbers}
+  \label{tab:Scaling numbers}
+\end{figure*}
 
 The primary control and datapaths of the system have been simulated in a system verilog environment. 
 \iffalse
@@ -970,35 +964,6 @@ It has been synthesized using a 65nm technology node.
 \fi
 %The design has been coded . 
 Initial synthesis timing closure at a frequency of \SI{500}{\mega\hertz} is complete.
-
-\iffalse
-As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized \acp{ann} requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
-\fi
-
-%%%%The approximate design targets are shown in Table \ref{tab:DesignTargets}.
-%%%%
-%%%%\begin{table}[h]
-%%%%%  \captionsetup{justification=centering, skip=-5pt}
-%%%%  \captionsetup{justification=centering, skip=3pt}
-%%%%  \caption{Design targets}
-%%%%  \label{tab:DesignTargets}
-%%%%  \centering
-%%%%%  \begin{center}
-%%%%    % [lr] ~ left align col 0 and right align col 1
-%%%%    % e.g. 4 columns could be lccr
-%%%%    \begin{tabular}{lr}
-%%%%      \toprule
-%%%%      Parameter         & Target \\
-%%%%      \midrule
-%%%%      Frequency         & $>$\SI{700}{\MHz}   \\
-%%%%      Power             & \SI{\approx 80}{\W}   \\
-%%%%      Bandwidth         & \SI[per-mode=symbol]{\approx 64}{\tera\bit\per\second} \\
-%%%%      Overall Die Area  & \SI{175}{\mm^2} \\
-%%%%      \bottomrule
-%%%%    \end{tabular}
-%%%%%  \end{center}
-%%%%\end{table}
-
 Initial place and route for the Manager and PE are shown in Figure \ref{fig:Manager and PE Die layouts}. 
 The area contribution of each block within the Manager and PE can be seen in Table \ref{tab:Area contribution}.
 \begin{table}[h]
@@ -1064,13 +1029,7 @@ The area contribution of each block within the Manager and PE can be seen in Tab
   \end{subtable}
   \end{table}
 
-
-\iffalse
-Although the design is yet to close timing, the 
-\else
-The
-\fi
-parasitics were extracted from these layouts and simulated against a group of operations. 
+The parasitics were extracted from these layouts and simulated against a group of operations. 
 The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. 
 These testcases were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
 Additional testcases were employed representing pre-synaptic fanins of 294, 300, 500 and 1000. Both locally connected (CONV) and fully connected (FC) type fanins were tested.
@@ -1290,14 +1249,12 @@ hold kernel weights and/or \ac{an} activations in local \ac{sram}. Another metho
 This local storage allows the system to take advantage of the low latency and random access benefits of \ac{sram} whilst performing multiple operations on that data.
 When considering applications where this local storage cannot be used effectively, all these implementations suffer a large degradation in performance.
 
-
 This work considers embedded applications where a system is processing requests with a disparate set of \acp{ann}. The assumption is that local \ac{sram} is no longer effective and performance is based on \ac{dram} bandwidth.
 This work considers 3DIC technology and a customized 3D-\ac{dram} is proposed. 
 
 The customized 3D-\ac{dram} combined with a design based on custom instructions and operation descriptors allows the system to achieve high levels of memory bandwidth efficiency.
 
 There is no doubt existing \ac{cnn} accelerators that take advantage of batch processing achieve a performance that is difficult to better, but applying these systems to this works target application exposes those systems \ac{dram} bandwidth limitations.
-
 This work demonstrates a \ac{3dic} system that at the surface provides relatively low \ac{flops}, but considering the target application is memory bound, this work demonstrates a 3X power improvement and 6X area improvement over similar \ac{ann} systems \cite{chen2016diannao,azarkhish2017neurostream,kim2016neurocube,gao2017tetris}.
 
 \section{Acknowlembeddedments}

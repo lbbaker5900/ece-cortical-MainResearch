@@ -40,7 +40,8 @@ This work targeted a baseline system with:
   \1 28nm \ac{asic} technology
 \end{outline}
 The work includes customizing the interface to a 3D-\ac{dram}, researching data structures to describe storage of \ac{ann} parameters, designing a memory manager with unique micro-coded instructions and a \ac{pe} layer.  
-The targeted 3D-\ac{dram}, the Tezzaron DiRAM4 employs 64 disjoint memories arranged in a physical array.
+The targeted 3D-\ac{dram}, the Tezzaron \ac{diram4} employs 64 disjoint memories arranged in a physical array.
+A physical layout of the \ac{diram4} can be seen in Figure \ref{fig:diram4Layout} and the key characteristics are shown in Table \ref{tab:DiRAM4 characteristics} in Appendix \ref{sec:DiRAM4 Characteristics}. 
 
 
 \section{Sub-System Column}
@@ -164,6 +165,7 @@ The \ac{diram4} \cite{tezzaron:diram4} employs multiple memory array layers in c
 The memory is formed from 64 disjoint sub-memories each providing upwards of \SI[per-mode=symbol]{1}{\giga\bit} with a total capacity of at least \SI[per-mode=symbol]{64}{\giga\bit}.
 Unlike traditional \ac{dram}, the \ac{diram4} has two independent channels that are accessed using \ac{ddr} signaling on the control signals.
 Each channel has 32 banks and 4096 pages per bank with \SI[per-mode=symbol]{4096}{\bit\per page}.
+The key characteristics of the \ac{diram4} are shown in Table \ref{tab:DiRAM4 characteristics} in Appendix \ref{sec:DiRAM4 Characteristics}. 
 
 The standard \ac{diram4} has a 32-bit read databus and a 32-bit write databus enabling simultaneous read and write. Both read and write databuses employ \ac{ddr} signaling.
 The read and write transactions are burst-of-two providing 64 bits per read/write. When accessing a \ac{dram}, a read and write are often referred to as a cache line.
