@@ -218,7 +218,7 @@ The 128-bit upstream bus is primarily designed to send the results of a downstre
 The upstream bus is packetized with the result data contained in the data portion of the upstream packet.
 Additional information includes the operation identification tag provided by the decoder in the downstream \ac{oob} operation configuration and the number of data words.
 The upstream bus is not as wide as the downstream bus because the ratio of downstream operands to result data is a function of the pre-synaptic fanin.
-Based on the average fanin from the baseline \ac{ann} shown in Table \ref{tab:Baseline Layer Configuration}, a 512-bit bus exceeds the required average bandwidth.
+Based on the average fanin from the baseline \ac{ann} shown in Table \ref{tab:Baseline Layer Configuration}, a 128-bit result bus exceeds the required average bandwidth.
 The stack bus \ac{oob} downstream and upstream signaling can be seen in Figure \ref{fig:Stack Bus signalling}.
 
 \subsubsection{Common Bus Signaling}
