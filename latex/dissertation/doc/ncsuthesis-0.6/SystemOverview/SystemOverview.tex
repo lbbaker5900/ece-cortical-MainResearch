@@ -202,7 +202,7 @@ The interconnect between the manager and \ac{pe} is referred to as the stack bus
 \subsection{Stack Bus}
 \label{sec:Stack Bus}
 
-The stack bus is bidirectional with a 36-bit \ac{oob} configuration bus from the manager to the \ac{pe}, a 2048-bit ``downstream'' data bus from the manager to the \ac{pe} and a 512-bit ``upstream'' data bus from the \ac{pe} to the manager.
+The stack bus is bidirectional with a 36-bit \ac{oob} configuration bus from the manager to the \ac{pe}, a 2048-bit ``downstream'' data bus from the manager to the \ac{pe} and a 128-bit ``upstream'' data bus from the \ac{pe} to the manager.
 
 The 36-bit \ac{oob} bus is designed to send configuration packets to configure the \ac{stop} and \ac{simd} blocks inside the \ac{pe}.
 A configuration packet primarily contains the \ac{stop} function to be performed on the downstream data and the operation the \ac{simd} is to perform on the result from the \ac{stop}.
