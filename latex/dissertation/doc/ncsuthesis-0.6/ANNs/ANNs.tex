@@ -580,57 +580,69 @@ A \ac{cnn} similar to this has demonstrated high levels of efficacy in image rec
 %%%% \end{sidewaysfigure}
 
 
-\begin{sidewaysfigure}[!htbp]
-  %\begin{adjustbox}{angle=0, width=1.0\textwidth}
-    \centering
-    \captionsetup{justification=centering}
-    \begin{minipage}{.9\textwidth}
-      %\captionsetup{justification=centering, skip=-5pt}
-      \centering
-      %\begin{center}
-       % [lr] ~ left align col 0 and right align col 1
-       % e.g. 4 columns could be lccr
-      \begin{adjustbox}{width=1\textwidth}
-        \begin{tabular}{|r|c|c|c|c|c|c|c|c|c|c|c|c|c}\cline{3-13}
-          %\toprule
-           \multicolumn{2}{c|}  {\multirow{2}{*}{}}    & \multicolumn{11}{c|}{Layers}    \\\cline{3-13}
-           \multicolumn{2}{c|}{}                       &  1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11  \\\cline{3-13} \cline{1-13}
-           \multicolumn{2}{|r|}{Type}                  &  Input          & Locally      & Pooling           & Locally             & Pooling             & Locally             & Locally             & Locally             &  Fully              &  Fully                 &  Fully         &                                    \\\cline{1-13}
-           \multirow{3}{*}{Dimensions}               &X& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{      4096}    & \num{     4096}        & \num{    1024} &                                    \\
-                                                     &Y& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\
-                                                     &Z& \num{         3}& \num{     96}& \num{    96}      & \num{    256}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{    256}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\\cline{1-13}
-           \multirow{3}{*}{Filter Dimensions}        &X&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{     4096}        & \num{    4096} &                                    \\
-                                                     &Y&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{        1}        & \num{       1} &                                    \\
-                                                     &Z&    na           & \num{      3}& \num{     1}      & \num{     96}       & \num{      1}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{       256}    & \num{        1}        & \num{       1} &                                    \\\cline{1-14}
-            \multicolumn{2}{|r|}{Stride           }    &    na           & \num{      4}& \num{     2}      & \num{      2}       & \num{      2}       & \num{      1}       & \num{      1}       & \num{      1}       &              na     &             na         &            na  & \multicolumn{1}{c|}{Aggregate    } \\\cline{14-14}
-            \multicolumn{2}{|r|}{Pre-synaptic Fanin}   &    na           & \num{    363}& \num{     4}      & \num{   2400}       & \num{      4}       & \num{   2304}       & \num{   3456}       & \num{   3456}       & \num{     43264}    & \num{     4096}        & \num{    4096} & \multicolumn{1}{c|}{$\Bar{\num{   1650}}$} \\
-            \multicolumn{2}{|r|}{Number of \ac{an}}    & \num{    196608}& \num{ 290400}& \num{ 69984}      & \num{ 186624}       & \num{  43264}       & \num{  64896}       & \num{  64896}       & \num{  43264}       & \num{      4096}    & \num{     4096}        & \num{    1024} & \multicolumn{1}{c|}{\num{ 772544}} \\
-            \multicolumn{2}{|r|}{Number of Weights}    &    na           & \num{  34848}& na                & \num{ 614400}       & na                  & \num{ 884736}       & \num{ 1327104}      & \num{ 884736}       & \num{ 177209344}    & \num{ 16777216}        & \num{ 4194304} & \multicolumn{1}{c|}{\num{ 2.02e8}} \\\hline
-        \end{tabular}
-      \end{adjustbox}
-      \captionsetup{justification=centering, skip=9pt}
-      \vspace{0.5cm}
-      \captionof{table}{Baseline \ac{ann} layer configuration \cite{krizhevsky2012imagenet}}
-      \label{tab:Baseline Layer Configuration}
-      %  \end{center}
-    \end{minipage}
-  
-    \bigskip
+%\newgeometry{letterpaper,top=1in,bottom=1in,right=1in,left=1.25in,footskip=\chapterfootskip, includefoot}
+%\newgeometry{letterpaper,left=1in,right=1in,bottom=1in,top=1.25in,footskip=\chapterfootskip, includefoot}
 
-    %\begin{adjustbox}{width=1.0\textwidth}
-      \begin{minipage}{1\textwidth}
+\begin{landscape}
+  \centering
+  \vspace*{\fill}
+  %\begin{sidewaysfigure}[!htbp]
+  \begin{figure}[!htbp]
+    %\begin{adjustbox}{angle=0, width=1.0\linewidth}
+      \centering
+      \captionsetup{justification=centering}
+      \begin{minipage}{0.95\linewidth}
+        %\captionsetup{justification=centering, skip=-5pt}
         \centering
-        \includegraphics[width=1.0\textwidth]{fullDNN}
-        \captionsetup{justification=centering, skip=15pt}
-        \captionof{figure}{Baseline DNN showing layer order \cite{krizhevsky2012imagenet}}
-        \label{fig:Baseline DNN showing layer order}
+        %\begin{center}
+         % [lr] ~ left align col 0 and right align col 1
+         % e.g. 4 columns could be lccr
+        \begin{adjustbox}{width=1\linewidth}
+          \begin{tabular}{|r|c|c|c|c|c|c|c|c|c|c|c|c|c}\cline{3-13}
+            %\toprule
+             \multicolumn{2}{c|}  {\multirow{2}{*}{}}    & \multicolumn{11}{c|}{Layers}    \\\cline{3-13}
+             \multicolumn{2}{c|}{}                       &  1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11  \\\cline{3-13} \cline{1-13}
+             \multicolumn{2}{|r|}{Type}                  &  Input          & Locally      & Pooling           & Locally             & Pooling             & Locally             & Locally             & Locally             &  Fully              &  Fully                 &  Fully         &                                    \\\cline{1-13}
+             \multirow{3}{*}{Dimensions}               &X& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{      4096}    & \num{     4096}        & \num{    1024} &                                    \\
+                                                       &Y& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\
+                                                       &Z& \num{         3}& \num{     96}& \num{    96}      & \num{    256}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{    256}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\\cline{1-13}
+             \multirow{3}{*}{Filter Dimensions}        &X&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{     4096}        & \num{    4096} &                                    \\
+                                                       &Y&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{        1}        & \num{       1} &                                    \\
+                                                       &Z&    na           & \num{      3}& \num{     1}      & \num{     96}       & \num{      1}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{       256}    & \num{        1}        & \num{       1} &                                    \\\cline{1-14}
+              \multicolumn{2}{|r|}{Stride           }    &    na           & \num{      4}& \num{     2}      & \num{      2}       & \num{      2}       & \num{      1}       & \num{      1}       & \num{      1}       &              na     &             na         &            na  & \multicolumn{1}{c|}{Aggregate    } \\\cline{14-14}
+              \multicolumn{2}{|r|}{Pre-synaptic Fanin}   &    na           & \num{    363}& \num{     4}      & \num{   2400}       & \num{      4}       & \num{   2304}       & \num{   3456}       & \num{   3456}       & \num{     43264}    & \num{     4096}        & \num{    4096} & \multicolumn{1}{c|}{$\Bar{\num{   1650}}$} \\
+              \multicolumn{2}{|r|}{Number of \ac{an}}    & \num{    196608}& \num{ 290400}& \num{ 69984}      & \num{ 186624}       & \num{  43264}       & \num{  64896}       & \num{  64896}       & \num{  43264}       & \num{      4096}    & \num{     4096}        & \num{    1024} & \multicolumn{1}{c|}{\num{ 772544}} \\
+              \multicolumn{2}{|r|}{Number of Weights}    &    na           & \num{  34848}& na                & \num{ 614400}       & na                  & \num{ 884736}       & \num{ 1327104}      & \num{ 884736}       & \num{ 177209344}    & \num{ 16777216}        & \num{ 4194304} & \multicolumn{1}{c|}{\num{ 2.02e8}} \\\hline
+          \end{tabular}
+        \end{adjustbox}
+        \captionsetup{justification=centering, skip=9pt}
+        \vspace{0.5cm}
+        \captionof{table}{Baseline \ac{ann} layer configuration \cite{krizhevsky2012imagenet}}
+        \label{tab:Baseline Layer Configuration}
+        %  \end{center}
       \end{minipage}
-    %\end{adjustbox}
+    
+      \bigskip
   
-  %\end{adjustbox}
-  %\caption{Baseline DNN \cite{krizhevsky2012imagenet}}
-  %\label{fig:Baseline DNN}
-\end{sidewaysfigure}
+      %\begin{adjustbox}{width=1.0\linewidth}
+        \begin{minipage}{0.95\linewidth}
+          \centering
+          \includegraphics[width=1.0\linewidth]{fullDNN}
+          \captionsetup{justification=centering, skip=15pt}
+          \captionof{figure}{Baseline DNN showing layer order \cite{krizhevsky2012imagenet}}
+          \label{fig:Baseline DNN showing layer order}
+        \end{minipage}
+      %\end{adjustbox}
+    
+    %\end{adjustbox}
+    %\caption{Baseline DNN \cite{krizhevsky2012imagenet}}
+    %\label{fig:Baseline DNN}
+  %\end{sidewaysfigure}
+  \end{figure}
+  \vfill
+\end{landscape}
+
+%\restoregeometry
 
 
 

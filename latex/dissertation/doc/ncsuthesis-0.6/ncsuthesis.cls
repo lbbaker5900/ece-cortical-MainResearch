@@ -437,6 +437,31 @@
      \ncsu@defaultspacing
 }
 
+\newcommand{\maketitlepageLee}{
+     \thispagestyle{empty}
+     \clearpage
+     \singlespacing
+      \begin{center}
+       \vfill
+        \ncsu@thesistitle
+       \vfill
+        by \\
+        \@author
+       \vfill
+       \ncsu@titlepageparagraph
+       \\[3.0\ncsu@lineheight]
+       \ncsu@program\\[3.0\ncsu@lineheight]
+       \ncsu@citystate\\[1\ncsu@lineheight]
+       \ncsu@year
+       \\[3.0\ncsu@lineheight]
+       APPROVED BY:
+       \vfill
+       \ncsu@committeesignatures
+      \end{center}
+     \clearpage
+     \ncsu@defaultspacing
+}
+
 %% -------------------------------------------------------------------------- %%
 %% ------------ Dedication, biography, and acknowledgements ----------------- %%
 %% -------------------------------------------------------------------------- %%

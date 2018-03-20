@@ -179,6 +179,7 @@ In Figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation des
     \end{minipage}
     \begin{minipage}{0.85\textwidth}
         \vspace{5mm}
+        \captionof{table}{Option tuple functions}
         \begin{adjustbox}{width=1\textwidth}
             \footnotesize
             \begin{tabular}{ |c|c|c|c|  }
@@ -206,7 +207,6 @@ In Figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation des
               \hline
             \end{tabular}
         \end{adjustbox}
-        \captionof{table}{Option tuple functions}
         \label{tab:Option tuple functions}
     \end{minipage}
   \end{minipage}
@@ -395,12 +395,14 @@ The sync configuration instruction is shown in Figure \ref{fig:Sync instruction}
   %\begin{subfigure}{1\textwidth}
     \centering
     \captionsetup{justification=centering, skip=10pt}
-    \begin{bytefield}[bitwidth=1.49em, endianness=big]{32}
-      \bitheader{0,20,21,23,24,31} \\
-      %\begin{rightwordgroup}{\scriptsize Option Cycle}
-        \colorbitbox{optiontype!40}{8}{\scriptsize Sync or Data} & \colorbitbox{optionvalue!40}{3}{\scriptsize Mode Register ID} & \colorbitbox{optionvalue!40}{21}{\scriptsize Mode register value } 
-      %\end{rightwordgroup}  \\
-    \end{bytefield}
+    \begin{adjustbox}{width=1\textwidth}
+      \begin{bytefield}[bitwidth=1.49em, endianness=big]{32}
+        \bitheader{0,20,21,23,24,31} \\
+        %\begin{rightwordgroup}{\scriptsize Option Cycle}
+          \colorbitbox{optiontype!40}{8}{\scriptsize Sync or Data} & \colorbitbox{optionvalue!40}{3}{\scriptsize Mode Register ID} & \colorbitbox{optionvalue!40}{21}{\scriptsize Mode register value } 
+        %\end{rightwordgroup}  \\
+      \end{bytefield}
+    \end{adjustbox}
     \captionsetup{justification=centering, skip=9pt}
     \vspace{-2mm}
     \captionof{figure}{Configuration tuple}

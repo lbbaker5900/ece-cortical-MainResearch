@@ -47,34 +47,29 @@ The area and power results from these synthesis runs are shown in Table \ref{tab
   % the [] contains position info e.g. [!t] means here
   \centering
   \captionsetup{justification=centering}
+  %\captionsetup{justification=centering, skip=9pt}
+  \caption{Example design area and power}
 
   %\begin{minipage}{1\textwidth}
     \centering
     \begin{subtable}{0.65\textwidth}
-        \begin{adjustbox}{width=1\textwidth}
-            \footnotesize
-            \begin{tabular}{ |c|c|c|c|c|c|  }
-              \hline
-              %\rowcolor{gray!50}
-              %\multicolumn{5}{|c|}{Power } \\
-              %\hline
-              %\rowcolor{gray!25}
-          Node  &   Type & Frequency                              & Internal                & Net switching           & Leakage                  \\
-              \hline
+      \begin{adjustbox}{width=1\textwidth}
+         \footnotesize
+         \begin{tabular}{ |c|c|c|c|c|c|  }
+           \hline
+                        Node  &   Type & Frequency                              & Internal                & Net switching           & Leakage                  \\
+            \hline
           \SI{65}{\nano\meter}  &  Logic &\SI[per-mode=symbol]{100}{\mega\hertz}  & \SI{66.9}{\milli\watt} & \SI{1.53}{\milli\watt} & \SI{2.02}{\nano\watt}  \\  % xls
           \SI{28}{\nano\meter}  &  Logic &\SI[per-mode=symbol]{100}{\mega\hertz}  & \SI{13.2}{\milli\watt} & \SI{1.26}{\milli\watt} & \SI{4.9 }{\micro\watt} \\  % xls
-          %\SI{65}{\nano\meter}  &  Logic &\SI[per-mode=symbol]{100}{\mega\hertz}  & \SI{142}{\milli\watt} & \SI{123}{\milli\watt} & \SI{192}{\micro\watt}  \\  % main_mem_cntl
-          %\SI{28}{\nano\meter}  &  Logic &\SI[per-mode=symbol]{100}{\mega\hertz}  & \SI{ 28}{\milli\watt} & \SI{100}{\milli\watt} & \SI{22.4}{\milli\watt} \\  % main_mem_cntl
-%      Scaling  &                                                 & \num{5.06}              & \num{1.22}              & \num{4.11e-3}            \\
-              \hline
-            \end{tabular}
-        \end{adjustbox}
+          \hline
+        \end{tabular}
+      \end{adjustbox}
       \caption{Example logic only design synthesis power}
       \label{tab:Scaling}
     \end{subtable}
     \begin{subtable}{0.65\textwidth}
-        \vspace{5mm}
-        \begin{adjustbox}{width=1\textwidth}
+      \vspace{1mm}
+      \begin{adjustbox}{width=1\textwidth}
             \footnotesize
             \begin{tabular}{ |c|c|c|c|c|c|  }
               \hline
@@ -92,13 +87,13 @@ The area and power results from these synthesis runs are shown in Table \ref{tab
 %       Scaling &                                                     & \num{5.06}              & \num{1.22}             & \num{4.11e-3}           \\
               \hline
             \end{tabular}
-        \end{adjustbox}
+      \end{adjustbox}
       \caption{Example design with memory synthesis power}
       \label{tab:Example design with memory synthesis power}
     \end{subtable}
     \begin{subtable}{0.65\textwidth}
-        \vspace{5mm}
-        \begin{adjustbox}{width=1\textwidth}
+      \vspace{1mm}
+      \begin{adjustbox}{width=1\textwidth}
             \footnotesize
             \begin{tabular}{ |c|c|c|c|  }
               \hline
@@ -115,14 +110,12 @@ The area and power results from these synthesis runs are shown in Table \ref{tab
 %      Scaling  &           & \num{5.06}                                         & \num{1.22}                                          \\
               \hline
             \end{tabular}
-        \end{adjustbox}
+      \end{adjustbox}
       \caption{Example design area}
       \label{tab:Example design area}
     \end{subtable}
   %\end{minipage}
-  \captionsetup{justification=centering, skip=9pt}
   \vspace{0.0cm}
-  \caption{Example design area and power}
   \label{tab:Scaling runs}
 \end{table}
 
@@ -130,10 +123,11 @@ The area and power results from these synthesis runs are shown in Table \ref{tab
   % the [] contains position info e.g. [!t] means here
   \centering
   \captionsetup{justification=centering}
+  \captionof{table}{\SI{68}{\nano\meter} to \SI{28}{\nano\meter} scaling numbers}
   \begin{minipage}{1\textwidth}
     \centering
     \begin{minipage}{0.85\textwidth}
-        \vspace{5mm}
+        \vspace{0mm}
         \begin{adjustbox}{width=1\textwidth}
             \footnotesize
             \begin{tabular}{|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1.3cm}|>{\centering}m{1.3cm}|>{\centering}m{1cm}|>{\centering}m{1.3cm}|m{1.3cm}|}\cline{3-8}
@@ -152,9 +146,7 @@ The area and power results from these synthesis runs are shown in Table \ref{tab
       %\label{tab:Example design area}
     \end{minipage}
   \end{minipage}
-  \captionsetup{justification=centering, skip=9pt}
   \vspace{0.0cm}
-  \captionof{table}{\SI{68}{\nano\meter} to \SI{28}{\nano\meter} scaling numbers}
   \label{tab:Scaling numbers}
 \end{table}
 
@@ -446,10 +438,10 @@ The list of features implemented and verified is shown in Table \ref{tab:Feature
   % the [] contains position info e.g. [!t] means here
   \centering
   \captionsetup{justification=centering}
-
+  \captionof{table}{System features implemented}
   \begin{minipage}{1\textwidth}
     \centering
-      %\begin{adjustbox}{width=0.85\textwidth}
+      \begin{adjustbox}{width=1\textwidth}
           \footnotesize
           %\begin{tabular}{|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1.3cm}|>{\centering}m{1.3cm}|}\cline{1-4}
           %\begin{tabular}{ |>{\centering}m{1.5cm}|>{\centering}m{1.5cm}|>{\centering}m{1.5cm}|m{3cm}|}
@@ -473,11 +465,9 @@ The list of features implemented and verified is shown in Table \ref{tab:Feature
         %MAC                             &   N                     & Self checking  &  Instructions generated using python scripts \\
             %\hline
           \end{tabular}
-      %\end{adjustbox}
+      \end{adjustbox}
   \end{minipage}
-  \captionsetup{justification=centering, skip=9pt}
   \vspace{0.0cm}
-  \captionof{table}{System features implemented}
   \label{tab:Features implemented}
 \end{table}
 

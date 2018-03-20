@@ -83,6 +83,7 @@
 ]{caption}
 %\usepackage{subfig}
 \usepackage[list=true]{subcaption}
+\usepackage{capt-of}
 
 \usepackage{url}
 
@@ -385,7 +386,7 @@
 
 
 %% Student writing thesis, \student{First Middle}{Last}
-\student{Lee B.}{Baker} % a full middle name
+\student{Lee Brian}{Baker} % a full middle name
 %\student{John Mark}{Smith} % a full middle name
 %\student{John M.}{Smith} % a middle initial
 
@@ -400,7 +401,7 @@
 %%  Note: To break the title onto multiple lines, use \break instead of \\.
 %\thesistitle{A North Carolina State University Sample \LaTeX{} Thesis \break 
 %with a Title So Long it Needs a Line Break}
-\thesistitle{Design of a 3DIC system to aid in the acceleration of embedded systems that \break employ multiple instances of disparate artificial neural networks}
+\thesistitle{Design of a 3DIC System to Aid in the Acceleration of Embedded Systems that Employ Multiple Instances of Disparate Artificial Neural Networks}
 
 %% Degree year.  Necessary if your degree year doesn't equal the current year.
 %\degreeyear{1995}
@@ -504,6 +505,7 @@
 
 %landscape support in fancyhdr from http://tex.stackexchange.com/questions/9071/how-to-translate-and-rotate-the-heading-of-landscaped-pages
 \usepackage{pdflscape}
+%\usepackage{scrhack}
 \usepackage{tikz}
 \fancypagestyle{lscapedplain}{%
   \fancyhf{}
@@ -516,6 +518,8 @@
 
 \include{abbrev}
                       
+\urlstyle{same}
+
 \begin{document}
 \pagestyle{plain}
 %%---------------------------------------------------------------------------%%
@@ -581,7 +585,8 @@
 \titleformat{\chapter}[display]{\bf\filcenter
 }{\chaptertitlename\ \thechapter}{11pt}{\bf\filcenter}
 %\titlespacing*{\chapter}{0pt}{-0.5in-9pt}{22pt}
-\titlespacing*{\chapter}{0pt}{-0.15in-9pt}{22pt}
+%\titlespacing*{\chapter}{0pt}{-0.15in-9pt}{22pt}
+\titlespacing*{\chapter}{0pt}{-0.12in-9pt}{22pt}
 
 \printbibliography[heading=myheading]
 \end{spacing}

@@ -46,29 +46,33 @@ An example calculation sequence is shown in Figure \ref{fig:classifier implement
   %\captionof{figure}{Classifier}
   %\label{tab:Classifier}
 \end{figure}
-\begin{sidewaysfigure}[h]
+
+\begin{landscape}
   \centering
-  \captionsetup{justification=centering}
-  \captionsetup{width=0.9\textwidth}
-  \begin{minipage}{1\textwidth}
+  \vspace*{\fill}
+  \begin{figure}[h]
     \centering
-    \centerline{
-    \mbox{\includegraphics[angle=0, width=.95\textwidth]{classifierImplementation}}
-    }
-    \caption{Classifier layer stOp/SIMD implementation}
-    \label{fig:classifier implementation}
-  \end{minipage}
-  \bigskip
-  \vspace{1mm}
-  \begin{minipage}{1\textwidth}
-    \centering
-    \centerline{
-    \mbox{\includegraphics[angle=0, width=.95\textwidth]{classifierSequenceTiming}}
-    }
-    \center\caption{Classifier layer stOp/SIMD sequence timing}
-    \label{fig:classifier implementation sequence timing}
-  \end{minipage}
-  %\captionof{table}{Classifier implementation}
-  %\label{tab:Classifier implementation}
-\end{sidewaysfigure}
+    \captionsetup{justification=centering}
+    \captionsetup{width=0.9\linewidth}
+    \begin{minipage}{1\linewidth}
+      \centering
+      \centerline{
+      \mbox{\includegraphics[angle=0, width=1\linewidth]{classifierImplementation}}
+      }
+      \caption{Classifier layer stOp/SIMD implementation}
+      \label{fig:classifier implementation}
+    \end{minipage}
+    \bigskip
+    \vspace{1mm}
+    \begin{minipage}{1\linewidth}
+      \centering
+      \centerline{
+      \mbox{\includegraphics[angle=0, width=1\linewidth]{classifierSequenceTiming}}
+      }
+      \caption{Classifier layer stOp/SIMD sequence timing}
+      \label{fig:classifier implementation sequence timing}
+    \end{minipage}
+  \end{figure}
+  \vfill
+\end{landscape}
 

@@ -487,33 +487,34 @@ When the destination \ac{ssc} receives the packet, it extracts the storage descr
   % the [] contains position info e.g. [!t] means here
   \centering
   \captionsetup{justification=centering}
-
   \begin{minipage}{1\textwidth}
-  %\begin{subfigure}{1\textwidth}
     \centering
     \captionsetup{justification=centering, skip=10pt}
-    \begin{bytefield}[bitwidth=0.49em, endianness=big]{77}
-      \bitheader{0,8,16,24,32,40,48,56,64,68,74,76} \\
-      \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
-        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
-      \end{rightwordgroup}  \\
-      \begin{rightwordgroup}{\scriptsize MCast Group header}
-        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}}  & \bitbox{58}{\tiny padding} & \bitbox{6}{\tiny gid} 
-      \end{rightwordgroup}  \\
-      \begin{rightwordgroup}{\scriptsize Unicast header}
-        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}}  & \bitbox{57}{\tiny padding} & \bitbox{7}{\tiny dest} 
-      \end{rightwordgroup}  \\
-      \begin{rightwordgroup}{\scriptsize Option Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \colorbitbox{optiontype!40}{8}{\tiny option\\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer} & \colorbitbox{optiontype!40}{8}{\tiny option\\ type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer}
-      \end{rightwordgroup}  \\
-      \begin{rightwordgroup}{\scriptsize Data Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
-      \end{rightwordgroup}  \\
-      \bitbox[]{76}{$\vdots$} \\[1ex]
-      \begin{rightwordgroup}{\scriptsize Data Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
-      \end{rightwordgroup}  \\
-    \end{bytefield}
+    \vspace{2mm}
+    \begin{adjustbox}{width=1\textwidth}
+      \begin{bytefield}[bitwidth=0.49em, endianness=big]{77}
+        \bitheader{0,8,16,24,32,40,48,56,64,68,74,76} \\
+        \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
+          \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
+        \end{rightwordgroup}  \\
+        \begin{rightwordgroup}{\scriptsize MCast Group header}
+          \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}}  & \bitbox{58}{\tiny padding} & \bitbox{6}{\tiny gid} 
+        \end{rightwordgroup}  \\
+        \begin{rightwordgroup}{\scriptsize Unicast header}
+          \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}}  & \bitbox{57}{\tiny padding} & \bitbox{7}{\tiny dest} 
+        \end{rightwordgroup}  \\
+        \begin{rightwordgroup}{\scriptsize Option Cycle}
+          \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \colorbitbox{optiontype!40}{8}{\tiny option\\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer} & \colorbitbox{optiontype!40}{8}{\tiny option\\ type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer}
+        \end{rightwordgroup}  \\
+        \begin{rightwordgroup}{\scriptsize Data Cycle}
+          \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+        \end{rightwordgroup}  \\
+        \bitbox[]{76}{$\vdots$} \\[1ex]
+        \begin{rightwordgroup}{\scriptsize Data Cycle}
+          \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+        \end{rightwordgroup}  \\
+      \end{bytefield}
+    \end{adjustbox}
     \captionsetup{justification=centering, skip=9pt}
     \vspace{-1.0cm}
     \captionof{figure}{NoC packet format}
@@ -521,6 +522,8 @@ When the destination \ac{ssc} receives the packet, it extracts the storage descr
   \end{minipage}
 
   \vspace{0.5cm}
+  \captionof{table}{NoC header cycle fields}
+  \vspace{0.3cm}
   \begin{minipage}{1\textwidth}
     \centering
     \begin{minipage}{0.25\textwidth}
@@ -580,48 +583,56 @@ When the destination \ac{ssc} receives the packet, it extracts the storage descr
     \bigskip
     
     \centering
-    \begin{minipage}{0.25\textwidth}
-        \begin{adjustbox}{width=1\textwidth}
-            \footnotesize
-            \begin{tabular}{ |c|c|  }
-              \hline
-              \rowcolor{gray!50}
-              \multicolumn{2}{|c|}{Group ID} \\
-              \hline
-              \rowcolor{gray!25}
-              gid[5:0] & Description  \\
-              \hline
-              $0\cdots 63$     & Group table pointer\\
-              \hline
-            \end{tabular}
-        \end{adjustbox}
+    \begin{minipage}{1\textwidth}
+      \centering
+      \begin{minipage}{0.25\textwidth}
+          \begin{adjustbox}{width=1\textwidth}
+              \footnotesize
+              \begin{tabular}{ |c|c|  }
+                \hline
+                \rowcolor{gray!50}
+                \multicolumn{2}{|c|}{Group ID} \\
+                \hline
+                \rowcolor{gray!25}
+                gid[5:0] & Description  \\
+                \hline
+                $0\cdots 63$     & Group table pointer\\
+                \hline
+              \end{tabular}
+          \end{adjustbox}
+      \end{minipage}
+      %\centering
+      \begin{minipage}{0.25\textwidth}
+          \begin{adjustbox}{width=1\textwidth}
+              \footnotesize
+              \begin{tabular}{ |c|c|  }
+                \hline
+                \rowcolor{gray!50}
+                \multicolumn{2}{|c|}{Unicast Destination} \\
+                \hline
+                \rowcolor{gray!25}
+                dest[6:0] & Description  \\
+                \hline
+                $0\cdots 63 $  & Destination SSC \\
+                $64$          & Host            \\
+                $65\cdots 127$ & Unused          \\
+                \hline
+              \end{tabular}
+          \end{adjustbox}
+      \end{minipage}
     \end{minipage}
-    \begin{minipage}{0.25\textwidth}
-        \begin{adjustbox}{width=1\textwidth}
-            \footnotesize
-            \begin{tabular}{ |c|c|  }
-              \hline
-              \rowcolor{gray!50}
-              \multicolumn{2}{|c|}{Unicast Destination} \\
-              \hline
-              \rowcolor{gray!25}
-              dest[6:0] & Description  \\
-              \hline
-              $0\cdots 63 $  & Destination SSC \\
-              $64$          & Host            \\
-              $65\cdots 127$ & Unused          \\
-              \hline
-            \end{tabular}
-        \end{adjustbox}
-    \end{minipage}
-    \captionsetup{justification=centering, skip=9pt}
-    \vspace{0.0cm}
-    \captionof{table}{NoC header cycle fields}
+    %\vspace{0.0cm}
+    %\captionsetup{justification=centering, skip=9pt}
+    %\captionsetup[table]{position=top} 
+    %\captionof{table}{NoC header cycle fields}
     \label{tab:NoC header fields}
   \end{minipage}
     
   \bigskip
 
+  \captionsetup{justification=centering, skip=9pt}
+  \captionof{table}{NoC option/data cycle fields}
+  \vspace{0.3cm}
   \begin{minipage}{1\textwidth}
     \centering
     \begin{minipage}{0.35\textwidth}
@@ -685,9 +696,6 @@ When the destination \ac{ssc} receives the packet, it extracts the storage descr
             \end{tabular}
         \end{adjustbox}
     \end{minipage}
-    \captionsetup{justification=centering, skip=9pt}
-    \vspace{0.0cm}
-    \captionof{table}{NoC option/data cycle fields}
     \label{tab:NoC option/data cycle fields}
   \end{minipage}
 \end{figure}

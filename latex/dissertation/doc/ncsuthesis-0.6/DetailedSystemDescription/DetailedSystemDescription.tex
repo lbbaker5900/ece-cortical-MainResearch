@@ -81,19 +81,21 @@ Once \ac{ann} parameters and system tables are downloaded, the last instruction 
   %\begin{subfigure}{1\textwidth}
     \centering
     \captionsetup{justification=centering, skip=10pt}
-    \begin{bytefield}[bitwidth=0.49em, endianness=big]{77}
-      \bitheader{0,8,16,24,32,40,48,56,64,68,74,76} \\
-      \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
-        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
-      \end{rightwordgroup}  \\
-      \begin{rightwordgroup}{\scriptsize Data Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{7}{\tiny NA} & \bitbox{57}{\tiny Instruction memory entry}
-      \end{rightwordgroup}  \\
-      \bitbox[]{76}{$\vdots$} \\[1ex]
-      \begin{rightwordgroup}{\scriptsize Data Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{7}{\tiny NA} & \bitbox{57}{\tiny Instruction memory entry}
-      \end{rightwordgroup}  \\
-    \end{bytefield}
+    \begin{adjustbox}{width=1\textwidth}
+      \begin{bytefield}[bitwidth=0.49em, endianness=big]{77}
+        \bitheader{0,8,16,24,32,40,48,56,64,68,74,76} \\
+        \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
+          \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
+        \end{rightwordgroup}  \\
+        \begin{rightwordgroup}{\scriptsize Data Cycle}
+          \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{7}{\tiny NA} & \bitbox{57}{\tiny Instruction memory entry}
+        \end{rightwordgroup}  \\
+        \bitbox[]{76}{$\vdots$} \\[1ex]
+        \begin{rightwordgroup}{\scriptsize Data Cycle}
+          \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{7}{\tiny NA} & \bitbox{57}{\tiny Instruction memory entry}
+        \end{rightwordgroup}  \\
+      \end{bytefield}
+    \end{adjustbox}
     \captionsetup{justification=centering, skip=9pt}
     \vspace{-0.5cm}
     \captionof{figure}{Host boot code download \ac{noc} packet}
@@ -601,6 +603,7 @@ A block diagram of the \ac{pe} controller can be seen in Figure \ref{fig:PE Cont
           \end{bytefield}
         \end{center}
     \end{minipage}
+    \captionof{table}{stOp pointer memory fields}
     \begin{minipage}{1\textwidth}
       \centering
       \begin{minipage}[t]{0.75\textwidth}
@@ -625,7 +628,6 @@ A block diagram of the \ac{pe} controller can be seen in Figure \ref{fig:PE Cont
         \end{adjustbox}
       \end{minipage}
     \end{minipage}
-    \captionof{table}{stOp pointer memory fields}
     \label{tab:stOp pointer memory}
   \end{minipage}
 \end{figure}
@@ -677,6 +679,7 @@ A block diagram of the \ac{stop} can be seen in Figure \ref{fig:stOp block diagr
     \end{minipage}
     \bigskip
     \vspace{0.25cm}
+    \captionof{table}{Streaming operation fields}
     \begin{minipage}{1\textwidth}
       \centering
       \begin{minipage}[t]{1\textwidth}
@@ -746,7 +749,6 @@ A block diagram of the \ac{stop} can be seen in Figure \ref{fig:stOp block diagr
         \end{minipage}
       \end{minipage}
     \end{minipage}
-    \captionof{table}{Streaming operation fields}
     \label{tab:stOp op fields}
   \end{minipage}
 \end{figure}
@@ -805,6 +807,8 @@ Other than the \ac{relu}, the \acp{sfu} are not considered hot-spots in the proc
   \begin{minipage}{0.80\textwidth}
     \centering
     \vspace{5mm}
+    \captionsetup{justification=centering, skip=9pt}
+    \captionof{table}{SIMD wrapper special function codes}
     \begin{adjustbox}{width=1\textwidth}
         \centering
         %\footnotesize
@@ -834,8 +838,6 @@ Other than the \ac{relu}, the \acp{sfu} are not considered hot-spots in the proc
           \hline
         \end{tabular}
     \end{adjustbox}
-    \captionsetup{justification=centering, skip=9pt}
-    \captionof{table}{SIMD wrapper special function codes}
     \label{SIMD wrapper special function codes}
   \end{minipage}
 \end{figure}
@@ -952,22 +954,27 @@ Currently only the tag and data mode has been implemented.
 
 
 
-\begin{sidewaysfigure}[h]
-% the [] contains position info e.g. [!H] means here
-% H 	Place exactly at spot in source text
-% h 	Place approximately at spot in source test
-% t 	Place at top of page
-% b 	Place at bottom of page
-% p 	Place on page for floats only
-% ! 	Override internal LaTeX parameters for determining float position
-\centering
-\captionsetup{justification=centering}
-\captionsetup{width=0.9\textwidth}
-\centerline{
-\mbox{\includegraphics[angle=0, width=1.0\textwidth]{DetailedBlockDiagram}}
-}
-\center\caption{Sub-System Column (SSC) Block Diagram}
-\label{fig:DetailedBlockDiagram}
-\end{sidewaysfigure}
+\begin{landscape}
+  \centering
+  \vspace*{\fill}
+  \begin{figure}[!htbp]
+    % the [] contains position info e.g. [!H] means here
+    % H 	Place exactly at spot in source text
+    % h 	Place approximately at spot in source test
+    % t 	Place at top of page
+    % b 	Place at bottom of page
+    % p 	Place on page for floats only
+    % ! 	Override internal LaTeX parameters for determining float position
+    \centering
+    \captionsetup{justification=centering}
+    \captionsetup{width=0.9\textwidth}
+    \centerline{
+    \mbox{\includegraphics[angle=0, width=1.0\linewidth]{DetailedBlockDiagram}}
+    }
+    \caption{Sub-System Column (SSC) Block Diagram}
+    \label{fig:DetailedBlockDiagram}
+  \end{figure}
+  \vfill
+\end{landscape}
 
 
