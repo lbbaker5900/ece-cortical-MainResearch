@@ -597,6 +597,8 @@ A \ac{cnn} similar to this has demonstrated high levels of efficacy in image rec
         %\begin{center}
          % [lr] ~ left align col 0 and right align col 1
          % e.g. 4 columns could be lccr
+        \captionsetup{justification=centering, skip=9pt}
+        \captionof{table}{Baseline \ac{ann} layer configuration \cite{krizhevsky2012imagenet}}
         \begin{adjustbox}{width=1\linewidth}
           \begin{tabular}{|r|c|c|c|c|c|c|c|c|c|c|c|c|c}\cline{3-13}
             %\toprule
@@ -615,9 +617,6 @@ A \ac{cnn} similar to this has demonstrated high levels of efficacy in image rec
               \multicolumn{2}{|r|}{Number of Weights}    &    na           & \num{  34848}& na                & \num{ 614400}       & na                  & \num{ 884736}       & \num{ 1327104}      & \num{ 884736}       & \num{ 177209344}    & \num{ 16777216}        & \num{ 4194304} & \multicolumn{1}{c|}{\num{ 2.02e8}} \\\hline
           \end{tabular}
         \end{adjustbox}
-        \captionsetup{justification=centering, skip=9pt}
-        \vspace{0.5cm}
-        \captionof{table}{Baseline \ac{ann} layer configuration \cite{krizhevsky2012imagenet}}
         \label{tab:Baseline Layer Configuration}
         %  \end{center}
       \end{minipage}

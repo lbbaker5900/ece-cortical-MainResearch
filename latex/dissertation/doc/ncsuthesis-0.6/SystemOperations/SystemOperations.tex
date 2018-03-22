@@ -177,7 +177,7 @@ In Figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation des
       \caption{Operation descriptor (5-tuple example)}
       \label{fig:descriptorTuple}
     \end{minipage}
-    \begin{minipage}{0.85\textwidth}
+    \begin{minipage}{1\textwidth}
         \vspace{5mm}
         \captionof{table}{Option tuple functions}
         \begin{adjustbox}{width=1\textwidth}
@@ -219,8 +219,8 @@ The memory write descriptor shows two storage option elements, which indicates t
 The waveform in Figure \ref{fig:Instruction memory waveform} is from the verification environment and shows the instruction as it is read out of the manager's instruction memory.
 The waveform also shows an example of the common interface signaling described in Section \label{sec:Common Bus Signalling} with the signals \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore icntl} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore dcntl} being used to delineate the instruction and descriptors respectively.
 As can be seen in Figure \ref{fig:Instruction memory waveform}, the instruction memory transfers three descriptor elements per cycle shown on the bus signals \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore option\textunderscore type} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore option\textunderscore value}.
-\\
-Note: The signal name convention used between blocks in the \ac{rtl} is <src>\textunderscore\textunderscore <dest>\textunderscore\textunderscore <signal\textunderscore\textunderscore  name>. In Figure \ref{fig:Instruction memory waveform},~ \texttt{wum} and \texttt{wud} refer to ``work unit memory'' and ``work unit decode''
+The signal name convention used between blocks in the \ac{rtl} is <src>\textunderscore\textunderscore <dest>\textunderscore\textunderscore <signal\textunderscore  name>.
+In Figure \ref{fig:Instruction memory waveform},~ \texttt{wum} and \texttt{wud} refer to ``work unit memory'' and ``work unit decode''
 which correspond to the manager instruction memory and instruction decoder respectively.
 
 \begin{figure}

@@ -574,7 +574,7 @@ The \ac{pe} controller takes \ac{oob} control packets stored in an interface \ac
 The \ac{simd} pointer is passed to the \ac{simd} wrapper along with the tag associated with the operation.
 The \ac{simd} wrapper contains an interface \ac{fifo} and the \ac{pe} controller will pause if the \ac{simd} wrapper interface asserts flow control.
 The \ac{stop} pointer is used to index into a small \ac{sram} that contains the long instruction word used to select the \ac{stop} function and control the source and destination of the data.
-The contents of the memory is shown in Table \ref{tab:stOp pointer memory}.
+The contents of the memory is shown in Figure \ref{fig:stOp pointer memory} and Table \ref{tab:stOp pointer memory}.
 When the \ac{stop} has completed the operation, the \ac{pe} controller takes the next operation from the \ac{fifo}.
 A block diagram of the \ac{pe} controller can be seen in Figure \ref{fig:PE Controller block diagram}}.
 
@@ -587,15 +587,15 @@ A block diagram of the \ac{pe} controller can be seen in Figure \ref{fig:PE Cont
     \centerline{
     \mbox{\includegraphics[angle=0, width=0.75\textwidth]{PEcntlBlockDiagram}}
     }
+    \vspace{-2mm}
     \center\caption{PE controller block diagram}
     \label{fig:PE Controller block diagram}
   \end{minipage}
   \bigskip
   \begin{minipage}{1\textwidth}
     \centering
-    \captionsetup{justification=centering, skip=10pt}
+    \vspace{10mm}
     \begin{minipage}[t]{1\textwidth}
-        \vspace{0.5cm}
         \begin{center}
           \begin{bytefield}[bitwidth=0.3em, endianness=big]{109}
             %\bitheader{0, 31, 37} \\
@@ -603,7 +603,13 @@ A block diagram of the \ac{pe} controller can be seen in Figure \ref{fig:PE Cont
           \end{bytefield}
         \end{center}
     \end{minipage}
+    \vspace{-1.0cm}
+    \captionsetup{justification=centering}%, skip=10pt}
+    \captionof{figure}{stOp pointer memory contents}
+    \label{fig:stOp pointer memory}
+    \vspace{2mm}
     \captionof{table}{stOp pointer memory fields}
+    \vspace{0.2cm}
     \begin{minipage}{1\textwidth}
       \centering
       \begin{minipage}[t]{0.75\textwidth}
