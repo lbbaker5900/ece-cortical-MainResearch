@@ -960,10 +960,13 @@ Currently only the tag and data mode has been implemented.
 
 
 
+\newgeometry{margin=1in,lmargin=1.25in,footskip=\chapterfootskip}
+\thispagestyle{lscapedlee}
 \begin{landscape}
   \centering
-  \vspace*{\fill}
+  %\vspace*{\fill}
   \begin{figure}[!htbp]
+    \vspace{25mm}
     % the [] contains position info e.g. [!H] means here
     % H 	Place exactly at spot in source text
     % h 	Place approximately at spot in source test
@@ -980,7 +983,11 @@ Currently only the tag and data mode has been implemented.
     \caption{Sub-System Column (SSC) Block Diagram}
     \label{fig:DetailedBlockDiagram}
   \end{figure}
-  \vfill
+  %\vfill
 \end{landscape}
+\restoregeometry
+\newgeometry{letterpaper,top=1in,bottom=1in,right=1in,left=1.25in,footskip=\chapterfootskip, includefoot}
+\pagestyle{plain}
+\thispagestyle{plain}
 
 

@@ -189,11 +189,11 @@ paulf@ncsu.edu}
 \begin{abstract}
 
 This work demonstrates how a customized \acf{3ddram} with a very wide databus can be combined with application-specific layers to produce a system meeting the requirements of embedded systems employing multiple instances of disparate \acfp{ann}.
-This work avoids any dependencies on \ac{sram} that might limit the size of supported \acp{ann}. 
-This work demonstrates the required utilization of the very wide \ac{dram} databus when employing instructions and data structures that facilitate operating directly out of the \ac{3ddram}.
-By allowing system functions to operate asynchronously this work is able to absorb the latencies associated with \ac{dram} and provide the bandwidth required to support multiple useful-sized disparate \acp{ann}.
-By demonstrating effective use of the very wide bus of a customized \ac{3ddram}, 
-this system demonstrates a 3X power improvement and 6X area improvement over similar \ac{ann} systems.
+This work avoids any dependencies on \ac{sram} that might limit the size of supported \acp{ann} and demonstrates the required utilization of the very wide \ac{dram} databus when employing instructions and data structures that facilitate operating directly out of the \ac{3ddram}.
+By allowing system functions to operate asynchronously this work is able to absorb the latencies associated with \ac{dram} and utilize the wide databus of the customized \ac{dram} to provide the bandwidth required to support multiple useful-sized disparate \acp{ann}.
+This work demonstrates a near-memory system that does not simply add \ac{ann} processing as an appendage to an existing \ac{3ddram} but proposes customizations to an existing \ac{3ddram} along with tight integration of the \ac{ann} processing elements and memory controller to 
+create a true near-memory \ac{ann} accelerator.
+By demonstrating effective use of the very wide bus of a customized \ac{3ddram}, this system demonstrates a conservative 3X power improvement and 6X area improvement over similar \ac{ann} systems along with the ability to keep pace with the \ac{dram} roadmap over the foreseeable future.
 
 \end{abstract}
 
@@ -211,7 +211,8 @@ machine learning, embedded system, \acp{dnn}, \ac{cnn}, neural network
 \IEEEPARstart{U}{seful} \acp{dnn} often require hundreds of thousands of \acp{an}.
 Within the network, each \ac{an} can have hundreds of feeder (pre-synaptic) \acp{an}.
 With popular \acp{dnn}, there are often tens of layers. 
-So in these \acp{ann}, the memory requirements are significant. The storage is required for the input, the \ac{an} state and most significantly the pre-synapic \ac{an} connection weights for each of the \acp{an}. This storage requirement often results in gigabytes of memory.
+So in these \acp{ann}, the memory requirements are significant. The storage is required for the input, the \ac{an} state and most significantly the pre-synapic \ac{an} connection weights for each of the \acp{an}. 
+This storage requirement often results in gigabytes of memory.
 When these \acp{ann} are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
 In most cases, \acp{gpu} are used to implement large \acp{ann}. In many \ac{ann} architectures, such as Convolutional \acp{ann} (\ac{cnn}), they are quite effective. 
 However, we should not forget they are not optimized purely for \ac{ann} processing and are restricted by available \ac{sram} and they are power hungry. These limitations limit the effectiveness of \acp{gpu}.
@@ -220,13 +221,18 @@ Much of the \ac{ann} \ac{asic} and \ac{asip} research has focused on taking adva
 These implementations can be shown to be effective when there are reuse opportiunities such as with \acp{cnn} or applications that have batch processing opportunities, such as cloud applications.
 But given an embedded system requiring multiple disparate \acp{ann}, where reuse opportunities do not exist, these implementations do not provide the required performance.
 Another technology that has been considered over the last decade is \ac{3dic}.
-Implementations such as Neurostream \cite{azarkhish2017neurostream}, NeuroCube\cite{kim2016neurocube} and Tetris \cite{gao2017tetris} employ \ac{hmc} \ac{3ddram} in a \ac{3dic} system, and all have demonstrated improvements over non-\ac{3dic} systems and \acp{gpu}.
+Implementations such as Neurostream \cite{azarkhish2017neurostream}, NeuroCube\cite{kim2016neurocube} and Tetris \cite{gao2017tetris} employ \ac{hmc} \ac{3ddram} in a \ac{3dic} system, 
+and all have demonstrated improvements over non-\ac{3dic} systems and \acp{gpu}.
+However, for the most part these systems employ the \ac{3ddram} as a disjoint memory with the \ac{ann} processing elements being an appendage to the \ac{dram}.
+In particular, NeuroCube\cite{kim2016neurocube} and Tetris \cite{gao2017tetris} achieve the required performance by optimistically targeting a 15nm process where this work achieves the required performance by tightly integrating
+the \ac{ann} processing with the memory controller while targeting a less optimistic 28nm process.
 
 This work considers future embedded systems where multiple \acp{ann} are employed \cite{bojarski2016end} and that each of the \acp{ann} will be of similar size to useful-sized \acp{ann} \cite{krizhevsky2012imagenet}.
 In addition, as \acp{ann} fulfill their potential and users start to employ them in various applications, there is no reason to believe these applications will exhibit the same stationary characteristcs that make \acp{cnn} effective in image processing.
 Therefore, this work provides support to \acp{dnn} that do not provide \ac{ann} parameter reuse \cite{coates2013deep} and suggests that these types of applications will require that all \ac{ann} parameters in main memory be accessed in real-time.
 This work coins the phrase ``goldilocks bandwidth'' when applied to \ac{ann} systems where the system provides the bandwidth required to read all \ac{ann} parameters in a real-time sampling rate of \SI{16}{\milli\second}. 
 Anything exceeding the required bandwidth is considered ``too hot'' and therefore a waste and anything less than the required bandwidth is ``too cold'' and therefore inadequate.
+This work provides support for all types of \acp{dnn} including \ac{lstm}, autoencoders and \acp{rbm} and does not focus on particular \acp{ann} such as \acp{cnn}.
 
 Although there is a lot of debate regarding number formats for \acp{ann}, this work also assumes single-precision floating point.
 This work assumes any useful \ac{ann} will be of a similar size to \cite{krizhevsky2012imagenet}, this work employs a baseline \ac{ann} similar to that shown in Table \ref{tab:Baseline Layer Configuration},

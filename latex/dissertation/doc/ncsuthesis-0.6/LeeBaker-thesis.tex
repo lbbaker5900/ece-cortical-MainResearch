@@ -516,6 +516,18 @@
 \renewcommand{\footrulewidth}{0pt}
 }
 
+\newlength{\leelscapepagenumber}
+\setlength{\leelscapepagenumber}{18mm}
+
+\fancypagestyle{lscapedlee}{%
+  \fancyhf{}
+  \fancyfoot{%
+    \tikz[remember picture,overlay]
+      \node[outer sep=\leelscapepagenumber,above,rotate=90] at (current page.east) {\thepage};}
+\renewcommand{\headrulewidth}{0pt} 
+\renewcommand{\footrulewidth}{0pt}
+}
+
 \include{abbrev}
                       
 \urlstyle{same}
