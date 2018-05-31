@@ -34,76 +34,95 @@
 
 module mrc_cntl (  
 
-            //----------------------------------------------------------------------------------------------------
-            // From WU Decoder
-            // - receiver MR descriptorss
-            //
-            input   wire                                           wud__mrc__valid                                 ,  // send MR descriptors
-            output  reg                                            mrc__wud__ready                                 ,
-            input   wire  [`COMMON_STD_INTF_CNTL_RANGE    ]        wud__mrc__cntl                                  ,  // descriptor delineator
-            input   wire  [`MGR_WU_OPT_TYPE_RANGE         ]        wud__mrc__option_type   [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
-            input   wire  [`MGR_WU_OPT_VALUE_RANGE        ]        wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ] ,  
-            input   wire  [`MGR_STD_OOB_TAG_RANGE         ]        wud__mrc__tag                                   ,  // mmc needs to service tag requests before tag+1
-            
-            //----------------------------------------------------------------------------------------------------
-            // to NoC (via mcntl)
-            //
-            output  reg   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]      mrc__mcntl__lane_valid                                       ,
-            output  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mcntl__lane_cntl     [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ],
-            input   wire  [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]      mcntl__mrc__lane_ready                                       ,
-            output  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]      mrc__mcntl__lane_data     [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ],
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // From WU Decoder                                                                                                                                                   
+            // - receiver MR descriptorss                                                                                                                                        
+            //                                                                                                                                                                   
+            input   wire                                                                                    wud__mrc__valid                                                       ,  // send MR descriptors
+            output  reg                                                                                     mrc__wud__ready                                                       ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]                                 wud__mrc__cntl                                                        ,  // descriptor delineator
+            input   wire  [`MGR_WU_OPT_TYPE_RANGE                         ]                                 wud__mrc__option_type           [`MGR_WU_OPT_PER_INST_RANGE             ]   ,  // WU Instruction option fields
+            input   wire  [`MGR_WU_OPT_VALUE_RANGE                        ]                                 wud__mrc__option_value          [`MGR_WU_OPT_PER_INST_RANGE             ]   ,  
+            input   wire  [`MGR_STD_OOB_TAG_RANGE                         ]                                 wud__mrc__tag                                                         ,  // mmc needs to service tag requests before tag+1
+                                                                                                                                                                                  
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // to NoC (via mcntl)                                                                                                                                                 
+            //                                                                                                                                                                    
+            output  reg   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE               ]                                 mrc__mcntl__lane_valid                                                ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]                                 mrc__mcntl__lane_cntl           [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]   ,
+            input   wire  [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE               ]                                 mcntl__mrc__lane_ready                                                ,
+            output  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE               ]                                 mrc__mcntl__lane_data           [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]   ,
+                                                                                                                                                                                 
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // Stack Bus - Downstream arguments                                                                                                                                  
+            //                                                                                                                                                                   
+            output  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE                   ]                                 mrc__std__lane_valid                                                  ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]                                 mrc__std__lane_cntl             [`MGR_NUM_OF_EXEC_LANES_RANGE     ]   ,
+            input   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE                   ]                                 std__mrc__lane_ready                                                  ,
+            output  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE               ]                                 mrc__std__lane_data             [`MGR_NUM_OF_EXEC_LANES_RANGE     ]   ,
+                                                                                                                                                                                 
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // Main Memory Controller interface                                                                                                                                  
+            // - response must be in order                                                                                                                                       
+            //                                                                                                                                                                   
+            output  reg                                                                                     mrc__mmc__valid                                                       ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]                                 mrc__mmc__cntl                                                        ,
+            input   wire                                                                                    mmc__mrc__ready                                                       ,
+            output  reg   [`MGR_STD_OOB_TAG_RANGE                         ]                                 mrc__mmc__tag                                                         ,  // mmc needs to service tag requests before tag+1
+            output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE                ]                                 mrc__mmc__channel                                                     ,
+            output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE                   ]                                 mrc__mmc__bank                                                        ,
+            output  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE                   ]                                 mrc__mmc__page                                                        ,
+            output  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE                   ]                                 mrc__mmc__word                                                        ,
+                                                                                                                                                                                  
+            // MMC provides data from each DRAM channel                                                                                                                           
+            input   wire                                                                                    mmc__mrc__valid                 [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE           ]   ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]                                 mmc__mrc__cntl                  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE           ]   ,
+            output  reg                                                                                     mrc__mmc__ready                 [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE           ]   ,
+            input   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE           ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__mrc__data                  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE           ]   ,
 
-            //----------------------------------------------------------------------------------------------------
-            // Stack Bus - Downstream arguments
-            //
-            output  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE     ]      mrc__std__lane_valid                                   ,
-            output  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__std__lane_cntl     [`MGR_NUM_OF_EXEC_LANES_RANGE ],
-            input   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE     ]      std__mrc__lane_ready                                   ,
-            output  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]      mrc__std__lane_data     [`MGR_NUM_OF_EXEC_LANES_RANGE ],
-
-            //----------------------------------------------------------------------------------------------------
-            // Main Memory Controller interface
-            // - response must be in order
-            //
-            output  reg                                            mrc__mmc__valid                                   ,
-            output  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl                                    ,
-            output  reg   [`MGR_STD_OOB_TAG_RANGE           ]      mrc__mmc__tag                                     ,  // mmc needs to service tag requests before tag+1
-            input   wire                                           mmc__mrc__ready                                   ,
-            output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      mrc__mmc__channel                                 ,
-            output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      mrc__mmc__bank                                    ,
-            output  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      mrc__mmc__page                                    ,
-            output  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      mrc__mmc__word                                    ,
-                                                                                                                    
-            // MMC provides data from each DRAM channel
-            input   wire                                                                          mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] ,
-            output  reg                                                                           mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] ,
-
-            //----------------------------------------------------------------------------------------------------
-            //----------------------------------------------------------------------------------------------------
-            // Config/Status
-            
-            //-------------------------------------------------------------------------------------------------
-            // Storage descriptor download
-
-            input   wire                                                       mcntl__sdp__enable_sdmem_dnld   ,
-            input   wire                                                       mcntl__sdp__sdmem_valid         ,
-            input   wire  [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__sdp__sdmem_address       ,
-            output  wire                                                       sdp__mcntl__sdmem_ready         ,
-
-            // Storage descriptor memory contents
-            input   wire  [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__sdp__sdmem_addr          ,
-            input   wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__sdp__sdmem_order         ,
-            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump      ,
-            
-            //----------------------------------------------------------------------------------------------------
-            // General
-            //
-            input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
-
-            input  wire                           clk             ,
-            input  wire                           reset_poweron  
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // Config/Status                                                                                                                                                     
+                                                                                                                                                                                 
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // Storage descriptor download                                                                                                                                       
+                                                                                                                                                                                 
+            input   wire                                                                                     mcntl__sdp__enable_sdmem_dnld                                        ,
+                                                                                                                                                                                 
+            input   wire                                                                                     mcntl__sdp__sdmem_valid                                              ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]                                  mcntl__sdp__sdmem_cntl                                               ,
+            output  wire                                                                                     sdp__mcntl__sdmem_ready                                              ,
+                                                                                                                                                                                 
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE          ]                                  mcntl__sdp__sdmem_address                                            ,
+                                                                                                                                                                                 
+            // Storage descriptor memory contents                                                                                                                                
+            input   wire  [`MGR_DRAM_ADDRESS_RANGE                        ]                                  mcntl__sdp__sdmem_addr                                               ,
+            input   wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]                                  mcntl__sdp__sdmem_order                                              ,
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]                                  mcntl__sdp__sdmem_consJump_ptr                                       ,
+                                                                                                                                                                                 
+                                                                                                                                                                                 
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // Cons/jump download                                                                                                                                                
+            //                                                                                                                                                                   
+            input   wire                                                                                     mcntl__sdp__enable_cjmem_dnld                                        ,
+                                                                                                                                                                                 
+            input   wire                                                                                     mcntl__sdp__cjmem_valid                                              ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]                                  mcntl__sdp__cjmem_cntl                                               ,
+            output  reg                                                                                      sdp__mcntl__cjmem_ready                                              ,
+                                                                                                                                                                                 
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]                                  mcntl__sdp__cjmem_address                                            ,
+                                                                                                                                                                                 
+            // Cons/jump memory contents                                                                                                                                         
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]                                  mcntl__sdp__cjmem_consJump_cntl                                      ,
+            input   wire  [`MGR_INST_CONS_JUMP_FIELD_RANGE                ]                                  mcntl__sdp__cjmem_consJump_val                                       ,
+                                                                                                                                                  
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // General                                                                                                                            
+            //                                                                                                                                    
+            input  wire   [`MGR_MGR_ID_RANGE                              ]                                  sys__mgr__mgrId                                                      ,
+                                                                                                                                                                                  
+            input  wire                                                                                      clk                                                                  ,
+            input  wire                                                                                      reset_poweron                                                       
                         );
 
   //----------------------------------------------------------------------------------------------------
@@ -114,37 +133,37 @@ module mrc_cntl (
   //-------------------------------
   // DMA to mcntl
   //
-  reg   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]   mcntl__mrc__lane_ready_d1                                    ;
-  reg   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]   mrc__mcntl__lane_valid_e1                                    ;
-  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__mcntl__lane_cntl_e1  [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ];
-  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__mcntl__lane_data_e1  [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ];
+  reg   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]   mcntl__mrc__lane_ready_d1                                     ;
+  reg   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]   mrc__mcntl__lane_valid_e1                                     ;
+  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__mcntl__lane_cntl_e1  [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ] ;
+  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__mcntl__lane_data_e1  [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ] ;
 
   //-------------------------------
   // Stack Bus - Downstream arguments
   //
-  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE     ]   std__mrc__lane_ready_d1                                 ;
-  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__std__lane_cntl_e1   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
-  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__std__lane_data_e1   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
-  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE     ]   mrc__std__lane_valid_e1                                 ;
+  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE     ]   std__mrc__lane_ready_d1                                  ;
+  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__std__lane_cntl_e1   [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
+  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__std__lane_data_e1   [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
+  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE     ]   mrc__std__lane_valid_e1                                  ;
 
   //--------------------------------------------------
   // Memory Read Controller(s)
   
-  reg                                         wud__mrc__valid_d1             ;
-  reg                                         mrc__wud__ready_e1             ;
-  reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc__cntl_d1              ;  
-  reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__mrc__tag_d1               ;  // mmc needs to service tag requests before tag+1
-  reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc__option_type_d1    [`MGR_WU_OPT_PER_INST ] ;
-  reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc__option_value_d1   [`MGR_WU_OPT_PER_INST ] ;
+  reg                                         wud__mrc__valid_d1                                  ;
+  reg                                         mrc__wud__ready_e1                                  ;
+  reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc__cntl_d1                                   ;  
+  reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__mrc__tag_d1                                    ;  // mmc needs to service tag requests before tag+1
+  reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc__option_type_d1    [`MGR_WU_OPT_PER_INST_RANGE ] ;
+  reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc__option_value_d1   [`MGR_WU_OPT_PER_INST_RANGE ] ;
 
 
   //--------------------------------------------------
   // from Main Memory Controller
   
-  reg                                         mmc__mrc__valid_d1   [`MGR_DRAM_NUM_CHANNELS ]                                 ;
-  reg  [`COMMON_STD_INTF_CNTL_RANGE      ]    mmc__mrc__cntl_d1    [`MGR_DRAM_NUM_CHANNELS ]                                 ;
-  wire                                        mrc__mmc__ready_e1   [`MGR_DRAM_NUM_CHANNELS ]                                 ;
-  reg  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__mrc__data_d1  [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg                                                                            mmc__mrc__valid_d1   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]  ;
+  reg  [`COMMON_STD_INTF_CNTL_RANGE          ]                                   mmc__mrc__cntl_d1    [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]  ;
+  wire                                                                           mrc__mmc__ready_e1   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]  ;
+  reg  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__mrc__data_d1    [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]  ;
 
   //--------------------------------------------------
   // to Main Memory Controller
@@ -673,36 +692,53 @@ module mrc_cntl (
            //-------------------------------
            // from MMC fifo Control
            //
-            .sdp__xxx__get_next_line                     ( sdp__xxx__get_next_line           ),
-            .sdp__xxx__lane_enable                       ( sdp__xxx__lane_enable             ),
-            .sdp__xxx__lane_valid                        ( sdp__xxx__lane_valid              ),
-            .sdp__xxx__lane_cntl                         ( sdp__xxx__lane_cntl               ),
-            .sdp__xxx__lane_channel_ptr                  ( sdp__xxx__lane_channel_ptr        ),
-            .sdp__xxx__lane_word_ptr                     ( sdp__xxx__lane_word_ptr           ),
-            .sdp__xxx__lane_target                       ( sdp__xxx__lane_target             ),
-            //.xxx__sdp__lane_ready                      ( std__mrc__lane_ready_d1           ),
-            .xxx__sdp__lane_ready                        ( xxx__sdp__lane_ready              ),
-                                                                                                                    
-            //-------------------------------
-            // Config/Status
-            //-------------------------------
-            // storage descriptor memory download
-            //
-            .mcntl__sdp__enable_sdmem_dnld               ( mcntl__sdp__enable_sdmem_dnld     ),
-            .mcntl__sdp__sdmem_valid                     ( mcntl__sdp__sdmem_valid           ),
-            .mcntl__sdp__sdmem_address                   ( mcntl__sdp__sdmem_address         ),
-            .sdp__mcntl__sdmem_ready                     ( sdp__mcntl__sdmem_ready           ),
-            .mcntl__sdp__sdmem_addr                      ( mcntl__sdp__sdmem_addr            ),
-            .mcntl__sdp__sdmem_order                     ( mcntl__sdp__sdmem_order           ),
-            .mcntl__sdp__sdmem_consJump                  ( mcntl__sdp__sdmem_consJump        ),
-                                                         
-            //-------------------------------           
-            // General
-            //
-            .sys__mgr__mgrId                             ( sys__mgr__mgrId                   ),
-            .clk                                         ( clk                               ),
-            .reset_poweron                               ( reset_poweron                     ) 
-            );
+           .sdp__xxx__get_next_line                     ( sdp__xxx__get_next_line           ),
+           .sdp__xxx__lane_enable                       ( sdp__xxx__lane_enable             ),
+           .sdp__xxx__lane_valid                        ( sdp__xxx__lane_valid              ),
+           .sdp__xxx__lane_cntl                         ( sdp__xxx__lane_cntl               ),
+           .sdp__xxx__lane_channel_ptr                  ( sdp__xxx__lane_channel_ptr        ),
+           .sdp__xxx__lane_word_ptr                     ( sdp__xxx__lane_word_ptr           ),
+           .sdp__xxx__lane_target                       ( sdp__xxx__lane_target             ),
+           //.xxx__sdp__lane_ready                      ( std__mrc__lane_ready_d1           ),
+           .xxx__sdp__lane_ready                        ( xxx__sdp__lane_ready              ),
+                                                                                                                   
+           //-------------------------------
+           // Config/Status
+           //
+           //-------------------------------
+           // storage descriptor memory download
+           //
+           .mcntl__sdp__enable_sdmem_dnld               ( mcntl__sdp__enable_sdmem_dnld     ),
+
+           .mcntl__sdp__sdmem_valid                     ( mcntl__sdp__sdmem_valid           ),
+           .mcntl__sdp__sdmem_cntl                      ( mcntl__sdp__sdmem_cntl            ),
+           .sdp__mcntl__sdmem_ready                     ( sdp__mcntl__sdmem_ready           ),
+
+           .mcntl__sdp__sdmem_address                   ( mcntl__sdp__sdmem_address         ),
+           .mcntl__sdp__sdmem_addr                      ( mcntl__sdp__sdmem_addr            ),
+           .mcntl__sdp__sdmem_order                     ( mcntl__sdp__sdmem_order           ),
+           .mcntl__sdp__sdmem_consJump_ptr              ( mcntl__sdp__sdmem_consJump_ptr    ),
+                                                        
+           //-------------------------------
+           // cons/jump memory download
+           //
+           .mcntl__sdp__enable_cjmem_dnld               ( mcntl__sdp__enable_cjmem_dnld     ),
+
+           .mcntl__sdp__cjmem_valid                     ( mcntl__sdp__cjmem_valid           ),
+           .mcntl__sdp__cjmem_cntl                      ( mcntl__sdp__cjmem_cntl            ),
+           .sdp__mcntl__cjmem_ready                     ( sdp__mcntl__cjmem_ready           ),
+
+           .mcntl__sdp__cjmem_address                   ( mcntl__sdp__cjmem_address         ),
+           .mcntl__sdp__cjmem_consJump_cntl             ( mcntl__sdp__cjmem_consJump_cntl   ),
+           .mcntl__sdp__cjmem_consJump_val              ( mcntl__sdp__cjmem_consJump_val    ),
+                                                        
+           //-------------------------------           
+           // General
+           //
+           .sys__mgr__mgrId                             ( sys__mgr__mgrId                   ),
+           .clk                                         ( clk                               ),
+           .reset_poweron                               ( reset_poweron                     ) 
+           );
 
 
 

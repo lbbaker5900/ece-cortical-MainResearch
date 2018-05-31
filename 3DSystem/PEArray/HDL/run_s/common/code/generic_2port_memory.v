@@ -78,6 +78,16 @@ module generic_2port_memory
   // Forces synthesis not to elaborate during first read
   // synopsys template
 
+  //--------------------------------------------------------
+  // Define whether the actual memory model is used
+ 
+  `ifdef TB_USES_ACTUAL_MEMORIES
+    `define GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
+  `endif
+  `ifdef SYNTHESIS
+    `define GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
+  `endif
+
   // 
   localparam GENERIC_MEM_ADDR_WIDTH       = $clog2(GENERIC_MEM_DEPTH) ;
   localparam GENERIC_NUM_OF_PORTS         = 2 ;  // for generic_memories.vh
@@ -98,13 +108,15 @@ module generic_2port_memory
   input   wire                                      portB_write       ; 
 
 
-  `ifndef SYNTHESIS
-    reg    [GENERIC_MEM_DATA_WIDTH-1 :0  ]    reg_portA_read_data ;
-    reg    [GENERIC_MEM_DATA_WIDTH-1 :0  ]    reg_portB_read_data ;
-  `else
+  `ifdef GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
     wire   [GENERIC_MEM_DATA_WIDTH-1 :0  ]    int_portA_read_data ;
     wire   [GENERIC_MEM_DATA_WIDTH-1 :0  ]    int_portB_read_data ;
+  `else
+    reg    [GENERIC_MEM_DATA_WIDTH-1 :0  ]    reg_portA_read_data ;
+    reg    [GENERIC_MEM_DATA_WIDTH-1 :0  ]    reg_portB_read_data ;
   `endif
+
+
 
   //--------------------------------------------------------
   // Regs/Wires
@@ -113,14 +125,15 @@ module generic_2port_memory
   wire portA_read = ~portA_write  ;
   wire portB_read = ~portB_write  ;
 
+  
+
+
   // FIXME: Include this section as a .vh file
-  `ifdef SYNTHESIS
+  `ifdef GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
     // this file has all memories selected using parameters
     `include "generic_memories.vh"
 
   `else
-    // reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [256-1 :0 ] ;
-    // Not synthesis
     if (GENERIC_MEM_DEPTH >= 256)
       begin:memblk
         reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [256-1 :0 ] ;
@@ -140,7 +153,7 @@ module generic_2port_memory
       end
   `endif
 
-  `ifndef SYNTHESIS
+  `ifndef GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
     //--------------------------------------------------------
     // Registered outputs ??
     //
@@ -171,13 +184,6 @@ module generic_2port_memory
           reg_portB_read_data   <= ( portB_enable_d1 ) ? memblk.mem [portB_address] : 
                                                          reg_portB_read_data ;
         end
-      /*
-      always @(*)
-        begin
-          reg_portA_read_data = mem [portA_address] ;
-          reg_portB_read_data = mem [portB_address] ;
-        end
-      */
      end
 
     always @(posedge clk)
@@ -189,7 +195,7 @@ module generic_2port_memory
       end
   `endif
 
-  `ifndef SYNTHESIS
+  `ifndef GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
     assign portA_read_data = reg_portA_read_data  ;
     assign portB_read_data = reg_portB_read_data  ;
   `else

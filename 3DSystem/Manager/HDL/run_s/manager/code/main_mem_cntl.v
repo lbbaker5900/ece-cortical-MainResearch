@@ -43,10 +43,10 @@ module main_mem_cntl (
             // Read Data Interface(s)
             // MMC provides data from each DRAM channel          
             // - response must be in order of request            
-            output  reg   [`MMC_CNTL_NUM_OF_READ_INTF_VEC_RANGE  ]                                 mmc__xxx__valid   [`MGR_DRAM_NUM_CHANNELS    ]                               ,
-            output  reg   [`COMMON_STD_INTF_CNTL_RANGE           ]                                 mmc__xxx__cntl    [`MGR_DRAM_NUM_CHANNELS    ] [`MMC_CNTL_NUM_OF_READ_INTF ] ,
-            input   wire  [`MMC_CNTL_NUM_OF_READ_INTF_VEC_RANGE  ]                                 xxx__mmc__ready   [`MGR_DRAM_NUM_CHANNELS    ]                               ,
-            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__xxx__data    [`MGR_DRAM_NUM_CHANNELS    ] [`MMC_CNTL_NUM_OF_READ_INTF ] ,
+            output  reg   [`MMC_CNTL_NUM_OF_READ_INTF_VEC_RANGE  ]                                 mmc__xxx__valid   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE    ]                               ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE           ]                                 mmc__xxx__cntl    [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE    ] [`MMC_CNTL_NUM_OF_READ_INTF ] ,
+            input   wire  [`MMC_CNTL_NUM_OF_READ_INTF_VEC_RANGE  ]                                 xxx__mmc__ready   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE    ]                               ,
+            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__xxx__data    [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE    ] [`MMC_CNTL_NUM_OF_READ_INTF ] ,
 
             //----------------------------------------------------------------------- 
             // Write Data Interface(s)

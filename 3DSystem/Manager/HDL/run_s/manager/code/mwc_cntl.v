@@ -83,14 +83,31 @@ module mwc_cntl (
             // Storage descriptor download
 
             input   wire                                                       mcntl__mwc__enable_sdmem_dnld   ,
+
             input   wire                                                       mcntl__mwc__sdmem_valid         ,
-            input   wire  [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__mwc__sdmem_address       ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__mwc__sdmem_cntl          ,
             output  reg                                                        mwc__mcntl__sdmem_ready         ,
+
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE          ]    mcntl__mwc__sdmem_address       ,
 
             // Storage descriptor memory contents
             input   wire  [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__mwc__sdmem_addr          ,
             input   wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__mwc__sdmem_order         ,
-            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__mwc__sdmem_consJump      ,
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__mwc__sdmem_consJump_ptr  ,
+            
+
+            input   wire                                                       mcntl__mwc__enable_cjmem_dnld   ,
+
+            input   wire                                                       mcntl__mwc__cjmem_valid         ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__mwc__cjmem_cntl          ,
+            output  reg                                                        mwc__mcntl__cjmem_ready         ,
+
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__mwc__cjmem_address       ,
+
+            // Cons/jump memory contents
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__mwc__cjmem_consJump_cntl ,
+            input   wire  [`MGR_INST_CONS_JUMP_FIELD_RANGE                ]    mcntl__mwc__cjmem_consJump_val  ,
+
             
             //-------------------------------------------------------------------------------------------------
             // General
@@ -111,13 +128,29 @@ module mwc_cntl (
   // Storage descriptor download
  
   reg                                                        mcntl__mwc__enable_sdmem_dnld_d1   ;
+
   reg                                                        mcntl__mwc__sdmem_valid_d1         ;
-  reg   [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__mwc__sdmem_address_d1       ;
+  reg                                                        mcntl__mwc__sdmem_cntl_d1          ;
   reg                                                        mwc__mcntl__sdmem_ready_e1         ;
+
+  reg   [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE          ]    mcntl__mwc__sdmem_address_d1       ;
   // Storage descriptor memory contents
   reg   [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__mwc__sdmem_addr_d1          ;
   reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__mwc__sdmem_order_d1         ;
-  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__mwc__sdmem_consJump_d1      ;
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__mwc__sdmem_consJump_ptr_d1  ;
+            
+
+  reg                                                        mcntl__mwc__enable_cjmem_dnld_d1   ;
+
+  reg                                                        mcntl__mwc__cjmem_valid_d1         ;
+  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__mwc__cjmem_cntl_d1          ;
+  reg                                                        mwc__mcntl__cjmem_ready_e1         ;
+
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__mwc__cjmem_address_d1       ;
+  // Storage descriptor memory contents
+  reg   [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__mwc__cjmem_addr_d1          ;
+  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__mwc__cjmem_order_d1         ;
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__mwc__cjmem_consJump_val_d1  ;
             
 
   //-------------------------------------------------------------------------------------------------
@@ -176,13 +209,14 @@ module mwc_cntl (
       begin
         mcntl__mwc__enable_sdmem_dnld_d1   <=  (reset_poweron) ? 1'b0 : mcntl__mwc__enable_sdmem_dnld     ;
         mcntl__mwc__sdmem_valid_d1         <=  (reset_poweron) ? 1'b0 : mcntl__mwc__sdmem_valid           ;
+        mcntl__mwc__sdmem_cntl_d1          <=                           mcntl__mwc__sdmem_cntl            ;
                                                                                                        
         mwc__mcntl__sdmem_ready            <=                           mwc__mcntl__sdmem_ready_e1        ;
                                                                                                        
         mcntl__mwc__sdmem_address_d1       <=                           mcntl__mwc__sdmem_address         ;
         mcntl__mwc__sdmem_addr_d1          <=                           mcntl__mwc__sdmem_addr            ;
         mcntl__mwc__sdmem_order_d1         <=                           mcntl__mwc__sdmem_order           ;
-        mcntl__mwc__sdmem_consJump_d1      <=                           mcntl__mwc__sdmem_consJump        ;
+        mcntl__mwc__sdmem_consJump_ptr_d1  <=                           mcntl__mwc__sdmem_consJump_ptr    ;
       end
 
   //--------------------------------------------------
@@ -950,7 +984,7 @@ module mwc_cntl (
   wire   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address               ;
   wire   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder           ; // FIXME : change instruction gen
   reg    [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder_latched   ; // FIXME : change instruction gen
-  wire   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   ;
+  wire   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr           ;
 
   genvar gvi ;
   generate

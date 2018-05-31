@@ -139,13 +139,26 @@ module manager (
   wire                                  mcntl__wud__release     ;
   wire                                  wud__mcntl__stalled     ;
 
-  wire                                                       mcntl__xxx__enable_sdmem_dnld   ;
+
+  wire  [`MGR_CNTL_STORAGE_DESC_USERS_RANGE             ]    mcntl__xxx__enable_sdmem_dnld   ;
   wire                                                       mcntl__xxx__sdmem_valid         ;
-  wire  [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__xxx__sdmem_address       ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__xxx__sdmem_cntl          ;  // interface delineator
   wire  [`MGR_CNTL_STORAGE_DESC_USERS_RANGE             ]    xxx__mcntl__sdmem_ready         ;
+
+  wire  [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE          ]    mcntl__xxx__sdmem_address       ;
   wire  [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__xxx__sdmem_addr          ;
   wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__xxx__sdmem_order         ;
-  wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__xxx__sdmem_consJump      ;
+  wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__xxx__sdmem_consJump_ptr  ;
+
+
+  wire  [`MGR_CNTL_STORAGE_DESC_USERS_RANGE             ]    mcntl__xxx__enable_cjmem_dnld   ;
+  wire                                                       mcntl__xxx__cjmem_valid         ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__xxx__cjmem_cntl          ;  // interface delineator
+  wire  [`MGR_CNTL_STORAGE_DESC_USERS_RANGE             ]    xxx__mcntl__cjmem_ready         ;
+
+  wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__xxx__cjmem_address       ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__xxx__cjmem_consJump_cntl ;
+  wire  [`MGR_INST_CONS_JUMP_FIELD_RANGE                ]    mcntl__xxx__cjmem_consJump_val  ;
 
   //-------------------------------------------------------------------------------------------------
   // NoC
@@ -253,8 +266,10 @@ module manager (
   // Instruction download from mcntl
   wire                                       mcntl__wum__enable_inst_dnld                             ;
   wire                                       mcntl__wum__valid                                        ;
-  wire  [`MGR_WU_ADDRESS_RANGE          ]    mcntl__wum__address                                      ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__cntl                                         ;
   wire                                       wum__mcntl__ready                                        ;
+
+  wire  [`MGR_WU_ADDRESS_RANGE          ]    mcntl__wum__address                                      ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__icntl                                        ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__dcntl                                        ;
   wire  [`MGR_INST_TYPE_RANGE           ]    mcntl__wum__op                                           ;
@@ -280,10 +295,13 @@ module manager (
             // - instruction download
             .mcntl__wum__enable_inst_dnld  ( mcntl__wum__enable_inst_dnld  ),
             .mcntl__wum__valid             ( mcntl__wum__valid             ),
-            .mcntl__wum__address           ( mcntl__wum__address           ),
+            .mcntl__wum__cntl              ( mcntl__wum__cntl              ),  // interface delineator
             .wum__mcntl__ready             ( wum__mcntl__ready             ),
-            .mcntl__wum__icntl             ( mcntl__wum__icntl             ),
-            .mcntl__wum__dcntl             ( mcntl__wum__dcntl             ),
+            
+            .mcntl__wum__address           ( mcntl__wum__address           ),  // IM address
+                                                                               // instruction contents
+            .mcntl__wum__icntl             ( mcntl__wum__icntl             ),  // IM instruction delineator
+            .mcntl__wum__dcntl             ( mcntl__wum__dcntl             ),  // IM descriptor delineator
             .mcntl__wum__op                ( mcntl__wum__op                ),
             .mcntl__wum__option_type       ( mcntl__wum__option_type       ),
             .mcntl__wum__option_value      ( mcntl__wum__option_value      ),
@@ -324,8 +342,8 @@ module manager (
   wire                                          mcntl__wud__ready         ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__mcntl__dcntl         ; 
   wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__mcntl__tag           ;
-  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mcntl__option_type    [`MGR_WU_OPT_PER_INST ] ;
-  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mcntl__option_value   [`MGR_WU_OPT_PER_INST ] ;
+  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mcntl__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ;
+  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mcntl__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ;
 
   wire                                          wud__odc__valid         ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
@@ -338,15 +356,15 @@ module manager (
   wire                                          wud__mrc0__valid         ;
   wire                                          mrc0__wud__ready         ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__mrc0__cntl          ; 
-  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mrc0__option_type    [`MGR_WU_OPT_PER_INST ] ;
-  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mrc0__option_value   [`MGR_WU_OPT_PER_INST ] ;
+  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mrc0__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ;
+  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mrc0__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ;
   wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__mrc0__tag           ;
 
   wire                                          wud__mrc1__valid         ;
   wire                                          mrc1__wud__ready         ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__mrc1__cntl          ; 
-  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mrc1__option_type    [`MGR_WU_OPT_PER_INST ] ;
-  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mrc1__option_value   [`MGR_WU_OPT_PER_INST ] ;
+  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mrc1__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ;
+  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mrc1__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ;
   wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__mrc1__tag           ;
 
   wire                                          wud__rdp__valid         ;
@@ -505,8 +523,8 @@ module manager (
         wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   wud__mrc__cntl                                       ;  // descriptor delineator
         wire  [`MGR_STD_OOB_TAG_RANGE           ]   wud__mrc__tag                                        ;  // mmc needs to service tag requests before tag+1
         wire                                        mrc__wud__ready                                      ;
-        wire  [`MGR_WU_OPT_TYPE_RANGE           ]   wud__mrc__option_type   [`MGR_WU_OPT_PER_INST ]      ;  // WU Instruction option fields
-        wire  [`MGR_WU_OPT_VALUE_RANGE          ]   wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ]      ;  
+        wire  [`MGR_WU_OPT_TYPE_RANGE           ]   wud__mrc__option_type   [`MGR_WU_OPT_PER_INST_RANGE ];  // WU Instruction option fields
+        wire  [`MGR_WU_OPT_VALUE_RANGE          ]   wud__mrc__option_value  [`MGR_WU_OPT_PER_INST_RANGE ];  
 
         //----------------------------------------------------------------------------------------------------
         // Main memory Controller
@@ -570,15 +588,28 @@ module manager (
                 .mmc__mrc__data          ( mmc__mrc__data          ),                         
 
                 //-------------------------------
-                // storage descriptor memory download
+                // storage descriptor and cons/jump memory download
                 //
-                .mcntl__sdp__enable_sdmem_dnld  ( mcntl__xxx__enable_sdmem_dnld     ),
-                .mcntl__sdp__sdmem_valid        ( mcntl__xxx__sdmem_valid           ),
-                .mcntl__sdp__sdmem_address      ( mcntl__xxx__sdmem_address         ),
-                .sdp__mcntl__sdmem_ready        ( xxx__mcntl__sdmem_ready     [gvi] ),
-                .mcntl__sdp__sdmem_addr         ( mcntl__xxx__sdmem_addr            ),
-                .mcntl__sdp__sdmem_order        ( mcntl__xxx__sdmem_order           ),
-                .mcntl__sdp__sdmem_consJump     ( mcntl__xxx__sdmem_consJump        ),
+                .mcntl__sdp__enable_sdmem_dnld    ( mcntl__xxx__enable_sdmem_dnld [gvi] ),  // MRC0 is sdmem user 0, MRC1 is user 1 (see macro MGR_CNTL_STORAGE_DESC_USERS_MRC0 and MRC1)
+                                                  
+                .mcntl__sdp__sdmem_valid          ( mcntl__xxx__sdmem_valid             ),
+                .mcntl__sdp__sdmem_cntl           ( mcntl__xxx__sdmem_cntl              ),
+                .sdp__mcntl__sdmem_ready          ( xxx__mcntl__sdmem_ready       [gvi] ),  // MRC0 is sdmem user 0, MRC1 is user 1 (see macro MGR_CNTL_STORAGE_DESC_USERS_MRC0 and MRC1)
+                                                  
+                .mcntl__sdp__sdmem_address        ( mcntl__xxx__sdmem_address           ),
+                .mcntl__sdp__sdmem_addr           ( mcntl__xxx__sdmem_addr              ),
+                .mcntl__sdp__sdmem_order          ( mcntl__xxx__sdmem_order             ),
+                .mcntl__sdp__sdmem_consJump_ptr   ( mcntl__xxx__sdmem_consJump_ptr      ),
+                                                  
+                .mcntl__sdp__enable_cjmem_dnld    ( mcntl__xxx__enable_cjmem_dnld [gvi] ),  // MRC0 is cjmem user 0, MRC1 is user 1 (see macro MGR_CNTL_STORAGE_DESC_USERS_MRC0 and MRC1)
+                                                  
+                .mcntl__sdp__cjmem_valid          ( mcntl__xxx__cjmem_valid             ),
+                .mcntl__sdp__cjmem_cntl           ( mcntl__xxx__cjmem_cntl              ),
+                .sdp__mcntl__cjmem_ready          ( xxx__mcntl__cjmem_ready       [gvi] ),  // MRC0 is cjmem user 0, MRC1 is user 1 (see macro MGR_CNTL_STORAGE_DESC_USERS_MRC0 and MRC1)
+                                                  
+                .mcntl__sdp__cjmem_address        ( mcntl__xxx__cjmem_address           ),
+                .mcntl__sdp__cjmem_consJump_cntl  ( mcntl__xxx__cjmem_consJump_cntl     ),
+                .mcntl__sdp__cjmem_consJump_val   ( mcntl__xxx__cjmem_consJump_val      ),
 
                 //-------------------------------
                 // General
@@ -1039,15 +1070,28 @@ module manager (
             .mmc__mwc__data_ready    ( mmc__xxx__data_ready   [0]  ),                         
                                                                                            
             //-------------------------------
-            // storage descriptor memory download
+            // storage descriptor and cons/jump memory download
             //
-            .mcntl__mwc__enable_sdmem_dnld  ( mcntl__xxx__enable_sdmem_dnld     ),
-            .mcntl__mwc__sdmem_valid        ( mcntl__xxx__sdmem_valid           ),
-            .mcntl__mwc__sdmem_address      ( mcntl__xxx__sdmem_address         ),
-            .mwc__mcntl__sdmem_ready        ( xxx__mcntl__sdmem_ready       [2] ),
-            .mcntl__mwc__sdmem_addr         ( mcntl__xxx__sdmem_addr            ),
-            .mcntl__mwc__sdmem_order        ( mcntl__xxx__sdmem_order           ),
-            .mcntl__mwc__sdmem_consJump     ( mcntl__xxx__sdmem_consJump        ),
+            .mcntl__mwc__enable_sdmem_dnld    ( mcntl__xxx__enable_sdmem_dnld [`MGR_CNTL_STORAGE_DESC_USERS_MWC ] ),
+                                              
+            .mcntl__mwc__sdmem_valid          ( mcntl__xxx__sdmem_valid                                           ),
+            .mcntl__mwc__sdmem_cntl           ( mcntl__xxx__sdmem_cntl                                            ),
+            .mwc__mcntl__sdmem_ready          ( xxx__mcntl__sdmem_ready       [`MGR_CNTL_STORAGE_DESC_USERS_MWC ] ),
+                                              
+            .mcntl__mwc__sdmem_address        ( mcntl__xxx__sdmem_address                                         ),
+            .mcntl__mwc__sdmem_addr           ( mcntl__xxx__sdmem_addr                                            ),
+            .mcntl__mwc__sdmem_order          ( mcntl__xxx__sdmem_order                                           ),
+            .mcntl__mwc__sdmem_consJump_ptr   ( mcntl__xxx__sdmem_consJump_ptr                                    ),
+                                              
+            .mcntl__mwc__enable_cjmem_dnld    ( mcntl__xxx__enable_cjmem_dnld [`MGR_CNTL_STORAGE_DESC_USERS_MWC ] ),
+                                              
+            .mcntl__mwc__cjmem_valid          ( mcntl__xxx__cjmem_valid                                           ),
+            .mcntl__mwc__cjmem_cntl           ( mcntl__xxx__cjmem_cntl                                            ),
+            .mwc__mcntl__cjmem_ready          ( xxx__mcntl__cjmem_ready       [`MGR_CNTL_STORAGE_DESC_USERS_MWC ] ),
+                                              
+            .mcntl__mwc__cjmem_address        ( mcntl__xxx__cjmem_address                                         ),
+            .mcntl__mwc__cjmem_consJump_cntl  ( mcntl__xxx__cjmem_consJump_cntl                                   ),
+            .mcntl__mwc__cjmem_consJump_val   ( mcntl__xxx__cjmem_consJump_val                                    ),
 
             //-------------------------------                      
             // General                                             
@@ -1072,8 +1116,9 @@ module manager (
             // - instruction download
             .mcntl__wum__enable_inst_dnld   ( mcntl__wum__enable_inst_dnld  ),
             .mcntl__wum__valid              ( mcntl__wum__valid             ),
-            .mcntl__wum__address            ( mcntl__wum__address           ),
+            .mcntl__wum__cntl               ( mcntl__wum__cntl              ),
             .wum__mcntl__ready              ( wum__mcntl__ready             ),
+            .mcntl__wum__address            ( mcntl__wum__address           ),
             .mcntl__wum__icntl              ( mcntl__wum__icntl             ),
             .mcntl__wum__dcntl              ( mcntl__wum__dcntl             ),
             .mcntl__wum__op                 ( mcntl__wum__op                ),
@@ -1084,11 +1129,22 @@ module manager (
             // - storage descriptor memory download
             .mcntl__xxx__enable_sdmem_dnld  ( mcntl__xxx__enable_sdmem_dnld     ),
             .mcntl__xxx__sdmem_valid        ( mcntl__xxx__sdmem_valid           ),
-            .mcntl__xxx__sdmem_address      ( mcntl__xxx__sdmem_address         ),
+            .mcntl__xxx__sdmem_cntl         ( mcntl__xxx__sdmem_cntl            ),
             .xxx__mcntl__sdmem_ready        ( xxx__mcntl__sdmem_ready           ),
+            .mcntl__xxx__sdmem_address      ( mcntl__xxx__sdmem_address         ),
             .mcntl__xxx__sdmem_addr         ( mcntl__xxx__sdmem_addr            ),
             .mcntl__xxx__sdmem_order        ( mcntl__xxx__sdmem_order           ),
-            .mcntl__xxx__sdmem_consJump     ( mcntl__xxx__sdmem_consJump        ),
+            .mcntl__xxx__sdmem_consJump_ptr ( mcntl__xxx__sdmem_consJump_ptr    ),
+
+            //--------------s----------------
+            // - cons/jump memory download
+            .mcntl__xxx__enable_cjmem_dnld    ( mcntl__xxx__enable_cjmem_dnld     ),
+            .mcntl__xxx__cjmem_valid          ( mcntl__xxx__cjmem_valid           ),
+            .mcntl__xxx__cjmem_cntl           ( mcntl__xxx__cjmem_cntl            ),
+            .xxx__mcntl__cjmem_ready          ( xxx__mcntl__cjmem_ready           ),
+            .mcntl__xxx__cjmem_address        ( mcntl__xxx__cjmem_address         ),
+            .mcntl__xxx__cjmem_consJump_cntl  ( mcntl__xxx__cjmem_consJump_cntl   ),
+            .mcntl__xxx__cjmem_consJump_val   ( mcntl__xxx__cjmem_consJump_val    ),
 
             //-------------------------------
             .mcntl__wuf__start_addr         ( mcntl__wuf__start_addr        ),  // first WU address

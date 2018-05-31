@@ -33,6 +33,10 @@
 `include "sdp_cntl.vh"
 
 
+// synopsys translate_off
+`include "/afs/eos.ncsu.edu/dist/synopsys2013/syn/dw/sim_ver/DW01_addsub.v"
+//synopsys translate_on
+
 module sdp_stream_cntl (  
 
             input   wire                                           xxx__sdp__storage_desc_processing_enable     ,
@@ -467,7 +471,7 @@ module sdp_stream_cntl (
   reg                                            all_lanes_complete                                          ;  // flag to tell all lanes to transition to wait. Also used to read addr fifo
   //--------------------------------------------------
   // State Transitions
-  // synopsys one_hot sdp_cntl_stream_cntl_state
+  // FIXMEsynopsys one_hot sdp_cntl_stream_cntl_state not sure needed as not
   //
   always @(*)
     begin
@@ -611,6 +615,15 @@ module sdp_stream_cntl (
         // We need to maintain a per lane pointer to control reading the response ID fifo
         reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE      ]     lane_inc_address             ;  // create a unique address for each lane as we may cross a channel/bank/page boundary
         reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE      ]     lane_inc_address_e1          ;  // create a unique address for each lane as we may cross a channel/bank/page boundary
+
+`ifdef SDP_CNTL_STRM_USES_DW_ADDER   
+        reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE      ]     lane_inc_address_e1_A        ;  // Added for DW adder
+        reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE      ]     lane_inc_address_e1_B        ;  // Added for DW adder
+        wire [`MGR_DRAM_LOCAL_ADDRESS_RANGE      ]     lane_inc_address_e1_SUM      ;  // Added for DW adder
+        //reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE    ]     lane_inc_address_e1_DW       ;
+        //reg                                          DW_ERROR                     ;
+`endif
+
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE     ]     lane_next_inc_cons_start_address ;  // pre-calculated next consequtive phase address
       
@@ -919,6 +932,26 @@ module sdp_stream_cntl (
          end
    
 
+  //-----------------------------------------------
+  // DesignWare Adder
+  //
+
+`ifdef SDP_CNTL_STRM_USES_DW_ADDER   
+
+  DW01_addsub  #(.width    (`MGR_DRAM_LOCAL_ADDRESS_WIDTH )
+                                )
+                 lane_inc_adder (
+                     .A         ( lane_inc_address_e1_A         ) ,
+                     .B         ( lane_inc_address_e1_B         ) ,
+                     .CI        ( 1'b0                          ) ,
+                     .ADD_SUB   ( 1'b0                          ) ,
+                     .SUM       ( lane_inc_address_e1_SUM       ) ,
+                     .CO        (                               ) );
+`endif
+
+
+`ifndef SDP_CNTL_STRM_USES_DW_ADDER   
+
        always @(posedge clk)
          begin
            case (sdp_cntl_stream_data_state)  // synopsys parallel_case full_case
@@ -1034,7 +1067,160 @@ module sdp_stream_cntl (
            endcase
    
          end
+
+`else
    
+       // Emulate lane_inc changes by updating A and B separately and then using the SUM output
+       //
+       // assign lane_inc to output of DW adder
+       always @(posedge clk)
+         begin
+           lane_inc_address_e1       <= lane_inc_address_e1_SUM ;
+           //lane_inc_address_e1_DW  <= lane_inc_address_e1_SUM ;
+           //DW_ERROR                <= lane_inc_address_e1_DW !=  lane_inc_address_e1;
+         end
+
+       // Update A and B inputs to DW adder
+       always @(*)
+         begin
+           case (sdp_cntl_stream_data_state)  // synopsys parallel_case full_case
+           
+             `SDP_CNTL_STRM_DATA_PTR_INIT :
+               begin
+                
+                 case (strm_transfer_type )  // synopsys parallel_case full_case
+                 
+                   PY_WU_INST_TXFER_TYPE_VECTOR:
+                     begin
+                       case (strm_accessOrder )  // synopsys parallel_case full_case
+                         PY_WU_INST_ORDER_TYPE_WCBP:
+                           begin
+                             lane_inc_address_e1_A         =  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
+                                                               addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_DIV2_FIELD_RANGE ], 
+                                                               addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE      ], 
+                                                               addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE      ],
+                                                               2'b00 } ;
+                             lane_inc_address_e1_B         =  {lane, 2'b00} ;
+                           end
+                         PY_WU_INST_ORDER_TYPE_CWBP:
+                           begin
+                             lane_inc_address_e1_A         =  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
+                                                               addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_DIV2_FIELD_RANGE ], 
+                                                               addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE      ],
+                                                               addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE      ], 
+                                                               2'b00 } ;
+                             lane_inc_address_e1_B         =  {lane, 2'b00} ;
+                           end
+                       endcase //(strm_accessOrder )
+                     end
+
+                   PY_WU_INST_TXFER_TYPE_BCAST :
+                     begin
+                       lane_inc_address_e1_A         =  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
+                                                         addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_DIV2_FIELD_RANGE ], 
+                                                         addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE      ],
+                                                         addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE      ], 
+                                                         2'b00 } ;
+                       lane_inc_address_e1_B         =  'd0 ;
+                     end
+                 endcase //(strm_transfer_type )
+   
+               end
+     
+             `SDP_CNTL_STRM_DATA_PTR_INC_INIT :
+               begin
+                 case (strm_transfer_type )  // synopsys parallel_case full_case
+                   PY_WU_INST_TXFER_TYPE_VECTOR:
+                     begin
+                       lane_inc_address_e1_A    =   lane_inc_address_e1 ;
+                       lane_inc_address_e1_B    =   {num_lanes, 2'b00}  ;
+                     end
+                   PY_WU_INST_TXFER_TYPE_BCAST :
+                     begin
+                       lane_inc_address_e1_A    =   lane_inc_address_e1 ;
+                       lane_inc_address_e1_B    =   'd4                 ;
+                     end
+                 endcase //(strm_transfer_type )
+               end
+
+      
+             `SDP_CNTL_STRM_DATA_COUNT_CONS:
+               begin
+                 case (strm_transfer_type )  // synopsys parallel_case full_case
+                   PY_WU_INST_TXFER_TYPE_VECTOR:
+                     begin
+                       lane_inc_address_e1_A    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1]) && consequtive_counter_eq1 ) ?  lane_next_inc_cons_start_address  :
+                                                    (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])                            ) ?  lane_inc_address_e1               :
+                                                                                                                                                                                                                  lane_inc_address_e1               ;
+
+                       lane_inc_address_e1_B    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1]) && consequtive_counter_eq1 ) ?  'd0                               :
+                                                    (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])                            ) ?  {num_lanes, 2'b00}                :
+                                                                                                                                                                                                                  'd0                               ;
+
+                     end
+                   PY_WU_INST_TXFER_TYPE_BCAST :
+                     begin
+                       lane_inc_address_e1_A    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1]) && consequtive_counter_eq1 ) ?  lane_next_inc_cons_start_address  :
+                                                    (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])                            ) ?  lane_inc_address_e1               :
+                                                                                                                                                                                                                  lane_inc_address_e1               ;
+
+                       lane_inc_address_e1_B    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1]) && consequtive_counter_eq1 ) ?  'd0                               :
+                                                    (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])                            ) ?  'd4                               :
+                                                                                                                                                                                                                  'd0                               ;
+                     end
+                 endcase //(strm_transfer_type )
+               end
+   
+             `SDP_CNTL_STRM_DATA_LOAD_JUMP_VALUE  :
+               begin
+                 case (strm_transfer_type )  // synopsys parallel_case full_case
+                   PY_WU_INST_TXFER_TYPE_VECTOR:
+                     begin
+                       lane_inc_address_e1_A    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  lane_inc_address_e1      :
+                                                                                                                                                                                      lane_inc_address_e1      ;
+
+                       lane_inc_address_e1_B    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  {num_lanes, 2'b00}       :
+                                                                                                                                                                                      'd0                      ;
+
+                     end
+                   PY_WU_INST_TXFER_TYPE_BCAST :
+                     begin
+                       lane_inc_address_e1_A    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  lane_inc_address_e1      :
+                                                                                                                                                                                      lane_inc_address_e1      ;
+
+                       lane_inc_address_e1_B    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  'd4                      :
+                                                                                                                                                                                      'd0                      ;
+                     end
+                 endcase //(strm_transfer_type )
+               end                            
+                                              
+             default:                         
+               begin                          
+                 case (strm_transfer_type )  // synopsys parallel_case full_case
+                   PY_WU_INST_TXFER_TYPE_VECTOR:
+                     begin
+                       lane_inc_address_e1_A    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  lane_inc_address_e1      :
+                                                                                                                                                                                      lane_inc_address_e1      ;
+
+                       lane_inc_address_e1_B    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  {num_lanes, 2'b00}       :
+                                                                                                                                                                                      'd0                      ;
+
+                     end
+                   PY_WU_INST_TXFER_TYPE_BCAST :
+                     begin
+                       lane_inc_address_e1_A    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  lane_inc_address_e1      :
+                                                                                                                                                                                      lane_inc_address_e1      ;
+
+                       lane_inc_address_e1_B    =   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  'd4                      :
+                                                                                                                                                                                      'd0                      ;
+                     end
+                 endcase //(strm_transfer_type )
+               end
+           endcase
+   
+         end
+`endif
+
        always @(*)
          begin
      

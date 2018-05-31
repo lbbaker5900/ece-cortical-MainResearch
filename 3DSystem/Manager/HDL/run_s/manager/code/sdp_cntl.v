@@ -87,15 +87,31 @@ module sdp_cntl (
             // Storage descriptor download
 
             input   wire                                                       mcntl__sdp__enable_sdmem_dnld   ,
+
             input   wire                                                       mcntl__sdp__sdmem_valid         ,
-            input   wire  [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__sdp__sdmem_address       ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__sdmem_cntl          ,
             output  wire                                                       sdp__mcntl__sdmem_ready         ,
+
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE          ]    mcntl__sdp__sdmem_address       ,
 
             // Storage descriptor memory contents
             input   wire  [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__sdp__sdmem_addr          ,
             input   wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__sdp__sdmem_order         ,
-            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump      ,
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump_ptr  ,
             
+
+            input   wire                                                       mcntl__sdp__enable_cjmem_dnld   ,
+
+            input   wire                                                       mcntl__sdp__cjmem_valid         ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__cjmem_cntl          ,
+            output  wire                                                       sdp__mcntl__cjmem_ready         ,
+
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__cjmem_address       ,
+
+            // Cons/jump memory contents
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__cjmem_consJump_cntl ,
+            input   wire  [`MGR_INST_CONS_JUMP_FIELD_RANGE                ]    mcntl__sdp__cjmem_consJump_val  ,
+
             //----------------------------------------------------------------------------------------------------
             // General
             //
@@ -207,13 +223,27 @@ module sdp_cntl (
             // storage descriptor memory download
             //
             .mcntl__sdp__enable_sdmem_dnld               ( mcntl__sdp__enable_sdmem_dnld     ),
+
             .mcntl__sdp__sdmem_valid                     ( mcntl__sdp__sdmem_valid           ),
-            .mcntl__sdp__sdmem_address                   ( mcntl__sdp__sdmem_address         ),
+            .mcntl__sdp__sdmem_cntl                      ( mcntl__sdp__sdmem_cntl            ),
             .sdp__mcntl__sdmem_ready                     ( sdp__mcntl__sdmem_ready           ),
+
+            .mcntl__sdp__sdmem_address                   ( mcntl__sdp__sdmem_address         ),
             .mcntl__sdp__sdmem_addr                      ( mcntl__sdp__sdmem_addr            ),
             .mcntl__sdp__sdmem_order                     ( mcntl__sdp__sdmem_order           ),
-            .mcntl__sdp__sdmem_consJump                  ( mcntl__sdp__sdmem_consJump        ),
+            .mcntl__sdp__sdmem_consJump_ptr              ( mcntl__sdp__sdmem_consJump_ptr    ),
                                                          
+            // cons/jump memory download
+            .mcntl__sdp__enable_cjmem_dnld               ( mcntl__sdp__enable_cjmem_dnld     ),
+                                                         
+            .mcntl__sdp__cjmem_valid                     ( mcntl__sdp__cjmem_valid           ),
+            .mcntl__sdp__cjmem_cntl                      ( mcntl__sdp__cjmem_cntl            ),
+            .sdp__mcntl__cjmem_ready                     ( sdp__mcntl__cjmem_ready           ),
+                                                         
+            .mcntl__sdp__cjmem_address                   ( mcntl__sdp__cjmem_address         ),
+            .mcntl__sdp__cjmem_consJump_cntl             ( mcntl__sdp__cjmem_consJump_cntl   ),
+            .mcntl__sdp__cjmem_consJump_val              ( mcntl__sdp__cjmem_consJump_val    ),
+
             //------------------------------
             // General
             //

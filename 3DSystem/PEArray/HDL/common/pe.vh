@@ -49,6 +49,7 @@
 //------------------------------------------------
 
 `define PE_NUM_OF_EXEC_LANES               32
+`define PE_NUM_OF_EXEC_LANES_WIDTH         (`PE_NUM_OF_EXEC_LANES)
 `define PE_NUM_OF_EXEC_LANES_MSB           (`PE_NUM_OF_EXEC_LANES -1)
 `define PE_NUM_OF_EXEC_LANES_LSB            0
 `define PE_NUM_OF_EXEC_LANES_SIZE           (`PE_NUM_OF_EXEC_LANES_MSB - `PE_NUM_OF_EXEC_LANES_LSB +1)

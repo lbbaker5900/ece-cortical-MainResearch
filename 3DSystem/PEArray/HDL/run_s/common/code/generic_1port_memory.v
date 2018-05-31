@@ -78,6 +78,16 @@ module generic_1port_memory
   // Forces synthesis not to elaborate during first read
   // synopsys template
 
+  //--------------------------------------------------------
+  // Define whether the actual memory model is used
+ 
+  `ifdef TB_USES_ACTUAL_MEMORIES
+    `define GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
+  `endif
+  `ifdef SYNTHESIS
+    `define GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
+  `endif
+
   // 
   localparam GENERIC_MEM_ADDR_WIDTH       = $clog2(GENERIC_MEM_DEPTH) ;
   localparam GENERIC_NUM_OF_PORTS         = 1 ;  // for generic_memories.vh
@@ -96,14 +106,14 @@ module generic_1port_memory
   input   wire                                      portA_write       ; 
 
 
-  `ifndef SYNTHESIS
+  `ifdef GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
+    wire   [GENERIC_MEM_DATA_WIDTH-1 :0  ]    int_portA_read_data ;
+  `else
     reg    [GENERIC_MEM_DATA_WIDTH-1 :0  ]    reg_portA_read_data ;
     if (GENERIC_MEM_REGISTERED_OUT == 1)
       begin : mem_reg
         reg    [GENERIC_MEM_DATA_WIDTH-1 :0  ]    mem_reg_portA_read_data ;
       end
-  `else
-    wire   [GENERIC_MEM_DATA_WIDTH-1 :0  ]    int_portA_read_data ;
   `endif
 
   //--------------------------------------------------------
@@ -112,7 +122,7 @@ module generic_1port_memory
   //
   wire portA_read = ~portA_write  ;
 
-  `ifdef SYNTHESIS
+  `ifdef GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
     // this file has all memories selected using parameters
     //
     // synthesis doesnt know which parameter might be used as both 1 and 2-port
@@ -129,17 +139,6 @@ module generic_1port_memory
 
     // Associative memory
     bit  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [bit[GENERIC_MEM_ADDR_WIDTH-1:0]] = '{default: 'X};
-
-    /*
-    initial
-      begin
-        @(negedge reset_poweron)
-          if (GENERIC_MEM_INIT_FILE != "")
-            begin
-              $readmemh( GENERIC_MEM_INIT_FILE, mem);
-            end
-      end
-    */
 
     string entry  ;
     int fileDesc ;
@@ -171,6 +170,9 @@ module generic_1port_memory
               $display("ERROR:generic_1port_memory:LEE:readmem file error : %s ", memFile);
               $finish;
             end
+          `ifdef GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
+            //dw_mem.genblk1.mem1p.loadmem(memFile);
+          `else
           while (!$feof(fileDesc)) 
             begin 
               void'($fgets(entry, fileDesc)); 
@@ -178,6 +180,7 @@ module generic_1port_memory
               //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);
               mem[memory_address] = memory_data ;
             end
+          `endif
          $fclose(fileDesc);
         end
      endtask
@@ -186,7 +189,7 @@ module generic_1port_memory
 
   `endif
 
-  `ifndef SYNTHESIS
+  `ifndef GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
     //--------------------------------------------------------
     // Registered/UnRegistered outputs
     //
@@ -216,7 +219,7 @@ module generic_1port_memory
       end
   `endif
 
-  `ifndef SYNTHESIS
+  `ifndef GENERIC_MEM_USES_COMPILER_MEMORY_MODEL
     assign portA_read_data = reg_portA_read_data  ;
   `else
     assign portA_read_data = int_portA_read_data  ;

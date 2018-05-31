@@ -16,11 +16,17 @@
 //------------------------------------------------------------------------------------------------------------
 // Who needs their storage descriptor memory loaded
 // MRC0, MRC1, MWC
+// Note: provide separate enables, not an address
 `define MGR_CNTL_STORAGE_DESC_USERS_WIDTH         3
 `define MGR_CNTL_STORAGE_DESC_USERS_MSB           `MGR_CNTL_STORAGE_DESC_USERS_WIDTH-1
 `define MGR_CNTL_STORAGE_DESC_USERS_LSB           0
 `define MGR_CNTL_STORAGE_DESC_USERS_SIZE          (`MGR_CNTL_STORAGE_DESC_USERS_MSB - `MGR_CNTL_STORAGE_DESC_USERS_LSB +1)
 `define MGR_CNTL_STORAGE_DESC_USERS_RANGE          `MGR_CNTL_STORAGE_DESC_USERS_MSB : `MGR_CNTL_STORAGE_DESC_USERS_LSB
+
+// BIT INDEX
+`define MGR_CNTL_STORAGE_DESC_USERS_MRC0          0
+`define MGR_CNTL_STORAGE_DESC_USERS_MRC1          1
+`define MGR_CNTL_STORAGE_DESC_USERS_MWC           2
 
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
@@ -85,6 +91,7 @@
 // DMA lanes from memory read
 
 `define MGR_CNTL_NUM_OF_DMA_LANES               2
+`define MGR_CNTL_NUM_OF_DMA_LANES_WIDTH         `MGR_CNTL_NUM_OF_DMA_LANES
 `define MGR_CNTL_NUM_OF_DMA_LANES_MSB           (`MGR_CNTL_NUM_OF_DMA_LANES -1)
 `define MGR_CNTL_NUM_OF_DMA_LANES_LSB            0
 `define MGR_CNTL_NUM_OF_DMA_LANES_SIZE           (`MGR_CNTL_NUM_OF_DMA_LANES_MSB - `MGR_CNTL_NUM_OF_DMA_LANES_LSB +1)

@@ -1646,6 +1646,56 @@ else if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 76) && (GENERIC
 
 //------------------------------------------------------------------------------------------------------------------------
 //
+else if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 78) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin : dw_mem
+    asdrlnpky2p64x78cm1sw0         mem2prf64x78(
+                   // Output
+                   .QB          ( int_portB_read_data_dly               ),
+                   // Read Port
+                   .CLKB        ( clk                                   ),
+                   .MEB         ( portB_enable_dly                      ),
+                   .ADRB        ( portB_address_dly                     ),
+                   // Write Port
+                   .CLKA        ( clk                                   ),
+                   .WEA         ( portA_write_dly                       ),
+                   .MEA         ( portA_enable_dly                      ),
+                   .ADRA        ( portA_address_dly                     ),
+                   .DA          ( portA_write_data_dly                  ),
+                   // Test
+                   .TEST1A      ( 1'b0     ), 
+                   .WMENA       ( 1'b0     ), // FIXME
+                   .TEST1B      ( 1'b0     ), 
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+else if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 79) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin : dw_mem
+    asdrlnpky2p64x79cm1sw0         mem2prf64x79(
+                   // Output
+                   .QB          ( int_portB_read_data_dly               ),
+                   // Read Port
+                   .CLKB        ( clk                                   ),
+                   .MEB         ( portB_enable_dly                      ),
+                   .ADRB        ( portB_address_dly                     ),
+                   // Write Port
+                   .CLKA        ( clk                                   ),
+                   .WEA         ( portA_write_dly                       ),
+                   .MEA         ( portA_enable_dly                      ),
+                   .ADRA        ( portA_address_dly                     ),
+                   .DA          ( portA_write_data_dly                  ),
+                   // Test
+                   .TEST1A      ( 1'b0     ), 
+                   .WMENA       ( 1'b0     ), // FIXME
+                   .TEST1B      ( 1'b0     ), 
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
 else if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 50) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
   begin : dw_mem
 
