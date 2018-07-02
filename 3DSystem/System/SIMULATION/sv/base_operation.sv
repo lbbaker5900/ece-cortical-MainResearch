@@ -65,7 +65,9 @@ package operation;
 
         time                                                timeTag                         ;
         int                                                 Id [2]                          ; // PE, Lane
-        logic  [`STACK_DOWN_OOB_INTF_TAG_RANGE ]            tId                             ; // transaction number
+        logic  [`STACK_DOWN_OOB_INTF_TAG_RANGE ]            tId                             ; // transaction number carried thru the system
+
+        shortint                                            seqId                           ; // sequence number 0,1,2,....
 
         int                                                 numberOfLanes                   ; // 
         int                                                 beenConstrained                 ; // 
@@ -172,7 +174,9 @@ package operation;
                     copy.operandsExp[1]            = new [this.numberOfOperands]  ;
                     copy.operandsSignificand[0]    = new [this.numberOfOperands]  ;
                     copy.operandsSignificand[1]    = new [this.numberOfOperands]  ;
-                    //copy.numberOfLanes             = this.numberOfLanes           ;
+                    copy.result                    = this.result                  ;
+                    copy.tId                       = this.tId                     ;
+                    copy.Id                        = this.Id                      ;
                     return copy ;
         endfunction
         
@@ -186,6 +190,9 @@ package operation;
                     c.operandsExp[1]            = new [this.numberOfOperands]  ;
                     c.operandsSignificand[0]    = new [this.numberOfOperands]  ;
                     c.operandsSignificand[1]    = new [this.numberOfOperands]  ;
+                    c.result                    = this.result                  ;
+                    c.tId                       = this.tId                     ;
+                    c.Id                        = this.Id                      ;
                     //c.numberOfLanes             = this.numberOfLanes           ;
         endfunction
         
@@ -697,6 +704,23 @@ package operation;
 
         endfunction
     
+    endclass
+
+
+    class lane_operation extends base_operation ; 
+    
+        //****************************************************************************************************
+        //----------------------------------------------------------------------------------------------------
+        // Notes:
+        // 
+        // Add lane ID
+        // 
+        //----------------------------------------------------------------------------------------------------
+        //****************************************************************************************************
+
+
+        shortint            lane                          ; // lane
+
     endclass
 
     //------------------------------------------------------------------------------------------------------

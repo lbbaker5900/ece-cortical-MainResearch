@@ -1992,6 +1992,7 @@ if __name__ == "__main__":
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/enable_mcntl_fsm}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/mcntl_fsm_complete}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/mwc_cntl_extract_desc_state}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/bank_lsb_latched}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/inc_address_data_valid}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/inc_address}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/inc_channel}}'.format(mgr)
