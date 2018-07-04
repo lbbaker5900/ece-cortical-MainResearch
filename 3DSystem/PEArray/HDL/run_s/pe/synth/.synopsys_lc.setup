@@ -1,0 +1,109 @@
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+
+set tech "65nm"
+
+# FIXME
+#unset INCLUDE_65nm_MEM 
+set INCLUDE_65nm_MEM "Y"
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Search Path variables  
+#set MGR_SIM_COM_DIR  "../../../../../Manager/SIMULATION/common"
+set MGR_COM_DIR       "../../../../../Manager/HDL/common"
+set PE_COM_DIR        "../../../../../PEArray/HDL/common"
+set PE_RTL_COM_DIR    "../../../../../PEArray/HDL/run_s/common/code"
+set SYS_RTL_COM_DIR   "../../../../../System/HDL/common"
+
+
+if {$tech == "65nm"} {
+  set path_ccs "/home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/liberty/ccs"
+  set path_plib "/home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/liberty/physical"
+  set path_slib "/home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/liberty/symbol"
+} elseif {$tech == "28nm"} {
+  set path_ccs "/home/gf028/arm/rvt/sc12mc_base_rvt_c30/r8p0/db"
+  set path_plib "/home/gf028/arm/rvt/sc12mc_base_rvt_c30/r8p0/sdb"
+  set path_slib "/home/gf028/arm/rvt/sc12mc_base_rvt_c30/r8p0/slib"
+}
+
+set path_this "/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/PEArray/HDL/run_s/pe/synth"
+set path_common "../../../../HDL/common"
+
+set search_path "$MGR_COM_DIR $PE_COM_DIR $PE_RTL_COM_DIR $SYS_RTL_COM_DIR $search_path";
+set search_path "$path_ccs $path_plib $path_slib $path_common $path_this $search_path"
+
+#set search_path [concat  $search_path [list [format "%s%s"  $synopsys_root "/libraries/syn"]]]
+#set search_path [concat  $search_path [list "." [format "%s%s"  $synopsys_root "/dw/sim_ver"]]]
+
+
+
+
+# Library DB files
+
+set mem_lib ""
+set regf_lib ""
+
+if {($tech == "65nm") || ([info exist INCLUDE_65nm_MEM])} {
+  set libList [glob ../synth/dw_memories/compout/views/sass*/tt1p2v25c/*.lib]
+  foreach libFile $libList {
+    set lName [file tail [file rootname $libFile]]
+    set dbName ${lName}_lib
+    set dbFileName ${lName}_lib.db
+    echo $dbFileName
+  
+    echo "Adding .db file to mem_lib variable : " $dbFileName
+    set mem_lib [concat $mem_lib $dbFileName]
+  }
+  set libList [glob ../synth/dw_memories/compout/views/asdr*/tt1p2v25c/*.lib]
+  foreach libFile $libList {
+    set lName [file tail [file rootname $libFile]]
+    set dbName ${lName}_lib
+    set dbFileName ${lName}_lib.db
+    echo $dbFileName
+  
+    echo "Adding .db file to regfmem_lib variable : " $dbFileName
+    set regf_lib [concat $regf_lib $dbFileName]
+  }
+}
+
+if {$tech == "28nm"} {
+  set libList [glob arm_memories/lib/*.lib]
+  foreach libFile $libList {
+    set lName [file tail [file rootname $libFile]]
+    set dbName ${lName}_lib
+    set dbFileName ${lName}_lib.db
+    echo $dbFileName
+  
+    echo "Adding .db file to mem_lib variable : " $dbFileName
+    set mem_lib [concat $mem_lib $dbFileName]
+  }
+}
+
+  
+if {$tech == "65nm"} {
+  set target_library cp65npksdst_tt1p0v25c.db
+  set link_library cp65npksdst_tt1p0v25c.db
+  #set target_library cp65npksdst_ss0p9v125c.db
+  #set symbol_library cp65npksdst.slib 
+
+} elseif {$tech == "28nm"} {
+
+  set target_library sc12mc_cmos28hpp_base_rvt_c30_ss_nominal_max_0p765v_110c.db
+  #set target_library sc12mc_cmos28hpp_base_rvt_c30_tt_nominal_max_0p90v_25c.db
+  set symbol_library sc12mc_cmos28hpp_base_rvt_c30.sdb
+
+}
+
+
+set synthetic_library [list dw_foundation.sldb]
+set link_library   [concat  $target_library $synthetic_library $mem_lib $regf_lib *]
+
+set verilogout_no_tri "true"
+
+alias h history
+
+
