@@ -51,19 +51,45 @@ module manager_array (
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - General
-        `include "system_manager_sys_general_ports.vh"
+        //`include "system_manager_sys_general_ports.vh"
+        // General control and status                    
+        mgr__sys__allSynchronized                    ,
+        sys__mgr__thisSynchronized                   ,
+        sys__mgr__ready                              ,
+        sys__mgr__complete                           ,
+
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - OOB Downstream
-        `include "system_manager_stack_bus_downstream_oob_ports.vh"
+        //`include "system_manager_stack_bus_downstream_oob_ports.vh"
+        // OOB controls the PE                          
+        // For now assume OOB is separate to lanes      
+        mgr__std__oob_cntl                           ,
+        mgr__std__oob_valid                          ,
+        std__mgr__oob_ready                          ,
+        mgr__std__oob_type                           ,
+        mgr__std__oob_data                           ,
+
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Downstream
-        `include "system_manager_stack_bus_downstream_ports.vh"
+        //`include "system_manager_stack_bus_downstream_ports.vh"
+        // - Manager Lane arguments to the PE                          
+        std__mgr__lane_strm_ready       ,
+        mgr__std__lane_strm_cntl        ,
+        mgr__std__lane_strm_data        ,
+        mgr__std__lane_strm_data_valid  ,
+
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Upstream
-        `include "system_manager_stack_bus_upstream_ports.vh"
+        //`include "system_manager_stack_bus_upstream_ports.vh"
+        stu__mgr__valid          ,
+        stu__mgr__cntl           ,
+        mgr__stu__ready          ,
+        stu__mgr__type           ,
+        stu__mgr__data           ,
+        stu__mgr__oob_data       ,
 
         //--------------------------------------------------------------------------------
         // Clocks for SDR/DDR
@@ -112,19 +138,42 @@ module manager_array (
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - General
-  `include "system_manager_sys_general_port_declarations.vh"
+  // - General control and status                                                   
+  //`include "system_manager_sys_general_port_declarations.vh"
+  output                                        mgr__sys__allSynchronized    [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  input                                         sys__mgr__thisSynchronized   [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  input                                         sys__mgr__ready              [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  input                                         sys__mgr__complete           [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - OOB Downstream
-  `include "system_manager_stack_bus_downstream_oob_port_declarations.vh"
+  //`include "system_manager_stack_bus_downstream_oob_port_declarations.vh"
+  // - OOB controls how the lanes are interpreted                                  
+  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl     [`MGR_ARRAY_NUM_OF_MGR_RANGE ]        ;
+  output                                          mgr__std__oob_valid    [`MGR_ARRAY_NUM_OF_MGR_RANGE ]        ;
+  input                                           std__mgr__oob_ready    [`MGR_ARRAY_NUM_OF_MGR_RANGE ]        ;
+  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type     [`MGR_ARRAY_NUM_OF_MGR_RANGE ]        ;
+  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data     [`MGR_ARRAY_NUM_OF_MGR_RANGE ]        ;
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
-  `include "system_manager_stack_bus_downstream_port_declarations.vh"
+  //`include "system_manager_stack_bus_downstream_port_declarations.vh"
+  input                                         std__mgr__lane_strm_ready       [`MGR_ARRAY_NUM_OF_MGR_RANGE ] [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ] ;
+  output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr__std__lane_strm_cntl        [`MGR_ARRAY_NUM_OF_MGR_RANGE ] [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ] ;
+  output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr__std__lane_strm_data        [`MGR_ARRAY_NUM_OF_MGR_RANGE ] [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ] ;
+  output                                        mgr__std__lane_strm_data_valid  [`MGR_ARRAY_NUM_OF_MGR_RANGE ] [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ] ;
+
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
-  `include "system_manager_stack_bus_upstream_port_declarations.vh"
+  //`include "system_manager_stack_bus_upstream_port_declarations.vh"
+  input                                          stu__mgr__valid         [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  input   [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl          [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  output                                         mgr__stu__ready         [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  input   [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type          [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  input   [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data          [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  input   [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data      [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+
 
 
   //-------------------------------------------------------------------------------------------
@@ -137,19 +186,39 @@ module manager_array (
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - General
-  `include "system_manager_sys_general_instance_wires.vh"
+  //`include "system_manager_sys_general_instance_wires.vh"
+  wire                                        mgr__sys__allSynchronized    [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  wire                                        sys__mgr__thisSynchronized   [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  wire                                        sys__mgr__ready              [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  wire                                        sys__mgr__complete           [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
   
   //-------------------------------------------------------------------------------------------
   // Stack Bus - OOB Downstream
-  `include "system_manager_stack_bus_downstream_oob_instance_wires.vh"
+  //`include "system_manager_stack_bus_downstream_oob_instance_wires.vh"
+  wire [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl          [`MGR_ARRAY_NUM_OF_MGR_RANGE ]   ;
+  wire                                         mgr__std__oob_valid         [`MGR_ARRAY_NUM_OF_MGR_RANGE ]   ;
+  wire                                         std__mgr__oob_ready         [`MGR_ARRAY_NUM_OF_MGR_RANGE ]   ;
+  wire [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type          [`MGR_ARRAY_NUM_OF_MGR_RANGE ]   ;
+  wire [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data          [`MGR_ARRAY_NUM_OF_MGR_RANGE ]   ;
   
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
-  `include "system_manager_stack_bus_downstream_instance_wires.vh"
+  //`include "system_manager_stack_bus_downstream_instance_wires.vh"
+  wire                                        std__mgr__lane_strm_ready       [`MGR_ARRAY_NUM_OF_MGR_RANGE ] [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ]  ;
+  wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr__std__lane_strm_cntl        [`MGR_ARRAY_NUM_OF_MGR_RANGE ] [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ]  ;
+  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr__std__lane_strm_data        [`MGR_ARRAY_NUM_OF_MGR_RANGE ] [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ]  ;
+  wire                                        mgr__std__lane_strm_data_valid  [`MGR_ARRAY_NUM_OF_MGR_RANGE ] [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ]  ;
+
   
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
-  `include "system_manager_stack_bus_upstream_instance_wires.vh"
+  //`include "system_manager_stack_bus_upstream_instance_wires.vh"
+  wire                                           stu__mgr__valid         [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  wire    [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl          [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  wire                                           mgr__stu__ready         [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  wire    [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type          [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  wire    [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data          [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
+  wire    [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data      [`MGR_ARRAY_NUM_OF_MGR_RANGE ]  ;
   
  
   genvar gvi;
@@ -197,7 +266,11 @@ module manager_array (
 
         //-------------------------------------------------------------------------------------------------
         // Stack Bus downstream Interface
-        `include "manager_stack_bus_downstream_instance_wires.vh"
+        //`include "manager_stack_bus_downstream_instance_wires.vh"
+        wire                                           std__mgr__lane_strm_ready       [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ] ;
+        wire [`COMMON_STD_INTF_CNTL_RANGE       ]      mgr__std__lane_strm_cntl        [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ] ;
+        wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      mgr__std__lane_strm_data        [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ] ;
+        wire                                           mgr__std__lane_strm_data_valid  [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ] ;
 
         //-------------------------------------------------------------------------------------------------
         // Stack Bus - Upstream
@@ -211,7 +284,16 @@ module manager_array (
  
         //-------------------------------------------------------------------------------------------------
         // NoC Interface
-        `include "manager_noc_instance_wires.vh"
+        //`include "manager_noc_instance_wires.vh"
+        wire                                         mgr__noc__port_valid            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ];
+        wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  mgr__noc__port_cntl             [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ];
+        wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  mgr__noc__port_data             [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ];
+        wire                                         noc__mgr__port_fc               [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ];
+        wire                                         noc__mgr__port_valid            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ];
+        wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port_cntl             [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ];
+        wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port_data             [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ];
+        wire                                         mgr__noc__port_fc               [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ];
+        wire   [`MGR_HOST_MGR_ID_BITMASK_RANGE    ]  sys__mgr__port_destinationMask  [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ];
 
         assign sys__mgr__mgrId = gvi;
 
@@ -240,7 +322,16 @@ module manager_array (
                 
                 //-------------------------------
                 // NoC Interface
-                `include "manager_noc_instance_ports.vh"
+                //`include "manager_noc_instance_ports.vh"
+                .mgr__noc__port_valid           ( mgr__noc__port_valid           ),
+                .mgr__noc__port_cntl            ( mgr__noc__port_cntl            ),
+                .mgr__noc__port_data            ( mgr__noc__port_data            ),
+                .noc__mgr__port_fc              ( noc__mgr__port_fc              ),
+                .noc__mgr__port_valid           ( noc__mgr__port_valid           ),
+                .noc__mgr__port_cntl            ( noc__mgr__port_cntl            ),
+                .noc__mgr__port_data            ( noc__mgr__port_data            ),
+                .mgr__noc__port_fc              ( mgr__noc__port_fc              ),
+                .sys__mgr__port_destinationMask ( sys__mgr__port_destinationMask ),
    
                 //-------------------------------
                 // Stack Bus OOB downstream Interface
@@ -253,7 +344,11 @@ module manager_array (
 
                 //-------------------------------
                 // Stack Bus downstream Interface
-                `include "manager_stack_bus_downstream_instance_ports.vh"
+                //`include "manager_stack_bus_downstream_instance_ports.vh"
+                .std__mgr__lane_strm_ready         ( std__mgr__lane_strm_ready      ),      
+                .mgr__std__lane_strm_cntl          ( mgr__std__lane_strm_cntl       ),      
+                .mgr__std__lane_strm_data          ( mgr__std__lane_strm_data       ),      
+                .mgr__std__lane_strm_data_valid    ( mgr__std__lane_strm_data_valid ),      
    
                 //-------------------------------
                 // Stack Bus - Upstream
@@ -271,7 +366,6 @@ module manager_array (
                 .sys__mgr__thisSynchronized   ( sys__mgr__thisSynchronized  ), 
                 .sys__mgr__ready              ( sys__mgr__ready             ), 
                 .sys__mgr__complete           ( sys__mgr__complete          ), 
-                //`include "manager_sys_general_instance_ports.vh"
 
                 //-------------------------------
                 // Clocks for SDR/DDR
@@ -313,19 +407,78 @@ module manager_array (
 
   //-------------------------------------------------------------------------------------------
   // General system connectivity
-  `include "manager_sys_general_connections.vh"
+  //`include "manager_sys_general_connections.vh"
+  // - Send an 'all' synchronized to all Managers's 
+  // - sys__mgr__thisSyncnronized basically means all the streams in a PE are complete
+  // - The PE controller will move to a 'final' state once it receives sys__pe__allSynchronized
+  /*
+  wire    mgr__sys__allSynchronized ;
+  for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1) 
+    begin
+      mgr__sys__allSynchronized = mgr__sys__allSynchronized & mgr_inst[mgr].sys__mgr__thisSynchronized ;
+    end
+  */
+
+  generate
+    for (genvar mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1) 
+      begin
+        assign  mgr__sys__allSynchronized               [mgr]  =  mgr_inst[mgr].mgr__sys__allSynchronized       ;
+        assign  mgr_inst[mgr].sys__mgr__thisSynchronized       =  sys__mgr__thisSynchronized              [mgr] ;
+        assign  mgr_inst[mgr].sys__mgr__ready                  =  sys__mgr__ready                         [mgr] ;
+        assign  mgr_inst[mgr].sys__mgr__complete               =  sys__mgr__complete                      [mgr] ;
+      end
+  endgenerate
   
   //-------------------------------------------------------------------------------------------------
   // Stack Bus OOB Downstream connections
-  `include "system_manager_stack_bus_downstream_oob_instance_connections.vh"
+  //`include "system_manager_stack_bus_downstream_oob_instance_connections.vh"
+  generate
+    for (genvar mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1) 
+      begin
+        assign  mgr__std__oob_cntl                [mgr]         =  mgr_inst[mgr].mgr__std__oob_cntl         ;
+        assign  mgr__std__oob_valid               [mgr]         =  mgr_inst[mgr].mgr__std__oob_valid        ;
+        assign  mgr_inst[mgr].std__mgr__oob_ready               =  std__mgr__oob_ready                [mgr] ;
+        assign  mgr__std__oob_type                [mgr]         =  mgr_inst[mgr].mgr__std__oob_type         ;
+        assign  mgr__std__oob_data                [mgr]         =  mgr_inst[mgr].mgr__std__oob_data         ;
+      end
+  endgenerate
+
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus Downstream connections
-  `include "system_manager_stack_bus_downstream_instance_connections.vh"
+  //`include "system_manager_stack_bus_downstream_instance_connections.vh"
+  generate
+    for (genvar mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1) 
+      begin
+        for (genvar lane=0; lane<`MGR_NUM_OF_EXEC_LANES ; lane=lane+1) 
+          begin
+            for (genvar strm=0; strm<`MGR_NUM_OF_STREAMS ; strm=strm+1) 
+              begin
+                assign  mgr_inst[mgr].std__mgr__lane_strm_ready      [lane] [strm]   =  std__mgr__lane_strm_ready                    [mgr] [lane] [strm]     ;
+                assign  mgr__std__lane_strm_cntl               [mgr] [lane] [strm]   =  mgr_inst[mgr].mgr__std__lane_strm_cntl             [lane] [strm]     ;
+                assign  mgr__std__lane_strm_data               [mgr] [lane] [strm]   =  mgr_inst[mgr].mgr__std__lane_strm_data             [lane] [strm]     ;
+                assign  mgr__std__lane_strm_data_valid         [mgr] [lane] [strm]   =  mgr_inst[mgr].mgr__std__lane_strm_data_valid       [lane] [strm]     ;
+              end
+          end
+      end
+  endgenerate
+
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus Upstream connections
-  `include "system_manager_stack_bus_upstream_instance_connections.vh"
+  //`include "system_manager_stack_bus_upstream_instance_connections.vh"
+  generate
+    for (genvar mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1) 
+      begin
+        assign   mgr_inst[mgr].stu__mgr__valid           =   stu__mgr__valid                [mgr]   ;
+        assign   mgr_inst[mgr].stu__mgr__cntl            =   stu__mgr__cntl                 [mgr]   ;
+        assign   mgr__stu__ready                  [mgr]  =   mgr_inst[mgr].mgr__stu__ready          ;
+        assign   mgr_inst[mgr].stu__mgr__type            =   stu__mgr__type                 [mgr]   ;
+        assign   mgr_inst[mgr].stu__mgr__data            =   stu__mgr__data                 [mgr]   ;
+        assign   mgr_inst[mgr].stu__mgr__oob_data        =   stu__mgr__oob_data             [mgr]   ;
+      end
+  endgenerate
+
 
   //-------------------------------------------------------------------------------------------------
   // Inter Manager NoC Connectivity      

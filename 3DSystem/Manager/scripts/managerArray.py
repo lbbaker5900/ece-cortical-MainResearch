@@ -205,7 +205,7 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
     for port in range (0, numOfPorts):
       pLine = pLine + '\n    // MGR{0}, Port{1} next hop mask                 '.format(pe,port)
-      pLine = pLine + '\n    assign mgr_inst[{0}].sys__mgr__port{1}_destinationMask    = `MGR_NOC_CONT_MGR{0}_PORT{1}_DESTINATION_MGR_BITMASK ;'.format(pe,port)
+      pLine = pLine + '\n    assign mgr_inst[{0}].sys__mgr__port_destinationMask [{1}]    = `MGR_NOC_CONT_MGR{0}_PORT{1}_DESTINATION_MGR_BITMASK ;'.format(pe,port)
 
   f.write(pLine)
   f.close()
@@ -246,15 +246,15 @@ if __name__ == "__main__":
         for uP in range (int(data[4]), portsPerPe):
           # Host is connected to mgr 0, port 2
           if srcPe is 0 and uP is 2 :
-            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port{1}_valid = \'d0 ;'.format(srcPe,uP)
-            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port{1}_cntl  = \'d0 ;'.format(srcPe,uP)
-            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port{1}_data  = \'d0 ;'.format(srcPe,uP)
-            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port{1}_fc    = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port_valid [{1}] = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port_cntl  [{1}] = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port_data  [{1}] = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port_fc    [{1}] = \'d0 ;'.format(srcPe,uP)
           else :
-            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_valid = \'d0 ;'.format(srcPe,uP)
-            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_cntl  = \'d0 ;'.format(srcPe,uP)
-            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_data  = \'d0 ;'.format(srcPe,uP)
-            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_fc    = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port_valid [{1}] = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port_cntl  [{1}] = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port_data  [{1}] = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port_fc    [{1}] = \'d0 ;'.format(srcPe,uP)
         pLine = pLine + '\n'        
     if re.search(r"Port . Connected to Node", line) :
       #print line
@@ -263,10 +263,10 @@ if __name__ == "__main__":
       destPort = int(data[8])
       
       pLine = pLine + '\n  // Connecting Mgr{0} Port{1} to Mgr{2} Port{3}'.format(srcPe,srcPort,destPe,destPort)
-      pLine = pLine + '\n  assign mgr_inst[{2}].noc__mgr__port{3}_valid = mgr_inst[{0}].mgr__noc__port{1}_valid ;'.format(srcPe,srcPort,destPe,destPort)
-      pLine = pLine + '\n  assign mgr_inst[{2}].noc__mgr__port{3}_cntl  = mgr_inst[{0}].mgr__noc__port{1}_cntl  ;'.format(srcPe,srcPort,destPe,destPort)
-      pLine = pLine + '\n  assign mgr_inst[{2}].noc__mgr__port{3}_data  = mgr_inst[{0}].mgr__noc__port{1}_data  ;'.format(srcPe,srcPort,destPe,destPort)
-      pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_fc    = mgr_inst[{2}].mgr__noc__port{3}_fc    ;'.format(srcPe,srcPort,destPe,destPort)
+      pLine = pLine + '\n  assign mgr_inst[{2}].noc__mgr__port_valid [{3}] = mgr_inst[{0}].mgr__noc__port_valid [{1}] ;'.format(srcPe,srcPort,destPe,destPort)
+      pLine = pLine + '\n  assign mgr_inst[{2}].noc__mgr__port_cntl  [{3}] = mgr_inst[{0}].mgr__noc__port_cntl  [{1}] ;'.format(srcPe,srcPort,destPe,destPort)
+      pLine = pLine + '\n  assign mgr_inst[{2}].noc__mgr__port_data  [{3}] = mgr_inst[{0}].mgr__noc__port_data  [{1}] ;'.format(srcPe,srcPort,destPe,destPort)
+      pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port_fc    [{1}] = mgr_inst[{2}].mgr__noc__port_fc    [{3}] ;'.format(srcPe,srcPort,destPe,destPort)
       pLine = pLine + '\n'        
 
 

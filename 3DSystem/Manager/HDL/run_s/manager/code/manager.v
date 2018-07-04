@@ -59,8 +59,18 @@ module manager (
             //-------------------------------
             // NoC
             //
-            `include "manager_noc_cntl_noc_ports_and_declaration.vh"
- 
+            //`include "manager_noc_cntl_noc_ports_and_declaration.vh"
+            // port
+            output   wire                                         mgr__noc__port_valid            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ],
+            output   wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  mgr__noc__port_cntl             [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ],
+            output   wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  mgr__noc__port_data             [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ],
+            input    wire                                         noc__mgr__port_fc               [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ],
+            input    wire                                         noc__mgr__port_valid            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ],
+            input    wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port_cntl             [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ],
+            input    wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port_data             [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ],
+            output   wire                                         mgr__noc__port_fc               [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ],
+            input    wire   [`MGR_HOST_MGR_ID_BITMASK_RANGE    ]  sys__mgr__port_destinationMask  [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ],
+
 
             //-------------------------------
             // Stack Bus - OOB Downstream
@@ -75,7 +85,13 @@ module manager (
             //-------------------------------
             // Stack Bus - Downstream
             //
-            `include "manager_stack_bus_downstream_ports_and_declaration.vh"
+            //`include "manager_stack_bus_downstream_ports_and_declaration.vh"
+            // Lane operand bus                  
+            input   wire                                            std__mgr__lane_strm_ready      [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ]  ,
+            output  wire [`COMMON_STD_INTF_CNTL_RANGE       ]       mgr__std__lane_strm_cntl       [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ]  ,
+            output  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       mgr__std__lane_strm_data       [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ]  ,
+            output  wire                                            mgr__std__lane_strm_data_valid [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS_RANGE ]  ,
+
 
             //-------------------------------
             // Stack Bus - Upstream
@@ -111,13 +127,6 @@ module manager (
  
     );
 
-
-
-  //-------------------------------------------------------------------------------------------------
-  // Stack Bus - Downstream
-
-  // carries lane arguments
-  //`include "manager_stack_bus_downstream_port_declarations.vh"
 
 
   //-------------------------------------------------------------------------------------------------
@@ -163,12 +172,6 @@ module manager (
   //-------------------------------------------------------------------------------------------------
   // NoC
   //
-  //`include "manager_noc_cntl_noc_ports_declaration.vh"
-
-  //`include "noc_to_mgrArray_connection_wires.vh"
-
-  //`include "manager_noc_connection_wires.vh"
-
 
    // Data-Path (dp) to NoC 
    wire                                             rdp__mcntl__noc_valid      ; 
@@ -814,8 +817,25 @@ module manager (
   // Connect packed array port of MRC(s) to WU Decoder
   `include "manager_mrc_cntl_wud_connections.vh"
   
+  //------------------------------------------------------------------------------------------------------------------------
   // Connect packed array port of MRC(s) to individual stack downstream wires
-  `include "manager_mrc_cntl_stack_bus_downstream_connections.vh"
+  //`include "manager_mrc_cntl_stack_bus_downstream_connections.vh"
+  // Lane N                 
+  // 
+  generate
+    for (genvar lane=0; lane<`MGR_NUM_OF_EXEC_LANES ; lane=lane+1) 
+      begin
+        for (genvar strm=0; strm<`MGR_NUM_OF_STREAMS ; strm=strm+1) 
+          begin
+            // Stream 
+            assign mrc_cntl_strm_inst[strm].std__mrc__lane_ready [lane]              =   std__mgr__lane_strm_ready                     [lane] [strm] ;   
+            assign mgr__std__lane_strm_cntl                      [lane] [strm]       =   mrc_cntl_strm_inst[strm].mrc__std__lane_cntl  [lane]        ; 
+            assign mgr__std__lane_strm_data                      [lane] [strm]       =   mrc_cntl_strm_inst[strm].mrc__std__lane_data  [lane]        ; 
+            assign mgr__std__lane_strm_data_valid                [lane] [strm]       =   mrc_cntl_strm_inst[strm].mrc__std__lane_valid [lane]        ; 
+          end
+      end
+  endgenerate
+
 
 
   //-------------------------------------------------------------------------------------------------
@@ -995,7 +1015,17 @@ module manager (
             .noc__locl__dp_mgrId          ( noc__mcntl__dp_mgrId     ), 
 
              // Connections to external NoC
-             `include "manager_noc_cntl_noc_ports_instance_ports.vh"
+             //`include "manager_noc_cntl_noc_ports_instance_ports.vh"
+             .mgr__noc__port_valid           ( mgr__noc__port_valid           ),
+             .mgr__noc__port_cntl            ( mgr__noc__port_cntl            ),
+             .mgr__noc__port_data            ( mgr__noc__port_data            ),
+             .noc__mgr__port_fc              ( noc__mgr__port_fc              ),
+             .noc__mgr__port_valid           ( noc__mgr__port_valid           ),
+             .noc__mgr__port_cntl            ( noc__mgr__port_cntl            ),
+             .noc__mgr__port_data            ( noc__mgr__port_data            ),
+             .mgr__noc__port_fc              ( mgr__noc__port_fc              ),
+             .sys__mgr__port_destinationMask ( sys__mgr__port_destinationMask ),
+
 
             .sys__mgr__mgrId              ( sys__mgr__mgrId          ), 
             .clk                          ( clk                      ),
