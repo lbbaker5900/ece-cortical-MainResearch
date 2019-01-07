@@ -79,7 +79,7 @@
 %
 \usepackage[pdftex]{graphicx}
 \graphicspath{{./eps/}}
-\graphicspath{{../../../../3DSystem/DOC/wikiImages/}{./eps/}}
+\graphicspath{{../../../../3DSystem/DOC/wikiImages/}{./images/}}
 \DeclareGraphicsExtensions{.eps}
 
 \ifCLASSINFOpdf
@@ -188,12 +188,26 @@ paulf@ncsu.edu}
 % in the abstract or keywords.
 \begin{abstract}
 
+Machine Learning in the form of \acfp{ann} has gained traction over the last few years especially in applications such as image recognition and speech recognition.
+These particular applications typically employ a subset of \acp{ann} known as \acp{cnn} which re-use parameters and thus reduce main memory bandwidth.
+However, there are other types of \ac{ann} that do not provide reuse opportunities such as autoencoders\iffalse\cite{le2013building}\fi and \ac{lstm}\iffalse\cite{}\fi . \iffalse and implementations that focus on \ac{cnn}s suffer from severe performance degradation when targeting these other types of \acp{ann}. \fi
+It is generally accepted that \ac{dram} is required to store the \ac{ann} parameters of useful sized \acp{ann}\iffalse \cite{azarkhish2017neurostream}\cite{dadiannao2014}\cite{dadiannao2017}\fi.
+To achieve a given performance, \ac{cnn}-specific implementations utilize cache-like structures using \ac{sram} which mimimizes accesses to the slower \ac{dram}.
+Most research has focused on implementing \acp{cnn} but because of their extensive use of \ac{sram} have both \ac{ann} size restrictions and performance degradation when used in applications that utilize other types of \ac{ann}.
+This work considers embedded applications employing multiple disparate generic \acp{ann} which, assuming there are limited reuse opportunities in the form of re-use or batch processing, will require usable memory bandwidth on the order of tens of \textbf{\SI[per-mode=symbol]{}{\tera \bit \per \second}}. 
+\iffalse
 This work demonstrates how a customized \acf{3ddram} with a very wide databus can be combined with application-specific layers to produce a system meeting the requirements of embedded systems employing multiple instances of disparate \acfp{ann}.
-This work avoids any dependencies on \ac{sram} that might limit the size of supported \acp{ann} and demonstrates the required utilization of the very wide \ac{dram} databus when employing instructions and data structures that facilitate operating directly out of the \ac{3ddram}.
-By allowing system functions to operate asynchronously this work is able to absorb the latencies associated with \ac{dram} and utilize the wide databus of the customized \ac{dram} to provide the bandwidth required to support multiple useful-sized disparate \acp{ann}.
+\fi
+\iffalse
+This work avoids any dependencies on \ac{sram} that might limit the size or type of \acp{ann} and demonstrates the required utilization of the very wide \ac{dram} databus.
+By employing instructions and data structures that facilitate operating directly out of the \ac{3ddram}, 
+and allowing system functions to operate asynchronously, 
+this work is able to absorb the latencies associated with \ac{dram} and utilize the wide databus of a customized \ac{dram} to provide the bandwidth required to support multiple useful-sized disparate \acp{ann}.
 This work demonstrates a near-memory system that does not simply add \ac{ann} processing as an appendage to an existing \ac{3ddram} but proposes customizations to an existing \ac{3ddram} along with tight integration of the \ac{ann} processing elements and memory controller to 
 create a true near-memory \ac{ann} accelerator.
-By demonstrating effective use of the very wide bus of a customized \ac{3ddram}, this system demonstrates a conservative 3X power improvement and 6X area improvement over similar \ac{ann} systems along with the ability to keep pace with the \ac{dram} roadmap over the foreseeable future.
+\fi
+By demonstrating effective use of the very wide bus of a customized \ac{3ddram}, this work demonstrates a conservative 3X power improvement and 6X area improvement over similar \ac{ann} systems 
+along with the ability to keep pace with the \ac{dram} roadmap over the foreseeable future.
 
 \end{abstract}
 
@@ -224,8 +238,8 @@ Another technology that has been considered over the last decade is \ac{3dic}.
 Implementations such as Neurostream \cite{azarkhish2017neurostream}, NeuroCube\cite{kim2016neurocube} and Tetris \cite{gao2017tetris} employ \ac{hmc} \ac{3ddram} in a \ac{3dic} system, 
 and all have demonstrated improvements over non-\ac{3dic} systems and \acp{gpu}.
 However, for the most part these systems employ the \ac{3ddram} as a disjoint memory with the \ac{ann} processing elements being an appendage to the \ac{dram}.
-In particular, NeuroCube\cite{kim2016neurocube} and Tetris \cite{gao2017tetris} achieve the required performance by optimistically targeting a 15nm process where this work achieves the required performance by tightly integrating
-the \ac{ann} processing with the memory controller while targeting a less optimistic 28nm process.
+In particular, some \ac{3dic} systems that employ \ac{3ddram} \iffalse NeuroCube\cite{kim2016neurocube} and Tetris \cite{gao2017tetris} \fi achieve the required performance by targeting a small \iffalse 15nm \fi process and optimistic scaling numbers where this work achieves the required performance by tightly integrating
+the \ac{ann} processing with the memory controller while targeting a 28nm process using realistic scaling numbers.
 
 This work considers future embedded systems where multiple \acp{ann} are employed \cite{bojarski2016end} and that each of the \acp{ann} will be of similar size to useful-sized \acp{ann} \cite{krizhevsky2012imagenet}.
 In addition, as \acp{ann} fulfill their potential and users start to employ them in various applications, there is no reason to believe these applications will exhibit the same stationary characteristcs that make \acp{cnn} effective in image processing.
@@ -327,7 +341,7 @@ The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{dram}
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=1\textwidth]{StackDiagram.jpg}
+  \includegraphics[width=1\textwidth]{SmallStackDiagram.jpg}
   \captionsetup{justification=centering, width=.8\linewidth}
   \caption{\ac{dram}, Manager and PE Layers}
   \label{fig:3DICStack}
@@ -1343,7 +1357,7 @@ Therefore, further work should include :
 %\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{mshell}}]{Michael Shell}
 % or if you just want to reserve a space for a photo:
 \begin{IEEEbiographynophoto}{Lee B. Baker}
-received a B.S. degree in Electrical Engineering from Brighton Polytechnic, UK, an M.S. degree in Electrical Engineering from Villanova University, USA and an M.B.A. degree from North Carolina State University, USA in 1983, 1994 and 2009 respectively. He is currently pursuing the Ph.D. degree with the Electrical and Computer Engineering Department at North Carolina State University.
+received a B.S. degree in Electrical Engineering from Brighton Polytechnic, UK, an M.S. degree in Electrical Engineering from Villanova University, USA and an M.B.A. degree from North Carolina State University, USA in 1983, 1994 and 2009 respectively. He earned his Ph.D. in Electrical and Computer Engineering from North Carolina State University in 2018.
 His current research interests include acceleration of artificial neural networks.
 \end{IEEEbiographynophoto}
 % if you will not have a photo at all:
