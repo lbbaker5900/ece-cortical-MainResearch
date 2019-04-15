@@ -38,6 +38,7 @@ module wu_memory (
             // Instruction download
             input   wire                                       mcntl__wum__enable_inst_dnld     ,
             input   wire                                       mcntl__wum__valid                ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__cntl                 ,  // interface delineator
             output  reg                                        wum__mcntl__ready                ,
             input   wire  [`MGR_WU_ADDRESS_RANGE          ]    mcntl__wum__address              ,
             // WU Instruction delineators
@@ -152,6 +153,7 @@ module wu_memory (
 
     reg                                        mcntl__wum__enable_inst_dnld_d1 ;
     reg                                        mcntl__wum__valid_d1            ;
+    reg   [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__cntl_d1             ;  // interface delineator
     wire                                       wum__mcntl__ready_e1            ;
     reg   [`MGR_WU_ADDRESS_RANGE          ]    mcntl__wum__address_d1          ;
     // WU Instruction delineators
@@ -172,6 +174,7 @@ module wu_memory (
       begin
        mcntl__wum__enable_inst_dnld_d1  <=  mcntl__wum__enable_inst_dnld ;
        mcntl__wum__valid_d1             <=  mcntl__wum__valid            ;
+       mcntl__wum__cntl_d1              <=  mcntl__wum__cntl             ;
        //wum__mcntl__ready                <=  wum__mcntl__ready_e1         ;  // FIXME
        wum__mcntl__ready                <=  'd1 ;
                                        

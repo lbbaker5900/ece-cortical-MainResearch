@@ -284,6 +284,7 @@ class manager;
               sys_operation_mgr.c_operandValues.constraint_mode(1)              ;
               sys_operation_mgr.c_memoryLocalized.constraint_mode(1)            ;
               sys_operation_mgr.tId      = operationNum             ;
+              sys_operation_mgr.seqId    = WU_num                   ;
               //
               // create new operation
               assert(sys_operation_mgr.randomize()) ;

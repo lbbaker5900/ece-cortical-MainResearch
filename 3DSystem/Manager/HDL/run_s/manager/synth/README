@@ -45,8 +45,10 @@ Modify and run run_create_arm_mem.sh
 
 /home/gf028/arm/SRAM/sram_sp_hsc_rvt_rvt/r5p0/bin/sram_sp_hsc_rvt_rvt &
 
-Instance name:  arm_sram_dp_<wxd>_mw<mux_width>
+Instance name :  arm_<sram|regf>_28nm_<1|2>p<wxd>mw<mux_width>
 When generating liberty model, set library name to arm_sram_28nm_2p<wxd>_mw<mux_width>
+e.g. arm_sram_28nm_2p1024x32mw8
+e.g. ar
 
 
 Synthesis 28nm .vs. 65nm

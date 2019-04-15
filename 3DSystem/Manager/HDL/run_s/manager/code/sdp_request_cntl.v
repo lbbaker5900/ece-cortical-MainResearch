@@ -126,16 +126,31 @@ module sdp_request_cntl (
             // Storage descriptor download
 
             input   wire                                                       mcntl__sdp__enable_sdmem_dnld   ,
+
             input   wire                                                       mcntl__sdp__sdmem_valid         ,
-            input   wire  [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__sdp__sdmem_address       ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__sdmem_cntl          ,
             output  reg                                                        sdp__mcntl__sdmem_ready         ,
+
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE          ]    mcntl__sdp__sdmem_address       ,
 
             // Storage descriptor memory contents
             input   wire  [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__sdp__sdmem_addr          ,
             input   wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__sdp__sdmem_order         ,
-            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump      ,
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump_ptr  ,
             
             
+            input   wire                                                       mcntl__sdp__enable_cjmem_dnld   ,
+
+            input   wire                                                       mcntl__sdp__cjmem_valid         ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__cjmem_cntl          ,
+            output  reg                                                        sdp__mcntl__cjmem_ready         ,
+
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__cjmem_address       ,
+
+            // Cons/jump memory contents
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__cjmem_consJump_cntl ,
+            input   wire  [`MGR_INST_CONS_JUMP_FIELD_RANGE                ]    mcntl__sdp__cjmem_consJump_val  ,
+
             //----------------------------------------------------------------------------------------------------
             //----------------------------------------------------------------------------------------------------
             // General
@@ -180,14 +195,30 @@ module sdp_request_cntl (
    // Storage descriptor download
  
    reg                                                        mcntl__sdp__enable_sdmem_dnld_d1   ;
+
    reg                                                        mcntl__sdp__sdmem_valid_d1         ;
-   reg   [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__sdp__sdmem_address_d1       ;
-   reg                                                        sdp__mcntl__sdmem_ready_e1         ;
+   reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__sdmem_cntl_d1          ;
+   wire                                                       sdp__mcntl__sdmem_ready_e1         ;
+
+   reg   [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE          ]    mcntl__sdp__sdmem_address_d1       ;
    // Storage descriptor memory contents
    reg   [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__sdp__sdmem_addr_d1          ;
    reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__sdp__sdmem_order_d1         ;
-   reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump_d1      ;
+   reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump_ptr_d1  ;
             
+
+  reg                                                        mcntl__sdp__enable_cjmem_dnld_d1   ;
+
+  reg                                                        mcntl__sdp__cjmem_valid_d1         ;
+  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__cjmem_cntl_d1          ;
+  wire                                                       sdp__mcntl__cjmem_ready_e1         ;
+
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__cjmem_address_d1       ;
+  // Storage descriptor memory contents
+  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__cjmem_consJump_cntl_d1 ;
+  reg   [`MGR_INST_CONS_JUMP_FIELD_RANGE                ]    mcntl__sdp__cjmem_consJump_val_d1  ;
+            
+
 
   //--------------------------------------------------
   // to Main Memory Controller
@@ -224,15 +255,36 @@ module sdp_request_cntl (
     always @(posedge clk) 
       begin
         mcntl__sdp__enable_sdmem_dnld_d1   <=  (reset_poweron) ? 1'b0 : mcntl__sdp__enable_sdmem_dnld     ;
+
         mcntl__sdp__sdmem_valid_d1         <=  (reset_poweron) ? 1'b0 : mcntl__sdp__sdmem_valid           ;
+        mcntl__sdp__sdmem_cntl_d1          <=                           mcntl__sdp__sdmem_cntl            ;
                                                                                                        
         sdp__mcntl__sdmem_ready            <=                           sdp__mcntl__sdmem_ready_e1        ;
                                                                                                        
         mcntl__sdp__sdmem_address_d1       <=                           mcntl__sdp__sdmem_address         ;
         mcntl__sdp__sdmem_addr_d1          <=                           mcntl__sdp__sdmem_addr            ;
         mcntl__sdp__sdmem_order_d1         <=                           mcntl__sdp__sdmem_order           ;
-        mcntl__sdp__sdmem_consJump_d1      <=                           mcntl__sdp__sdmem_consJump        ;
+        mcntl__sdp__sdmem_consJump_ptr_d1  <=                           mcntl__sdp__sdmem_consJump_ptr    ;
       end
+
+    always @(posedge clk) 
+      begin
+        mcntl__sdp__enable_cjmem_dnld_d1   <=  (reset_poweron) ? 1'b0 : mcntl__sdp__enable_cjmem_dnld     ;
+                                                                                                          
+        mcntl__sdp__cjmem_valid_d1         <=  (reset_poweron) ? 1'b0 : mcntl__sdp__cjmem_valid           ;
+        mcntl__sdp__cjmem_cntl_d1          <=                           mcntl__sdp__cjmem_cntl            ;
+                                                                                                          
+        sdp__mcntl__cjmem_ready            <=                           sdp__mcntl__cjmem_ready_e1        ;
+                                                                                                          
+        mcntl__sdp__cjmem_address_d1       <=                           mcntl__sdp__cjmem_address         ;
+        mcntl__sdp__cjmem_consJump_cntl_d1 <=                           mcntl__sdp__cjmem_consJump_cntl   ;
+        mcntl__sdp__cjmem_consJump_val_d1  <=                           mcntl__sdp__cjmem_consJump_val    ;
+      end
+
+    // FIXME ?? Do I need ready
+    // Remember, regs cant be used when assigning to fixed value
+    assign    sdp__mcntl__sdmem_ready_e1         =                           1'b1 ;
+    assign    sdp__mcntl__cjmem_ready_e1         =                           1'b1 ;
 
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1714,17 +1766,21 @@ module sdp_request_cntl (
   // Will need to merge Address_mem, AccessOrder_mem and consJumpPtr_mem into one device
   // e.g. merge memories 1,2,3 and merge 4,5
   
-  wire   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address       ;
-  wire   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder   ;
-  wire   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   ;
+  wire   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address          ;
+  wire   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder      ;
+  wire   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr      ;
+
+  reg    [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE          ]  sdmem_storage_desc_ptr ;
+  reg                                                       sdmem_write            ;
+  reg    [`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_RANGE    ]  sdmem_write_data       ;
 
   genvar gvi ;
   generate
     for (gvi=0; gvi<1 ; gvi=gvi+1) 
       begin: storageDesc_mem
 
-        generic_1port_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH  ),
-                               .GENERIC_MEM_REGISTERED_OUT (0                                     ),
+        generic_1port_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH        ),
+                               .GENERIC_MEM_REGISTERED_OUT (0                                           ),
                                .GENERIC_MEM_DATA_WIDTH     (`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_WIDTH )
                         ) gmemory ( 
                         
@@ -1737,59 +1793,38 @@ module sdp_request_cntl (
 
                         //---------------------------------------------------------------
                         // Port 
-                        .portA_address       ( local_storage_desc_ptr          ),
-                        .portA_write_data    ( {`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_WIDTH {1'b0}} ),
+                        .portA_address       ( sdmem_storage_desc_ptr                               ),
+                        .portA_write_data    ( sdmem_write_data                                     ),
                         .portA_read_data     ( {sdmem_Address, sdmem_consJumpPtr, sdmem_AccessOrder}),
-                        .portA_enable        ( 1'b1                             ), 
-                        .portA_write         ( 1'b0                             ),
+                        .portA_enable        ( 1'b1                                                 ), 
+                        .portA_write         ( sdmem_write                                          ),
                         
                         //---------------------------------------------------------------
                         // General
-                        .reset_poweron       ( reset_poweron             ),
-                        .clk                 ( clk                       )
+                        .reset_poweron       ( reset_poweron                                        ),
+                        .clk                 ( clk                                                  )
                         ) ;
-  // Note: parameters must be fixed, so have to load directly
-  //defparam gmemory.GENERIC_MEM_INIT_FILE   =    $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
-        `ifndef SYNTHESIS
 
-/*
-          string entry  ;
-          string memFile  ;
-          int memFileDesc ;
-          bit [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE       ]  memory_address ;
-          bit [`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_RANGE ]  memory_data    ;
-          initial
-            begin
-              @(negedge reset_poweron);
-              //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId), gmemory.mem);
-
-
-
-              memFile = $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
-              memFileDesc = $fopen (memFile, "r");
-              if (memFileDesc == 0)
-                begin
-                  $display("ERROR:LEE:readmem file error : %s ", memFile);
-                  $finish;
-                end
-              while (!$feof(memFileDesc)) 
-                begin 
-                  void'($fgets(entry, memFileDesc)); 
-                  void'($sscanf(entry, "@%x %x", memory_address, memory_data));
-                  //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);
-                  gmemory.mem[memory_address] = memory_data ;
-                end
-             $fclose(memFileDesc);
-
-            end
-*/
-
-        `endif
       end
   endgenerate
 
+  always @(*)
+    begin
+      sdmem_write             =   mcntl__sdp__enable_sdmem_dnld_d1 &  mcntl__sdp__sdmem_valid_d1       ;
+
+      sdmem_storage_desc_ptr  =  (mcntl__sdp__enable_sdmem_dnld_d1 )  ?   mcntl__sdp__sdmem_address_d1 :  // Host load of storage desc memory
+                                                                          local_storage_desc_ptr       ;
+
+      sdmem_write_data        =  {mcntl__sdp__sdmem_addr, mcntl__sdp__sdmem_consJump_ptr, mcntl__sdp__sdmem_order}  ;
+    end
+
   wire   [`COMMON_STD_INTF_CNTL_RANGE               ]  sdmem_consJumpCntl  ;
   wire   [`MGR_INST_CONS_JUMP_FIELD_RANGE           ]  sdmem_consJump      ;
+
+
+  reg    [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE       ]  cjmem_consJumpPtr      ;
+  reg                                                             cjmem_write            ;
+  reg    [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_AGGREGATE_MEM_RANGE ]  cjmem_write_data       ;
 
   generate
     for (gvi=0; gvi<1 ; gvi=gvi+1) 
@@ -1809,54 +1844,31 @@ module sdp_request_cntl (
 
                         //---------------------------------------------------------------
                         // Port
-                        .portA_address       ( consJumpPtr                      ),
-                        .portA_write_data    ( {`MGR_LOCAL_STORAGE_DESC_CONSJUMP_AGGREGATE_MEM_WIDTH {1'b0}} ),
+                        .portA_address       ( cjmem_consJumpPtr                   ),
+                        .portA_write_data    ( cjmem_write_data                    ),
                         .portA_read_data     ( {sdmem_consJumpCntl, sdmem_consJump}),
-                        .portA_enable        ( 1'b1                             ), 
-                        .portA_write         ( 1'b0                             ),
+                        .portA_enable        ( 1'b1                                ), 
+                        .portA_write         ( cjmem_write                         ),
                         
                         //---------------------------------------------------------------
                         // General
-                        .reset_poweron       ( reset_poweron             ),
-                        .clk                 ( clk                       )
+                        .reset_poweron       ( reset_poweron                       ),
+                        .clk                 ( clk                                 )
                         ) ;
-        `ifndef SYNTHESIS
 
-/*
-          string entry  ;
-          string memFile  ;
-          int memFileDesc ;
-          bit [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE       ]  memory_address ;
-          bit [`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_RANGE ]  memory_data    ;
 
-          initial
-            begin
-              @(negedge reset_poweron);
-              //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJump_readmem.dat", sys__mgr__mgrId), gmemory.mem);
-
-              memFile = $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJump_readmem.dat", sys__mgr__mgrId);
-
-              memFileDesc = $fopen (memFile, "r");
-              if (memFileDesc == 0)
-                begin
-                  $display("ERROR:LEE:readmem file error : %s ", memFile);
-                  $finish;
-                end
-              while (!$feof(memFileDesc)) 
-                begin 
-                  void'($fgets(entry, memFileDesc)); 
-                  void'($sscanf(entry, "@%x %x", memory_address, memory_data));
-                  //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);
-                  gmemory.mem[memory_address] = memory_data ;
-                end
-             $fclose(memFileDesc);
-
-            end
-*/
-
-        `endif
       end
   endgenerate
+
+  always @(*)
+    begin
+      cjmem_write             =   mcntl__sdp__enable_cjmem_dnld_d1 &  mcntl__sdp__cjmem_valid_d1       ;
+
+      cjmem_consJumpPtr       =  (mcntl__sdp__enable_cjmem_dnld_d1 )  ?   mcntl__sdp__cjmem_address_d1 :  // Host load of consJump memory
+                                                                          consJumpPtr                  ;
+
+      cjmem_write_data        =  {mcntl__sdp__cjmem_consJump_cntl_d1,  mcntl__sdp__cjmem_consJump_val_d1 } ;
+    end
 
 
   assign  storage_desc_consJumpPtr = sdmem_consJumpPtr      ;
@@ -1871,7 +1883,33 @@ module sdp_request_cntl (
   assign consJumpMemory_som_eom   =  (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_SOM_EOM) ;
   assign consJumpMemory_eom       =  (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_EOM);
 
-        
+/*
+   reg                                                        mcntl__sdp__enable_sdmem_dnld_d1   ;
+
+   reg                                                        mcntl__sdp__sdmem_valid_d1         ;
+   reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__sdmem_cntl_d1          ;
+   reg                                                        sdp__mcntl__sdmem_ready_e1         ;
+
+   reg   [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE          ]    mcntl__sdp__sdmem_address_d1       ;
+   // Storage descriptor memory contents
+   reg   [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__sdp__sdmem_addr_d1          ;
+   reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__sdp__sdmem_order_d1         ;
+   reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump_ptr_d1  ;
+            
+
+  reg                                                        mcntl__sdp__enable_cjmem_dnld_d1   ;
+
+  reg                                                        mcntl__sdp__cjmem_valid_d1         ;
+  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__cjmem_cntl_d1          ;
+  reg                                                        sdp__mcntl__cjmem_ready_e1         ;
+
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__cjmem_address_d1       ;
+  // Storage descriptor memory contents
+  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]    mcntl__sdp__cjmem_consJump_cntl_d1 ;
+  reg   [`MGR_INST_CONS_JUMP_FIELD_RANGE                ]    mcntl__sdp__cjmem_consJump_val_d1  ;
+            
+*/
+
   //----------------------------------------------------------------------------------------------------
   // end memories
   //----------------------------------------------------------------------------------------------------

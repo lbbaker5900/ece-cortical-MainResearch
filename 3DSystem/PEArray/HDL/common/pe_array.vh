@@ -18,6 +18,12 @@
 
 `define PE_ARRAY_NUM_OF_PE                 4
 
+`define PE_ARRAY_NUM_OF_PE_MSB           (`PE_ARRAY_NUM_OF_PE -1)
+`define PE_ARRAY_NUM_OF_PE_LSB            0
+`define PE_ARRAY_NUM_OF_PE_SIZE           (`PE_ARRAY_NUM_OF_PE_MSB - `PE_ARRAY_NUM_OF_PE_LSB +1)
+`define PE_ARRAY_NUM_OF_PE_RANGE           `PE_ARRAY_NUM_OF_PE_MSB : `PE_ARRAY_NUM_OF_PE_LSB
+`define PE_ARRAY_NUM_OF_PE_VECTOR        `PE_ARRAY_NUM_OF_PE-1 : 0
+
 
 //---------------------------------------------------------------------------------------------------------------------
 // Memory

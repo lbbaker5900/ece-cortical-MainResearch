@@ -103,7 +103,16 @@ module mgr_noc_cntl (
                   //noc__locl__dp_strmId     , 
 
                   // NoC Ports
-                 `include "manager_noc_cntl_noc_ports.vh"
+                  //`include "manager_noc_cntl_noc_ports.vh"
+                  mgr__noc__port_valid            ,
+                  mgr__noc__port_cntl             ,
+                  mgr__noc__port_data             ,
+                  noc__mgr__port_fc               ,
+                  noc__mgr__port_valid            ,
+                  noc__mgr__port_cntl             ,
+                  noc__mgr__port_data             ,
+                  mgr__noc__port_fc               ,
+                  sys__mgr__port_destinationMask  ,
 
                   sys__mgr__mgrId   ,
                   clk               ,
@@ -164,7 +173,17 @@ module mgr_noc_cntl (
   output [`MGR_ARRAY_HOST_ID_RANGE                ] noc__locl__dp_mgrId      ; 
 
 
-  `include "mgr_noc_cntl_noc_ports_declaration.vh"
+  //`include "mgr_noc_cntl_noc_ports_declaration.vh"
+  output                                         mgr__noc__port_valid           [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  output   [`COMMON_STD_INTF_CNTL_RANGE       ]  mgr__noc__port_cntl            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  output   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  mgr__noc__port_data            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  input                                          noc__mgr__port_fc              [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  input                                          noc__mgr__port_valid           [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  input    [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port_cntl            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  input    [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port_data            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  output                                         mgr__noc__port_fc              [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  input    [`MGR_HOST_MGR_ID_BITMASK_RANGE    ]  sys__mgr__port_destinationMask [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+
 
    
   //-------------------------------------------------------------------------------------------
@@ -174,7 +193,16 @@ module mgr_noc_cntl (
   reg                                               noc__locl__cp_ready      ; 
   reg                                               noc__locl__dp_ready      ; 
 
-  `include "mgr_noc_cntl_noc_ports_wires.vh"
+  //`include "mgr_noc_cntl_noc_ports_wires.vh"
+  reg                                            mgr__noc__port_valid           [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  wire     [`COMMON_STD_INTF_CNTL_RANGE       ]  mgr__noc__port_cntl            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  wire     [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  mgr__noc__port_data            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  wire                                           noc__mgr__port_fc              [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  wire                                           noc__mgr__port_valid           [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  wire     [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port_cntl            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  wire     [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port_data            [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  wire                                           mgr__noc__port_fc              [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
+  wire     [`MGR_HOST_MGR_ID_BITMASK_RANGE    ]  sys__mgr__port_destinationMask [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] ;
 
   reg [`MGR_MGR_ID_BITMASK_RANGE              ]   thisMgrBitMask           ;  // bit field used to mask off bits associated with this manager
 
@@ -918,11 +946,32 @@ module mgr_noc_cntl (
   // - defined here because output port fsm uses state of local inq fsm
   reg [`MGR_NOC_CONT_LOCAL_INQ_CNTL_STATE_RANGE] nc_local_inq_cntl_state      ;  // state flop
 
-  `include "mgr_noc_cntl_noc_port_output_control_mask_assignments.vh"          // which destinations nodes does this support. Based on input from top level
+  //`include "mgr_noc_cntl_noc_port_output_control_mask_assignments.vh"          // which destinations nodes does this support. Based on input from top level
+  generate
+  for (genvar port=0; port<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; port++)
+    begin
+      // Hard-code which nodes can be accessed via this output port
+      assign Port_to_NoC[port].thisPort_destinationMask = sys__mgr__port_destinationMask[port] ; // bitmask indicating which nodes accessed out of this port
+    end
+  endgenerate
+
   `include "mgr_noc_cntl_noc_port_output_control_request_assignments.vh"       // set {local, src0..3}_OutqReq based on ReqAddr  from each of those requestors
                                                                                // send the OutqAck and OutqReady to the requestors (local, port0..3)
   `include "mgr_noc_cntl_noc_port_output_control_header_field_assignments.vh"  // Format of packet defined at source, just pass the packet over but deassert the ports in the address bitfield not accessible via this output port
-  `include "mgr_noc_cntl_noc_port_output_control_transfer_assignments.vh"      // Connect output of FIFO to external NoC ports
+
+
+  //`include "mgr_noc_cntl_noc_port_output_control_transfer_assignments.vh"      // Connect output of FIFO to external NoC ports
+  generate
+  for (genvar port=0; port<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; port++)
+    begin
+      // Port outputs to NoC
+      assign mgr__noc__port_cntl  [port] = Port_to_NoC[port].read_cntl;
+      assign mgr__noc__port_data  [port] = Port_to_NoC[port].read_data;
+      assign Port_to_NoC[port].read       = ~Port_to_NoC[port].empty & ~noc__mgr__port_fc [port] ;
+      always @(posedge clk)
+          mgr__noc__port_valid [port]    <= Port_to_NoC[port].read ;
+    end
+  endgenerate
 
 
   //----------------------------------------------------------------------------------------------------
@@ -1286,7 +1335,20 @@ module mgr_noc_cntl (
   endgenerate
 
   // Connect incoming NoC packets to input FIFO(s)
-  `include "mgr_noc_cntl_port_input_control_assignments.vh"
+  //`include "mgr_noc_cntl_port_input_control_assignments.vh"
+  // Port inputs from NoC
+  generate
+  for (genvar port=0; port<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; port++)
+    begin
+      assign    mgr__noc__port_fc [port]        = Port_from_NoC_fifo[port].almost_full ;
+      always @(*)
+        begin 
+          Port_from_NoC_fifo[port].write_cntl    = noc__mgr__port_cntl   [port]        ;
+          Port_from_NoC_fifo[port].write_data    = noc__mgr__port_data   [port]        ;
+          Port_from_NoC_fifo[port].write         = noc__mgr__port_valid  [port]        ;
+        end 
+    end
+  endgenerate
 
 
   //--------------------------------------------------------------------------------------------

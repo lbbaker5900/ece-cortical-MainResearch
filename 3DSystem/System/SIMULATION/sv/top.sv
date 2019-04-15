@@ -345,15 +345,15 @@ module top;
            begin
              if(mgr == 0)
                begin
-                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port2_valid = ExtFromNocIfc[mgr].noc__mgr__port_valid    ;
-                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port2_cntl  = ExtFromNocIfc[mgr].noc__mgr__port_cntl     ;
-                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port2_data  = ExtFromNocIfc[mgr].noc__mgr__port_data     ;
-                 assign ExtFromNocIfc[mgr].mgr__noc__port_fc                             = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port2_fc ;
-                                                                                                                             
-                 assign ExtToNocIfc[mgr].mgr__noc__port_valid                            = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port2_valid ;
-                 assign ExtToNocIfc[mgr].mgr__noc__port_cntl                             = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port2_cntl  ;
-                 assign ExtToNocIfc[mgr].mgr__noc__port_data                             = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port2_data  ;
-                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port2_fc    = ExtToNocIfc[mgr].noc__mgr__port_fc         ;
+                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port_valid [2]  = ExtFromNocIfc[mgr].noc__mgr__port_valid    ;
+                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port_cntl  [2]  = ExtFromNocIfc[mgr].noc__mgr__port_cntl     ;
+                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port_data  [2]  = ExtFromNocIfc[mgr].noc__mgr__port_data     ;
+                 assign ExtFromNocIfc[mgr].mgr__noc__port_fc                                 = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port_fc [2]  ;
+                                                                                                                                  
+                 assign ExtToNocIfc[mgr].mgr__noc__port_valid                                = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port_valid [2] ;
+                 assign ExtToNocIfc[mgr].mgr__noc__port_cntl                                 = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port_cntl  [2] ;
+                 assign ExtToNocIfc[mgr].mgr__noc__port_data                                 = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port_data  [2] ;
+                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port_fc    [2]  = ExtToNocIfc[mgr].noc__mgr__port_fc         ;
 /*
                  assign system_inst.manager_array_inst.mgr__noc__port0_valid = ExtToNocIfc[mgr].cb_p.noc__mgr__port_valid    ;
                  assign system_inst.manager_array_inst.mgr__noc__port0_cntl  = ExtToNocIfc[mgr].cb_p.noc__mgr__port_cntl     ;

@@ -48,6 +48,11 @@ class generator;
     event   gen2drv_ack      ;
 
     //----------------------------------------------------------------------------------------------------
+    // send lane data to dram checker to check dram contents at the end of the
+    // test to drive stack bus
+    mailbox gen2dramck          ;
+
+    //----------------------------------------------------------------------------------------------------
     //  Generator sends operation to Upstream checker for value check
 
     mailbox gen2up                                   ;
@@ -88,39 +93,42 @@ class generator;
     base_operation    priorOperation                   ; // operation object copy of previous operations
     int               priorOperationNumberOfOperands   ;  // SV wont let me reference priorOperations as it might be null, so only reference priorOperations in post_randomize
 
+    base_operation    lane_op                          ; 
 
     //----------------------------------------------------------------------------------------------------
     // 
 
     function new (
-                  input int                   Id[2]             , 
-                  input mailbox               mgr2gen           ,
-                  input event                 mgr2gen_ack       ,
-                  input mailbox               gen2drv           ,
-                  input event                 gen2drv_ack       ,
-                  input mailbox               gen2oob           ,
-                  input event                 gen2oob_ack       ,
-                  input event                 new_operation     ,
-                  input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB   ,
-                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane [`PE_NUM_OF_STREAMS] ,
-                  input mailbox               gen2rfP           ,
-                  input event                 gen2rfP_ack       ,
-                  input mailbox               gen2up                         
+    input int                          Id                        [ 2]                  , 
+    input mailbox                      mgr2gen                                         , 
+    input event                        mgr2gen_ack                                     , 
+    input mailbox                      gen2drv                                         , 
+    input event                        gen2drv_ack                                     , 
+    input mailbox                      gen2oob                                         , 
+    input event                        gen2oob_ack                                     , 
+    input mailbox                      gen2dramck                                      , 
+    input event                        new_operation                                   , 
+    input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                          , 
+    input vDownstreamStackBusLane_T    vDownstreamStackBusLane   [ `PE_NUM_OF_STREAMS] , 
+    input mailbox                      gen2rfP                                         , 
+    input event                        gen2rfP_ack                                     , 
+    input mailbox                      gen2up                                           
                  );
 
-        this.Id                = Id                 ;
-        this.mgr2gen           = mgr2gen            ;
-        this.mgr2gen_ack       = mgr2gen_ack        ;
-        this.gen2drv           = gen2drv            ;
-        this.gen2drv_ack       = gen2drv_ack        ;
-        this.gen2oob           = gen2oob            ;
-        this.gen2oob_ack       = gen2oob_ack        ;
-        this.new_operation     = new_operation      ;
-        this.vDownstreamStackBusOOB   = vDownstreamStackBusOOB    ;
-        this.vDownstreamStackBusLane  = vDownstreamStackBusLane   ;
-        this.gen2rfP           = gen2rfP            ;
-        this.gen2rfP_ack       = gen2rfP_ack        ;
-        this.gen2up            = gen2up             ;
+        this.Id                      = Id                      ; 
+        this.mgr2gen                 = mgr2gen                 ; 
+        this.mgr2gen_ack             = mgr2gen_ack             ; 
+        this.gen2drv                 = gen2drv                 ; 
+        this.gen2drv_ack             = gen2drv_ack             ; 
+        this.gen2oob                 = gen2oob                 ; 
+        this.gen2oob_ack             = gen2oob_ack             ; 
+        this.gen2dramck              = gen2dramck              ; 
+        this.new_operation           = new_operation           ; 
+        this.vDownstreamStackBusOOB  = vDownstreamStackBusOOB  ; 
+        this.vDownstreamStackBusLane = vDownstreamStackBusLane ; 
+        this.gen2rfP                 = gen2rfP                 ; 
+        this.gen2rfP_ack             = gen2rfP_ack             ; 
+        this.gen2up                  = gen2up                  ; 
 
     endfunction
 
@@ -233,6 +241,12 @@ class generator;
                           sys_operation.displayOperation();
                         `endif
                         gen2drv.put(sys_operation)                    ;
+
+                        // Send operation to memory result checker
+                        lane_op        =  new ();
+                        lane_op = sys_operation.copy() ; // deep copy creates new operand arrays                                      
+                        //lane_op.lane   = Id[1]     ; // tell result checker which lane this operation was sent to
+                        gen2dramck.put(lane_op)                    ;
 
                         // now wait for driver to take our sequence of operations
                         //sys_operation.displayOperation();

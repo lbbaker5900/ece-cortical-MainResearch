@@ -38,6 +38,7 @@
 `include "regFile_driver.sv"
 `include "loadStore_driver.sv"
 `include "dram_driver.sv"
+`include "dram_checker.sv"
 `include "host.sv"
 `include "manager.vh"
 `include "manager_array.vh"
@@ -69,6 +70,7 @@ class Environment;
     regFile_driver       rf_driver         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ;
     loadStore_driver     ldst_driver       [`PE_ARRAY_NUM_OF_PE  ]                                               ;
     dram_driver          main_mem_driver   [`MGR_ARRAY_NUM_OF_MGR]                                               ;
+    dram_checker         main_mem_checker  [`MGR_ARRAY_NUM_OF_MGR]                                               ;
     host_driver_checker  host_driver                                                                             ;
 
 
@@ -88,6 +90,10 @@ class Environment;
     mailbox       mgr2up           [`PE_ARRAY_NUM_OF_PE ]                                               ;  // manager sends transaction type to upstream checker, generator sends expected values
     mailbox       gen2up           [`PE_ARRAY_NUM_OF_PE ]                                               ;
                                                                                                         
+    event         env2dramck       [`PE_ARRAY_NUM_OF_PE ]                                               ;  // environment tells main memory checker to start once the test is complete
+    event         dramck2env       [`PE_ARRAY_NUM_OF_PE ]                                               ;  // environment gets ack from main memory checker once memory check is complete
+    mailbox       gen2dramck       [`PE_ARRAY_NUM_OF_PE ]                                               ;
+
     // an operation defines what is sent on both the streams in a pe/lane                               
     event         new_operation    [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ; 
     event         final_operation  [`PE_ARRAY_NUM_OF_PE ]                                               ;
@@ -214,6 +220,7 @@ class Environment;
 
                 main_mem_driver  [pe]  = new ( pe, vDramIfc [pe] );  // DRAM
 
+                gen2dramck  [pe]  = new () ;
 
                 // Create memory read processors (two for each manager)
                 for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
@@ -235,41 +242,81 @@ class Environment;
                         gen2drv     [pe][lane]  = new () ;
                         drv2memP    [pe][lane]  = new () ;
                         gen2rfP     [pe][lane]  = new () ;
-                        // remember, each gen/drv tuple handle both streams in a lane
-                        gen         [pe][lane]  = new ( Id, mgr2gen[pe][lane] , mgr2gen_ack[pe][lane], gen2drv[pe][lane] , gen2drv_ack[pe][lane], gen2oob[pe] , gen2oob_ack[pe][lane], new_operation[pe][lane], vDownstreamStackBusOOB [pe]       ,   vDownstreamStackBusLane [pe][lane] ,        gen2rfP[pe][lane],    gen2rfP_ack[pe][lane]  , gen2up [pe] );
-                        drv         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane],                             vDownstreamStackBusOOB [pe]       ,   vDownstreamStackBusLane [pe][lane] ,       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );
-                        mem_check   [pe][lane]  = new ( Id,                                                                                                       vDma2Mem  [pe][lane] ,                                       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );  // monitor dma to memory interface for result check
-                        rf_driver   [pe][lane]  = new ( Id,                                                                                      vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
+                        // remember                                                                   , each gen/drv tuple handle both streams in a lane
+                        //
+                        gen [ pe ] [ lane ] = new ( .Id                      ( Id                                      ) , 
+                                                    .mgr2gen                 ( mgr2gen                 [ pe ] [ lane ] ) , 
+                                                    .mgr2gen_ack             ( mgr2gen_ack             [ pe ] [ lane ] ) , 
+                                                    .gen2drv                 ( gen2drv                 [ pe ] [ lane ] ) , 
+                                                    .gen2drv_ack             ( gen2drv_ack             [ pe ] [ lane ] ) , 
+                                                    .gen2oob                 ( gen2oob                 [ pe ]          ) , 
+                                                    .gen2oob_ack             ( gen2oob_ack             [ pe ] [ lane ] ) , 
+                                                    .gen2dramck              ( gen2dramck              [ pe ]          ) ,
+                                                    .new_operation           ( new_operation           [ pe ] [ lane ] ) , 
+                                                    .vDownstreamStackBusOOB  ( vDownstreamStackBusOOB  [ pe ]          ) , 
+                                                    .vDownstreamStackBusLane ( vDownstreamStackBusLane [ pe ] [ lane ] ) , 
+                                                    .gen2rfP                 ( gen2rfP                 [ pe ] [ lane ] ) , 
+                                                    .gen2rfP_ack             ( gen2rfP_ack             [ pe ] [ lane ] ) , 
+                                                    .gen2up                  ( gen2up                  [ pe ]          ) );
+
+                        drv [ pe ] [ lane ] = new ( .Id                      ( Id                                     ) , 
+                                                    .gen2drv                 ( gen2drv                 [ pe ] [ lane] ) , 
+                                                    .gen2drv_ack             ( gen2drv_ack             [ pe ] [ lane] ) , 
+                                                    .new_operation           ( new_operation           [ pe ] [ lane] ) , 
+                                                    .vDownstreamStackBusOOB  ( vDownstreamStackBusOOB  [ pe ]         ) , 
+                                                    .vDownstreamStackBusLane ( vDownstreamStackBusLane [ pe ] [ lane] ) , 
+                                                    .drv2memP                ( drv2memP                [ pe ] [ lane] ) , 
+                                                    .drv2memP_ack            ( drv2memP_ack            [ pe ] [ lane] ) );
+
+                        mem_check   [pe][lane]  = new ( .Id           ( Id                                                                             ),  
+                                                        .vP_mem       ( vDma2Mem  [pe][lane]                                                           ), 
+                                                        .drv2memP     ( drv2memP[pe][lane]                                                             ), 
+                                                        .drv2memP_ack ( drv2memP_ack[pe][lane]                                                         ));  // monitor dma to memory interface for result check
+
+                        rf_driver   [pe][lane]  = new ( .Id          ( Id                                                                       ), 
+                                                        .vP_srf      ( vRegFileScalarDrv2stOpCntl [pe]                                          ), 
+                                                        .vP_vrf      ( vRegFileLaneDrv2stOpCntl [pe][lane]                                      ), 
+                                                        .gen2rfP     ( gen2rfP[pe][lane]                                                        ), 
+                                                        .gen2rfP_ack ( gen2rfP_ack [pe][lane]                                                   ));  // RegFile driver for stOp controller inputs
                     end
                  
-                mgr         [pe]  = new ( .Id                        ( pe                           ), 
-                                          .mgr2oob                   ( mgr2oob[pe]                  ),
-                                          .mgr2oob_ack               ( mgr2oob_ack[pe]              ), 
-                                          .mgr2gen                   ( mgr2gen[pe]                  ), 
-                                          .mgr2gen_ack               ( mgr2gen_ack[pe]              ),  
-                                          .final_operation           ( final_operation[pe]          ), 
-                                          .vDownstreamStackBusOOB    ( vDownstreamStackBusOOB [pe]  ),   
-                                          .vDownstreamStackBusLane   ( vDownstreamStackBusLane [pe] ), 
-                                          .mgr2up                    ( mgr2up [pe]                  ), 
-                                          .vWudToMrcIfc              ( vWudToMrcIfc[pe]             ), 
-                                          .mrc2mgr_m                 ( mrc2mgr_m[pe]                ), 
-                                          .wud2mgr_m                 ( wud2mgr_m[pe]                ),
-                                          .vWudToOobIfc              ( vWudToOobIfc[pe]             ),
-                                          .vIntDramIfc               ( vIntDramIfc[pe]              ),
-                                          .vDramCfgIfc               ( vDramCfgIfc[pe]              ));
+                mgr         [pe]  = new ( .Id                        ( pe                              ), 
+                                          .mgr2oob                   ( mgr2oob[pe]                     ),
+                                          .mgr2oob_ack               ( mgr2oob_ack[pe]                 ), 
+                                          .mgr2gen                   ( mgr2gen[pe]                     ), 
+                                          .mgr2gen_ack               ( mgr2gen_ack[pe]                 ),  
+                                          .final_operation           ( final_operation[pe]             ), 
+                                          .vDownstreamStackBusOOB    ( vDownstreamStackBusOOB [pe]     ),   
+                                          .vDownstreamStackBusLane   ( vDownstreamStackBusLane [pe]    ), 
+                                          .mgr2up                    ( mgr2up [pe]                     ), 
+                                          .vWudToMrcIfc              ( vWudToMrcIfc[pe]                ), 
+                                          .mrc2mgr_m                 ( mrc2mgr_m[pe]                   ), 
+                                          .wud2mgr_m                 ( wud2mgr_m[pe]                   ),
+                                          .vWudToOobIfc              ( vWudToOobIfc[pe]                ),
+                                          .vIntDramIfc               ( vIntDramIfc[pe]                 ),
+                                          .vDramCfgIfc               ( vDramCfgIfc[pe]                 ));
 
-                oob_drv     [pe]  = new ( .Id                      ( pe                              ),
-                                          .mgr2oob                 ( mgr2oob[pe]                     ),
-                                          .mgr2oob_ack             ( mgr2oob_ack[pe]                 ),
-                                          .gen2oob                 ( gen2oob[pe]                     ),
-                                          .gen2oob_ack             ( gen2oob_ack[pe]                 ),
-                                          .vDownstreamStackBusOOB  ( vDownstreamStackBusOOB [pe]     ),
-                                          .vDownstreamStackBusLane ( vDownstreamStackBusLane [pe]    ),
-                                          .vWudToOobIfc            ( vWudToOobIfc[pe]                ),
-                                          .wud2mgr_m               ( wud2mgr_m[pe]                   ));
+                oob_drv     [pe]  = new ( .Id                        ( pe                              ),
+                                          .mgr2oob                   ( mgr2oob[pe]                     ),
+                                          .mgr2oob_ack               ( mgr2oob_ack[pe]                 ),
+                                          .gen2oob                   ( gen2oob[pe]                     ),
+                                          .gen2oob_ack               ( gen2oob_ack[pe]                 ),
+                                          .vDownstreamStackBusOOB    ( vDownstreamStackBusOOB [pe]     ),
+                                          .vDownstreamStackBusLane   ( vDownstreamStackBusLane [pe]    ),
+                                          .vWudToOobIfc              ( vWudToOobIfc[pe]                ),
+                                          .wud2mgr_m                 ( wud2mgr_m[pe]                   ));
+
+                main_mem_checker [pe]  = new ( .Id                   ( pe                              ), 
+                                               .env2dramck           ( env2dramck  [pe]                ),
+                                               .dramck2env           ( dramck2env  [pe]                ),
+                                               .gen2dramck           ( gen2dramck  [pe]                ),
+                                               .vIntDramIfc          ( vIntDramIfc [pe]                ),
+                                               .vDramCfgIfc          ( vDramCfgIfc [pe]                ));
 
                 up_check    [pe]  = new ( pe, vUpstreamStackBus [pe],  mgr2up [pe], gen2up [pe] ) ;
+
             end
+
           noc_check    = new ( vLocalToNoC,  vLocalFromNoC, noc2env_mbxEmpty );
           host_driver  = new ( vExtToNoC,  vExtFromNoC);
 
@@ -425,6 +472,13 @@ class Environment;
     endtask
 
     task wrap_up();                                               //This task marks the completion of verification.
+
+        // Check correct result is in memory
+        for (int pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe++)
+          begin
+            main_mem_checker [pe] .run();
+          end
+
         noc_check.displayRemainingSent();
         $display("@%0t:%s:%0d:Complete!",$time, `__FILE__, `__LINE__);
     endtask : wrap_up

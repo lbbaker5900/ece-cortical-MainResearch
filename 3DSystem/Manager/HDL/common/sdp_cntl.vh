@@ -106,6 +106,8 @@
 `define SDP_CNTL_STRM_DATA_STATE_SIZE          (`SDP_CNTL_STRM_DATA_STATE_MSB - `SDP_CNTL_STRM_DATA_STATE_LSB +1)
 `define SDP_CNTL_STRM_DATA_STATE_RANGE          `SDP_CNTL_STRM_DATA_STATE_MSB : `SDP_CNTL_STRM_DATA_STATE_LSB
 
+`define SDP_CNTL_STRM_USES_DW_ADDER   
+
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 // end of FSM's

@@ -61,14 +61,14 @@ class driver;
     //----------------------------------------------------------------------------------------------------
 
     function new (
-                  input int                  Id[2]              ,
-                  input mailbox              gen2drv            ,                  //Retrieving mailboxes and virtual system interface.
-                  input event                gen2drv_ack        ,
-                  input event                new_operation      ,
-                  input vDownstreamStackBusOOB_T    vDownstreamStackBusOOB    ,
-                  input vDownstreamStackBusLane_T   vDownstreamStackBusLane [`PE_NUM_OF_STREAMS] ,
-                  input mailbox              drv2memP           ,
-                  input event                drv2memP_ack       );
+                  input int                         Id                         [ 2]                  , 
+                  input mailbox                     gen2drv                                          , //Retrieving mailboxes and virtual system interface.
+                  input event                       gen2drv_ack                                      , 
+                  input event                       new_operation                                    , 
+                  input vDownstreamStackBusOOB_T    vDownstreamStackBusOOB                           , 
+                  input vDownstreamStackBusLane_T   vDownstreamStackBusLane    [ `PE_NUM_OF_STREAMS] , 
+                  input mailbox                     drv2memP                                         , 
+                  input event                       drv2memP_ack                                     );
 
         this.Id                  = Id                         ;
         this.gen2drv             = gen2drv                    ;

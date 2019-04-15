@@ -29,14 +29,6 @@
 
 module pe (
 
-            // PE core interface
-            //ready             , // ready to start streaming. Goes active when outside interfaces can start streaming
-            //complete          ,
-
-            // General system signals
-            //sys__pe__allSynchronized  ,  // all PE streams are complete
-            //pe__sys__thisSynchronized ,  // this PE's streams are complete
-                          
             //-------------------------------
             // Stack Bus - General
             //
@@ -54,12 +46,17 @@ module pe (
             pe__std__oob_ready                          ,
             std__pe__oob_type                           ,
             std__pe__oob_data                           ,
-            //`include "pe_stack_bus_downstream_oob_ports.vh"
 
             //-------------------------------
             // Stack Bus - Downstream
             //
-            `include "pe_stack_bus_downstream_ports.vh"
+            //`include "pe_stack_bus_downstream_ports.vh"
+            pe__std__lane_strm_ready                   , 
+            std__pe__lane_strm_cntl                    ,
+            std__pe__lane_strm_data                    ,
+            std__pe__lane_strm_data_valid              ,
+
+
 
             //-------------------------------
             // Stack Bus - Upstream
@@ -79,14 +76,6 @@ module pe (
 
   input                      clk            ;
   input                      reset_poweron  ;
-  //input [`PE_PE_ID_RANGE   ] sys__pe__peId  ; 
-
-  //input                      sys__pe__allSynchronized  ;  // all PE streams are complete
-  //output                     pe__sys__thisSynchronized ;  // this PE's streams are complete
-   
-  // interface to PE core
-  //output      ready             ; // ready to start streaming
-  //output      complete          ;
 
 
   //-------------------------------------------------------------------------------------------------
@@ -107,12 +96,17 @@ module pe (
   output                                        pe__std__oob_ready           ;
   input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;
   input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;
-  //`include "pe_stack_bus_downstream_oob_port_declarations.vh"
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
 
-  `include "pe_stack_bus_downstream_port_declarations.vh"
+  //`include "pe_stack_bus_downstream_port_declarations.vh"
+  // Lane operand bus                 
+  output                                           pe__std__lane_strm_ready       [`PE_NUM_OF_EXEC_LANES_RANGE ]   [`PE_NUM_OF_STREAMS_RANGE ] ;
+  input [`COMMON_STD_INTF_CNTL_RANGE       ]       std__pe__lane_strm_cntl        [`PE_NUM_OF_EXEC_LANES_RANGE ]   [`PE_NUM_OF_STREAMS_RANGE ] ;
+  input [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       std__pe__lane_strm_data        [`PE_NUM_OF_EXEC_LANES_RANGE ]   [`PE_NUM_OF_STREAMS_RANGE ] ;
+  input                                            std__pe__lane_strm_data_valid  [`PE_NUM_OF_EXEC_LANES_RANGE ]   [`PE_NUM_OF_STREAMS_RANGE ] ;
+
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
@@ -141,36 +135,41 @@ module pe (
   //-------------------------------------------------------------------------------------------------
   // NoC
   //
-  //`include "noc_cntl_noc_ports_declaration.vh"
-
-  //-------------------------------------------------------------------------------------------------
-  // Streaming Operations Control
-
-  //wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  scntl__stOp__operation ;
-  //wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  scntl__dma__operation  ;
 
   //-------------------------------------------------------------------------------------------------
   // Result from stOp to simd (via scntl)
 
   `include "pe_stOp_to_cntl_regfile_connection_wires.vh"
+  /*
+  wire                                    reg__sdp__lane_ready  [`PE_NUM_OF_EXEC_LANES_RANGE ]   ;
+  wire                                    sdp__reg__lane_valid  [`PE_NUM_OF_EXEC_LANES_RANGE ]   ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE  ]  sdp__reg__lane_cntl   [`PE_NUM_OF_EXEC_LANES_RANGE ]   ;
+  wire   [`STREAMING_OP_RESULT_RANGE   ]  sdp__reg__lane_data   [`PE_NUM_OF_EXEC_LANES_RANGE ]   ;
+  */
+
   `include "pe_scntl_to_simd_regfile_connection_wires.vh"
+  /*
+  wire                                    reg__scntl__lane_ready   [`PE_NUM_OF_EXEC_LANES_RANGE ]  ;
+  wire                                    scntl__reg__lane_valid   [`PE_NUM_OF_EXEC_LANES_RANGE ]  ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE  ]  scntl__reg__lane_cntl    [`PE_NUM_OF_EXEC_LANES_RANGE ]  ;
+  wire   [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane_data    [`PE_NUM_OF_EXEC_LANES_RANGE ]  ;
+  */
 
 
   //-------------------------------------------------------------------------------------------------
   `include "pe_dma_memc_connection_wires.vh"
-  //`include "pe_std_to_stOp_connection_wires.vh"
-
-  //`include "pe_noc_to_peArray_connection_wires.vh"
-
-  //`include "pe_cntl_noc_connection_wires.vh"
-  //`include "pe_cntl_to_stOp_connection_wires.vh"
 
   `include "pe_stOp_control_to_stOp_wires.vh"
 
   //---------------------------------------
   // Stack Interface Downstream to Streaming Op
   //
-  `include "stack_interface_to_stOp_downstream_instance_wires.vh"
+  //`include "stack_interface_to_stOp_downstream_instance_wires.vh"
+  wire                                            stOp__sti__lane_strm_ready      [`PE_NUM_OF_EXEC_LANES_RANGE ]   [`PE_NUM_OF_STREAMS_RANGE ]  ;
+  reg  [`COMMON_STD_INTF_CNTL_RANGE       ]       sti__stOp__lane_strm_cntl       [`PE_NUM_OF_EXEC_LANES_RANGE ]   [`PE_NUM_OF_STREAMS_RANGE ]  ;
+  reg  [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane_strm_data       [`PE_NUM_OF_EXEC_LANES_RANGE ]   [`PE_NUM_OF_STREAMS_RANGE ]  ;
+  reg                                             sti__stOp__lane_strm_data_valid [`PE_NUM_OF_EXEC_LANES_RANGE ]   [`PE_NUM_OF_STREAMS_RANGE ]  ;
+
 
   //---------------------------------------
   // Stack Interface Downstream to PE control
@@ -181,7 +180,6 @@ module pe (
   wire                                        cntl__sti__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      sti__cntl__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      sti__cntl__oob_data            ;
-  //`include "stack_interface_to_pe_cntl_downstream_instance_wires.vh"
 
   //---------------------------------------
   // PE Control
@@ -198,7 +196,6 @@ module pe (
   wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r133  [`PE_NUM_OF_EXEC_LANES ];
   wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r134  [`PE_NUM_OF_EXEC_LANES ];
   wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r135  [`PE_NUM_OF_EXEC_LANES ];
-  //`include "pe_cntl_simd_instance_wires.vh"
 
   wire                                    cntl__simd__tag_valid      ;
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag            ;
@@ -209,6 +206,7 @@ module pe (
   // SIMD
   // 
   `include "pe_simd_instance_wires.vh"
+
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag            ;
   wire  [`PE_NUM_LANES_RANGE           ]  simd__sui__tag_num_lanes  ;  
 
@@ -227,13 +225,24 @@ module pe (
 
                         //---------------------------------------
                         // OOB Downstream Stack bus
+                        // - carries PE configuration                                               
                         //
-                        `include "pe_stack_bus_downstream_oob_instance_ports.vh"
+                        //`include "pe_stack_bus_downstream_oob_instance_ports.vh"
+                        .std__pe__oob_cntl                  ( std__pe__oob_cntl               ),      
+                        .std__pe__oob_valid                 ( std__pe__oob_valid              ),      
+                        .pe__std__oob_ready                 ( pe__std__oob_ready              ),      
+                        .std__pe__oob_type                  ( std__pe__oob_type               ),      
+                        .std__pe__oob_data                  ( std__pe__oob_data               ),      
 
                         //---------------------------------------
                         // Downstream Stack bus
                         //
-                        `include "pe_stack_bus_downstream_instance_ports.vh"
+                        //`include "pe_stack_bus_downstream_instance_ports.vh"
+                        .pe__std__lane_strm_ready           ( pe__std__lane_strm_ready        ),      
+                        .std__pe__lane_strm_cntl            ( std__pe__lane_strm_cntl         ),      
+                        .std__pe__lane_strm_data            ( std__pe__lane_strm_data         ),      
+                        .std__pe__lane_strm_data_valid      ( std__pe__lane_strm_data_valid   ),      
+                        
 
                         //-------------------------------
                         // Stack Bus - Upstream
@@ -263,12 +272,15 @@ module pe (
                         .cntl__sti__oob_ready                 ( cntl__sti__oob_ready              ),      
                         .sti__cntl__oob_type                  ( sti__cntl__oob_type               ),      
                         .sti__cntl__oob_data                  ( sti__cntl__oob_data               ),      
-                        //`include "stack_interface_to_pe_cntl_downstream_instance_ports.vh"
 
                         //---------------------------------------
                         // Downstream Stack to Streaming Op
                         //
-                        `include "stack_interface_to_stOp_downstream_instance_ports.vh"
+                        //`include "stack_interface_to_stOp_downstream_instance_ports.vh"
+                        .stOp__sti__lane_strm_ready      ( stOp__sti__lane_strm_ready      ),      
+                        .sti__stOp__lane_strm_cntl       ( sti__stOp__lane_strm_cntl       ),      
+                        .sti__stOp__lane_strm_data       ( sti__stOp__lane_strm_data       ),      
+                        .sti__stOp__lane_strm_data_valid ( sti__stOp__lane_strm_data_valid ),      
 
 
                        .clk                          ( clk                         ),
@@ -800,7 +812,29 @@ module pe (
   //`include "streamingOps_cntl_stOp_noc_connections.vh"
 
   // Stack Interface Downstream to Streaming Op
-  `include "pe_stack_interface_to_stOp_connections.vh"
+  //`include "pe_stack_interface_to_stOp_connections.vh"
+  generate
+  for (genvar lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+    begin
+      for (genvar strm=0; strm<`PE_NUM_OF_STREAMS; strm++)
+        begin
+          if (strm == 0)
+            begin
+              assign stOp__sti__lane_strm_ready               [lane][strm] =  stOp_lane[lane].stOp__sti__strm0_ready                ;
+              assign stOp_lane[lane].sti__stOp__strm0_cntl                 =  sti__stOp__lane_strm_cntl              [lane][strm]   ;
+              assign stOp_lane[lane].sti__stOp__strm0_data                 =  sti__stOp__lane_strm_data              [lane][strm]   ;
+              assign stOp_lane[lane].sti__stOp__strm0_data_valid           =  sti__stOp__lane_strm_data_valid        [lane][strm]   ;
+            end
+          else
+            begin
+              assign stOp__sti__lane_strm_ready               [lane][strm] =  stOp_lane[lane].stOp__sti__strm1_ready                 ;
+              assign stOp_lane[lane].sti__stOp__strm1_cntl                 =  sti__stOp__lane_strm_cntl              [lane][strm]    ;
+              assign stOp_lane[lane].sti__stOp__strm1_data                 =  sti__stOp__lane_strm_data              [lane][strm]    ;
+              assign stOp_lane[lane].sti__stOp__strm1_data_valid           =  sti__stOp__lane_strm_data_valid        [lane][strm]    ;
+            end
+        end
+    end
+  endgenerate
 
 
 

@@ -85,6 +85,7 @@
 //------------------------------------------------
 
 `define MGR_NUM_OF_EXEC_LANES               `PE_NUM_OF_EXEC_LANES
+`define MGR_NUM_OF_EXEC_LANES_WIDTH         (`MGR_NUM_OF_EXEC_LANES)
 `define MGR_NUM_OF_EXEC_LANES_MSB           (`MGR_NUM_OF_EXEC_LANES -1)
 `define MGR_NUM_OF_EXEC_LANES_LSB            0
 `define MGR_NUM_OF_EXEC_LANES_SIZE           (`MGR_NUM_OF_EXEC_LANES_MSB - `MGR_NUM_OF_EXEC_LANES_LSB +1)

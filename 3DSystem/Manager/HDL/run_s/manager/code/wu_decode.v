@@ -46,8 +46,8 @@ module wu_decode (
             input   wire                                      mcntl__wud__ready                ,
             output  reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mcntl__dcntl                ,  // descriptor delineator
             output  reg  [`MGR_STD_OOB_TAG_RANGE         ]    wud__mcntl__tag                  ,  // decoder generates tag for Return data proc and Downstream OOB
-            output  reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mcntl__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
-            output  reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mcntl__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+            output  reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mcntl__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ,  // WU Instruction option fields
+            output  reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mcntl__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ,  
 
             //-------------------------------
             // from WU Memory
@@ -94,15 +94,15 @@ module wu_decode (
             output  reg                                      wud__mrc0__valid                ,  // send MR descriptors
             input   wire                                     mrc0__wud__ready                ,
             output  reg [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc0__cntl                 ,  // descriptor delineator
-            output  reg [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc0__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
-            output  reg [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc0__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+            output  reg [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc0__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ,  // WU Instruction option fields
+            output  reg [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc0__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ,  
             output  reg [`MGR_STD_OOB_TAG_RANGE         ]    wud__mrc0__tag                  ,  // mmc needs to service tag requests before tag+1
             
             output  reg                                      wud__mrc1__valid                ,
             output  reg [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc1__cntl                 ,  // descriptor delineator
             input   wire                                     mrc1__wud__ready                ,
-            output  reg [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc1__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
-            output  reg [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc1__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+            output  reg [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc1__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ,  // WU Instruction option fields
+            output  reg [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc1__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ,  
             output  reg [`MGR_STD_OOB_TAG_RANGE         ]    wud__mrc1__tag                  ,  // mmc needs to service tag requests before tag+1
 
             
@@ -135,8 +135,8 @@ module wu_decode (
     reg                                       mcntl__wud__ready_d1                                  ;
     reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mcntl__dcntl_e1                                  ;  // descriptor delineator
     reg  [`MGR_STD_OOB_TAG_RANGE         ]    wud__mcntl__tag_e1                                    ;  // decoder generates tag for Return data proc and Downstream OOB
-    reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mcntl__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
-    reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mcntl__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;  
+    reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mcntl__option_type_e1    [`MGR_WU_OPT_PER_INST_RANGE ] ;  // WU Instruction option fields
+    reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mcntl__option_value_e1   [`MGR_WU_OPT_PER_INST_RANGE ] ;  
 
  
     //--------------------------------------------------
@@ -173,14 +173,14 @@ module wu_decode (
     wire                                        wud__mrc0__valid_e1             ;
     reg                                         mrc0__wud__ready_d1             ;
     reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc0__cntl_e1              ;  
-    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc0__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
-    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc0__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;
+    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc0__option_type_e1    [`MGR_WU_OPT_PER_INST_RANGE ] ;
+    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc0__option_value_e1   [`MGR_WU_OPT_PER_INST_RANGE ] ;
 
     wire                                        wud__mrc1__valid_e1             ;
     reg                                         mrc1__wud__ready_d1             ;
     reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc1__cntl_e1              ;  
-    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc1__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
-    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc1__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;
+    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc1__option_type_e1    [`MGR_WU_OPT_PER_INST_RANGE ] ;
+    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc1__option_value_e1   [`MGR_WU_OPT_PER_INST_RANGE ] ;
 
     //--------------------------------------------------
     // Return Data Processor
