@@ -188,16 +188,19 @@ paulf@ncsu.edu}
 % in the abstract or keywords.
 \begin{abstract}
 
-Machine Learning in the form of \acfp{ann} has gained traction over the last few years especially in applications such as image recognition and speech recognition.
-These particular applications typically employ a subset of \acp{ann} known as \acp{cnn} which re-use parameters and thus reduce main memory bandwidth.
-However, there are other types of \ac{ann} that do not provide reuse opportunities such as autoencoders\iffalse\cite{le2013building}\fi and \ac{lstm}\iffalse\cite{}\fi . \iffalse and implementations that focus on \ac{cnn}s suffer from severe performance degradation when targeting these other types of \acp{ann}. \fi
-It is generally accepted that \ac{dram} is required to store the \ac{ann} parameters of useful sized \acp{ann}\iffalse \cite{azarkhish2017neurostream}\cite{dadiannao2014}\cite{dadiannao2017}\fi.
-To achieve a given performance, \ac{cnn}-specific implementations utilize cache-like structures using \ac{sram} which mimimizes accesses to the slower \ac{dram}.
-Most research has focused on implementing \acp{cnn} but because of their extensive use of \ac{sram} have both \ac{ann} size restrictions and performance degradation when used in applications that utilize other types of \ac{ann}.
-This work considers embedded applications employing multiple disparate generic \acp{ann} which, assuming there are limited reuse opportunities in the form of re-use or batch processing, will require usable memory bandwidth on the order of tens of \textbf{\SI[per-mode=symbol]{}{\tera \bit \per \second}}. 
-\iffalse
-This work demonstrates how a customized \acf{3ddram} with a very wide databus can be combined with application-specific layers to produce a system meeting the requirements of embedded systems employing multiple instances of disparate \acfp{ann}.
+Machine Learning in the form of \acfp{ann} has gained traction in applications such as image recognition and speech recognition.
+\iffalse \aclp{ann} have gained traction in applications such as image recognition and speech recognition. \fi
+These applications typically employ a subset of \acsp{ann} known as \acfp{cnn} which re-use parameters and thus reduce main memory bandwidth.
+However, there are other types of \acs{ann} that do not provide reuse opportunities such as autoencoders \iffalse\cite{le2013building}\fi and \acl{lstm}\iffalse\cite{}\fi . \iffalse and implementations that focus on \ac{cnn}s suffer from severe performance degradation when targeting these other types of \acp{ann}. \fi
+\iffalse It is generally accepted that \acs{dram} is required to store the \ac{ann} parameters of useful sized \acp{ann}\fi \iffalse \cite{azarkhish2017neurostream}\cite{dadiannao2014}\cite{dadiannao2017}.\fi
+\iffalse 
+To achieve a given performance, \ac{cnn}-specific implementations utilize cache-like structures using \acs{sram} which mimimizes accesses to the slower \ac{dram}.
 \fi
+Most research has focused on implementing \acsp{cnn} but because of their extensive use of \acs{sram} have both \ac{ann} size restrictions and performance degradation when used in applications that utilize other types of \ac{ann}.
+\iffalse
+This work considers embedded applications employing multiple disparate generic \acp{ann} which, assuming there are limited reuse opportunities in the form of re-use or batch processing, will require usable memory bandwidth on the order of tens of \textbf{\SI[per-mode=symbol]{}{\tera \bit \per \second}}. 
+\fi
+This work demonstrates how a customized \acs{3ddram} with a very wide databus can be combined with application-specific layers to produce a system meeting the requirements of embedded systems employing multiple instances of disparate \acp{ann}.
 \iffalse
 This work avoids any dependencies on \ac{sram} that might limit the size or type of \acp{ann} and demonstrates the required utilization of the very wide \ac{dram} databus.
 By employing instructions and data structures that facilitate operating directly out of the \ac{3ddram}, 
@@ -206,8 +209,12 @@ this work is able to absorb the latencies associated with \ac{dram} and utilize 
 This work demonstrates a near-memory system that does not simply add \ac{ann} processing as an appendage to an existing \ac{3ddram} but proposes customizations to an existing \ac{3ddram} along with tight integration of the \ac{ann} processing elements and memory controller to 
 create a true near-memory \ac{ann} accelerator.
 \fi
-By demonstrating effective use of the very wide bus of a customized \ac{3ddram}, this work demonstrates a conservative 3X power improvement and 6X area improvement over similar \ac{ann} systems 
+\iffalse
+By demonstrating effective use of the very wide bus of a customized \ac{3ddram}, this work demonstrates a conservative 3X power improvement and 6X area improvement over similar \ac{ann} systems. 
+\fi
+\iffalse
 along with the ability to keep pace with the \ac{dram} roadmap over the foreseeable future.
+\fi
 
 \end{abstract}
 
