@@ -256,45 +256,9 @@ Anything exceeding the required bandwidth is considered ``too hot'' and therefor
 This work provides support for all types of \acp{dnn} including \ac{lstm}, autoencoders and \acp{rbm} and does not focus on particular \acp{ann} such as \acp{cnn}.
 
 Although there is a lot of debate regarding number formats for \acp{ann}, this work also assumes single-precision floating point.
-This work assumes any useful \ac{ann} will be of a similar size to \cite{krizhevsky2012imagenet}, this work employs a baseline \ac{ann} similar to that shown in Table \ref{tab:Baseline Layer Configuration},
+This work assumes any useful \ac{ann} will be of a similar size to \cite{krizhevsky2012imagenet}.
 with 772 thousand \acp{an} and an average fanin to each \ac{an} of 1650. However, the assumption is the convolutional layers employ kernels with non-shared weights.
 A system employing 10 \acp{ann} for various disparate functions and an average processing time of \SI{16}{\milli\second} will require an average or ``goldilocks'' bandwidth of \SI[per-mode=symbol]{26}{\tera \bit \per \second} \eqref{eq:maximumBandwidth} and a capacity of \SI[per-mode=symbol]{8.0}{\giga\byte} \eqref{eq:memoryRequired}.
-\begin{figure*}[!htbp]
-  %\begin{adjustbox}{angle=0, width=1.0\textwidth}
-    \centering
-    \captionsetup{justification=centering}
-    \begin{minipage}{1.0\textwidth}
-      %\captionsetup{justification=centering, skip=-5pt}
-      \centering
-      %\begin{center}
-       % [lr] ~ left align col 0 and right align col 1
-       % e.g. 4 columns could be lccr
-      \begin{adjustbox}{width=1\textwidth}
-        \begin{tabular}{|r|c|c|c|c|c|c|c|c|c|c|c|c|c}\cline{3-13}
-          %\toprule
-           \multicolumn{2}{c|}  {\multirow{2}{*}{}}    & \multicolumn{11}{c|}{Layers}    \\\cline{3-13}
-           \multicolumn{2}{c|}{}                       &  1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11  \\\cline{3-13} \cline{1-13}
-           \multicolumn{2}{|r|}{Type}                  &  Input          & Locally      & Pooling           & Locally             & Pooling             & Locally             & Locally             & Locally             &  Fully              &  Fully                 &  Fully         &                                    \\\cline{1-13}
-           \multirow{3}{*}{Dimensions}               &X& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{      4096}    & \num{     4096}        & \num{    1024} &                                    \\
-                                                     &Y& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\
-                                                     &Z& \num{         3}& \num{     96}& \num{    96}      & \num{    256}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{    256}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\\cline{1-13}
-           \multirow{3}{*}{Filter Dimensions}        &X&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{     4096}        & \num{    4096} &                                    \\
-                                                     &Y&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{        1}        & \num{       1} &                                    \\
-                                                     &Z&    na           & \num{      3}& \num{     1}      & \num{     96}       & \num{      1}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{       256}    & \num{        1}        & \num{       1} &                                    \\\cline{1-14}
-            \multicolumn{2}{|r|}{Stride           }    &    na           & \num{      4}& \num{     2}      & \num{      2}       & \num{      2}       & \num{      1}       & \num{      1}       & \num{      1}       &              na     &             na         &            na  & \multicolumn{1}{c|}{Aggregate    } \\\cline{14-14}
-            \multicolumn{2}{|r|}{Pre-synaptic Fanin}   &    na           & \num{    363}& \num{     4}      & \num{   2400}       & \num{      4}       & \num{   2304}       & \num{   3456}       & \num{   3456}       & \num{     43264}    & \num{     4096}        & \num{    4096} & \multicolumn{1}{c|}{$\Bar{\num{   1650}}$} \\
-            \multicolumn{2}{|r|}{Number of \ac{an}}    & \num{    196608}& \num{ 290400}& \num{ 69984}      & \num{ 186624}       & \num{  43264}       & \num{  64896}       & \num{  64896}       & \num{  43264}       & \num{      4096}    & \num{     4096}        & \num{    1024} & \multicolumn{1}{c|}{\num{ 772544}} \\
-            \multicolumn{2}{|r|}{Number of Weights}    &    na           & \num{  34848}& na                & \num{ 614400}       & na                  & \num{ 884736}       & \num{ 1327104}      & \num{ 884736}       & \num{ 177209344}    & \num{ 16777216}        & \num{ 4194304} & \multicolumn{1}{c|}{\num{ 2.02e8}} \\\hline
-        \end{tabular}
-      \end{adjustbox}
-      \captionsetup{justification=centering, skip=9pt}
-      \vspace{0.5cm}
-      %\captionof{table}{Baseline \ac{ann} layer configuration \cite{krizhevsky2012imagenet}}
-      \captionof{table}{Baseline \ac{ann} layer configuration \cite{krizhevsky2012imagenet}}
-      \label{tab:Baseline Layer Configuration}
-      %  \end{center}
-    \end{minipage}
-\end{figure*}
 
 \begin{figure}[!htbp]
 \begin{alignat}{2}  \label{eq:maximumBandwidth}
@@ -346,25 +310,9 @@ The objective was to demonstrate that this very wide databus \ac{3ddram} can be 
 The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{dram} with a system manager below and one or more processing layers below the manager.
 \begin{figure}
 \centering
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=1\textwidth]{SmallStackDiagram.jpg}
-  \captionsetup{justification=centering, width=.8\linewidth}
-  \caption{\ac{dram}, Manager and PE Layers}
-  \label{fig:3DICStack}
-\end{subfigure}%
-
-\bigskip
-
-\begin{subfigure}{.35\textwidth}
-  \centering
-  \includegraphics[width=1\textwidth]{TSVs.pdf}
-  \captionsetup{justification=centering, width=1\linewidth}
-  \caption{Example Stack profile with metal layers and TSVs \cite{itrs2015_interconn}}
-  \label{fig:tsv}
-\end{subfigure}
-\captionsetup{justification=centering, width=.9\linewidth}
-\caption{3DIC System Stack}
+\includegraphics[width=0.4\textwidth]{SmallStackDiagram.jpg}
+\captionsetup{justification=centering, width=.8\linewidth}
+\caption{\ac{dram}, Manager and PE Layers}
 \label{fig:3DICStack}
 \end{figure}
 
@@ -495,8 +443,6 @@ In the context of this system and \ac{an} state calculation, the basic operation
 This work has researched an instruction architecture to describe the above operations. 
 These instructions are decoded by the manager. 
 
-In the baseline system, the manager is not responsible for performing specific algorithm operations but is responsible for coordinating the various data flows and configuration of the modules that make up the system.
-
 The managers primary responsibility is:
 
 \begin{outline}
@@ -505,8 +451,6 @@ The managers primary responsibility is:
     \1 Operand read
     \1 Result write
 \end{outline}
-
-In the baseline system, the PE is responsible for the main algorithm operations.
 
 The PE has three major blocks:
 
@@ -524,257 +468,16 @@ The PE has three major blocks:
       \2 Transfer configuration data to PE conroller or to store \ac{stop} results to a small local \ac{sram} which can be used for access by \ac{simd} or by the \ac{stop} function
 \end{outline}
 % ----------------------------------------------------------------------------------------------------
-% ----------------------------------------------------------------------------------------------------
-\subsection{Manager Operations}
-\label{sec:Manager Operations}
-
-% ----------------------------------------------------------------------------------------------------
-\subsubsection{Instructions}
-\label{ssec:Instructions}
-The instructions include information to control the following operations.
-
-\begin{outline}
-  %\setlength{\baselineskip}{10pt}
-  %\setlength{\itemsep}{6pt}
-  %\setlength{\baselineskip}{10pt}
-  %\setlength\itemsep{0pt}
-  %\setlength{\partopsep}{0pt}
-  %\setlength{\parskip}{0pt}
-  %\setlength{\parsep}{0pt}
-  %\setlength{\topsep}{0pt}
-  %\setlength{\itemsep}{3pt}
-  %\setlength{\itemindent}{\leftmargin}
-  %\setlength{\leftmargin}{0pt}
-        \1 To the Manager
-            \2 \ac{roi} Storage descriptor
-            \2 Parameter/Weight Storage Descriptor
-                \3 Broadcast or Vectored
-            \2 Result write storage descriptor
-                \3 include descriptors for all destination managers
-        \1 To the PE
-            \2 \ac{stop} operation
-            \2 \ac{simd} operation
-            \2 Number of active lanes
-            \2 Operand Vector length
-\end{outline}
-
-
-Instructions contain sub-instructions called descriptors. 
-These descriptors contain the information to control the various operations associated with the processing of a group of \acp{an}.
-The group size is related to the number of execution lanes which for the baseline system is 32. A group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
-
-An instruction will typically have four descriptors:
-
-\begin{outline}
-\renewcommand{\outlinei}{enumerate}
-    \1 Operation
-    \1 Memory read for operand stream 0
-    \1 Memory read for operand stream 1
-    \1 Result Write
-\end{outline}
-
-The instruction is an n-tuple where the tuple elements are descriptors and the number of elements can vary based on the operation being performed. In Figure \ref{fig:instructionTuple} is shown the format of a 4-tuple instruction which is used to perform an activation calculation for a group of neurons.
-
-\begin{figure}[!t]
-\centerline{
-\mbox{\includegraphics[width=2.75in]{instruction4Tuple.jpg}}
-}
-\caption{Instruction 4-tuple}
-\label{fig:instructionTuple}
-\end{figure}
-
-\iffalse
-Within a descriptor there are fields to describe the various options such as storage descriptor pointer, number of operands etc..
-\fi
-
-The fields within the descriptor are n-tuples where the first tuple element describes the descriptors operation followed by an m-tuple whose elements contain the options required for the operation.
-
-These option elements are a two-tuple with option and associated value.
-The format of a 5-tuple descriptor can be seen in Figure \ref{fig:descriptorTuple} .
-
-\begin{figure}[!t]
-\centerline{
-\mbox{\includegraphics[width=2.75in]{descriptorTuple.jpg}}
-}
-\caption{Descriptor 5-tuple}
-\label{fig:descriptorTuple}
-\end{figure}
-
-%%%% Feedback from Paul
-%%%%  % ----------------------------------------------------------------------------------------------------
-%%%%  \subsubsection{Accessing of Pre-synaptic \ac{an} states and connection weights}
-%%%%  \label{ssec:AccessingANStates}
-%%%%  
-%%%%  As was discussed previously, the \ac{ann} input and configuration is stored in main \ac{dram} memory. A part of the research is determining how to store the \ac{ann} input and parameters in such a way to effectively make use of main \ac{dram} bandwidth. To provide parameters for the up to 32 execution lanes within the PE, the \ac{an} parameters are stored in consecutive address locations. A single read to the \ac{dram} accesses 128 words. This provides four weights for each of the 32 \acp{an} being processed. 
-%%%%  These weights are sent to each lane of the PE over four cycles. 
-%%%%  By taking advantage of the multiple \ac{dram} banks along with pre-fetching and buffering, this system is able to achieve relatively high efficiency of the available maximum bandwidth.
-%%%%  
-%%%%  Although \ac{an} parameters (weights) are stored in contiguous memory locations, providing the input state to a particular \ac{an} presents us with an interesting problem.
-%%%%  
-%%%%  Most often \acp{dnn}s are represented by layers of \acp{an} whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the \ac{ann}.
-%%%%  
-%%%%  The input can be represented in the form of a 2-D array of \ac{an} states. For the sake of generality, the input array elements are considered as \ac{an} states.
-%%%%  
-%%%%  Any given \ac{an} operates on a region of interest (ROI) within the layers input array.
-%%%%  
-%%%%  
-%%%%  \begin{figure}[!t]
-%%%%  \centerline{
-%%%%  \mbox{\includegraphics[width=2.75in]{roiStorage.jpg}}
-%%%%  }
-%%%%  \caption{ROI Storage}
-%%%%  \label{fig:roiStorage}
-%%%%  \end{figure}
-%%%%  
-%%%%  The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each \acp{an} ROI can be stored in contiguous memory locations. 
-%%%%  An input to a \ac{ann} layer in the form of a 2-D array along with the ROI of two \acp{an} is shown in Figure \ref{fig:roiStorage}. 
-%%%%  Assuming the input array is stored in row-major order, an ROI is drawn from disjoint sections of memory. 
-%%%%  These disjoint sections contain a number of \ac{an} states and the sections are separated by a gap of a number of memory addresses. When the parameters are accessed the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. 
-%%%%  \iffalse
-%%%%  Now this looks problematic, and it is, but in practice groups of \acp{an} share a common ROI. So once we solve the problem of efficiently reading an ROI from the \ac{dram}, that ROI can be shared across a group of \acp{an}
-%%%%  \fi
-%%%%  
-%%%%  This work proposes a data structure to describe these ROI storage locations.  
-%%%%  The ROI is read efficiently by taking advantage of the \ac{dram}s banks and pages.
-%%%%  
-%%%%  Although disparate groups of \acp{an} may have a different start addresses for their ROI, a commonality is observed in the ROI section lengths and gaps. So for each \ac{an} group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
-%%%%  
-%%%%  This storage descriptor contains the start address of the ROI and a pointer to a section/gap descriptor. 
-%%%%  \iffalse
-%%%%  Many storage descriptors point to a common section/gap descriptor. This avoids having to have a unique section/gap descriptors for each \ac{an} group.
-%%%%  \fi
-%%%%  
-%%%%  Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor. The SOD, MOD and EOD are used to delineate each descriptor in memory and stand for start-of-descriptor, middle-of-descriptor and end-of-descriptor.
-%%%%  To limit the amount of storage required, a repeat operation can also be used to use a pair of section/gap fields multiple times.
-%%%%  
-%%%%  \begin{figure}[!t]
-%%%%  \centerline{
-%%%%  \mbox{\includegraphics[width=2.75in]{storageDesc.jpg}}
-%%%%  }
-%%%%  \caption{Storage Descriptor}
-%%%%  \label{fig:storageDescriptor}
-%%%%  \end{figure}
-%%%%  
-%%%%  
-
-% ----------------------------------------------------------------------------------------------------
-\subsubsection{Write Back to Memory}
-\label{ssec:writingANStates}
-
-When the PE has processed the group of \acp{an}, the new \ac{an} states are sent back to the manager for storing in the \ac{dram}. 
-\iffalse
-The manager will store these back to \ac{dram} most likely in the array format as described earlier.
-For any given operation, the system is writing far less than is being read. 
-\fi
-
-\iffalse
-For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
-\fi
-
-\iffalse
-Now that sounds like writing back has a very small impact on performance but with \ac{dram}s that's not always true.
-\fi
-
-\iffalse
-When the system writes the result of an operation back to memory, it is typically writing a small portion of a \ac{dram} page and the nature of the \ac{dram} protocol means this is a very inefficient use of \ac{dram} bandwidth. 
-So although the amount of data written is small the performance impact c\ac{ann}ot be ignored.
-\fi
-
-In many cases the \ac{an} activations from a particular PE have to be replicated not only to the local manager but also to other managers. This is handled with the network-on-chip (NoC).
-\iffalse
-The result storage directives are communicated by using the same storage descriptor mechanism. When the result has to be replicated to other managers, the storage descriptors are sent, along with the data to all destination managers.
-\else
-When the result has to be replicated to other managers, the data is sent, along with storage information over the NoC to all destination managers.
-\fi
-
-% ----------------------------------------------------------------------------------------------------
-% ----------------------------------------------------------------------------------------------------
-\subsection{PE Operations}
-\label{sec:PE Operations}
-
-% ----------------------------------------------------------------------------------------------------
-\subsubsection{\acf{stop}}
-\label{ssec:streamingOps}
-The operations performed by the \ac{stop} are primarily multiple-accumulate with a transfer to the \ac{simd} or to local memory.
-\iffalse
-Even though the baseline system focuses on the \ac{an} multiply-accumulate followed by a ReLu activation function, the system has built in flexibility into the \ac{stop} function to allow other functions to be added
-\fi
-
-In most cases, the \ac{stop} module will operate on the \ac{an} state and weights provided by the manager and provide the result to the \ac{simd}.
-% ----------------------------------------------------------------------------------------------------
-\subsubsection{SIMD}
-\label{ssec:SIMD}
-
-The \ac{simd} is a 32-lane processor with some builtin special functions including $e^x$ and divide to allow on-the-fly operations. 
-
-The \ac{simd} will take the result provided by the \ac{stop} and perform additonal operations such as neuron activation, pooling or softMax. The result will then be transmitted back to the manager.
-\iffalse
-In some cases, the manager uses the result from a previous instruction on a following instruction, an example being a softMax operation.
-\fi
-
-% ----------------------------------------------------------------------------------------------------
-\subsubsection{Configuration}
-\label{ssec:peConfiguration}
-
-To configure the PE operations, the manager extracts two pointers from the instruction and sends them in a configuration packet to the PE. These pointers index into a small local memory which provides a program counter (PC) to the function to be performed by the \ac{simd} and a configuration entry for the operation to be performed by the stOp.
- 
-\iffalse
-The PE is able to perform its operation concurrently on 32-lanes. 
-In cases when less than 32-lanes will be employed, the configuration packet also provides the number of lanes being processed.
-In addition, the length of the vector of operands is contained in the configuration packet.
-\fi
-
-\bigskip
-A detailed block diagram of the sub-system column (SSC) can be seen in Figure \ref{fig:DetailedFlowDiagram}.
+A detailed block diagram of the SSCcan be seen in Figure \ref{fig:DetailedFlowDiagram}.
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \ac{dram} Customizable <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
 \section{Suggested DRAM Customizations}
 \label{sec:Suggested DRAM Customizations}
 
-Accessing a "typical" \ac{dram} involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page.
-
-Typically a bank may contain of the order of a few thousand pages and a page may contain of the order of a few thousand bits.
-
-Once the page is open, the user accesses a portion of the requested page over a bus. With PCB based \ac{dram}s the bus might vary from four to 16 bits wide, but with 3D \ac{dram}s, such as HBM the bus might be up to 128 bits wide.
-
-\iffalse
-Figure \ref{fig:\ac{dram}BlockDiagram} shows a block diagram of a typical \ac{dram}.
-
-\begin{figure}[!t]
-% the [] contains position info e.g. [!t] means here
-\centering
-\captionsetup{justification=centering}
-\centerline{
-\mbox{\includegraphics[width=2.75in]{\ac{dram}BlockDiagram.jpg}}
-}
-\center\caption{Typical \ac{dram} Block Diagram}
-\label{fig:\ac{dram}BlockDiagram}
-\end{figure}
-
-\fi
-
-\subsection{Expose more of the Page}
-\label{sec:exposeMorePage}
-
 This work achieves the increase in bandwidth by proposing that the \ac{dram} expose more of its currently open page.
 
 Without the limitations of having to transfer data beyond the chip stack, this work suggests exposing a larger portion of the page over a 2048-bit wide bus. By staying within the 3D footprint, this bus can be implemented using fine pitch TSVs.
-(see Figure \ref{fig:DRAMBusChange}).
 
-\begin{figure}[!t]
-% the [] contains position info e.g. [!t] means here
-\centering
-\captionsetup{justification=centering}
-\captionsetup{width=.9\linewidth}
-\centerline{
-\mbox{\includegraphics[width=2.75in]{dramBusChange.jpg}}
-}
-\center\caption{Exposing more of the \ac{dram} page}
-\label{fig:DRAMBusChange}
-\end{figure}
-
-\subsection{DRAM Write Mask}
-\label{sec:DRAMWriteMask}
 For every group of \acp{an} processed, the state of the group of \acp{an} is written back to memory.
 Typically this would require a read/modify/write of a \ac{dram} cacheline. In the case writing back 32 \ac{an} states into a 4096 bit cacheline means the read/modify/write is inefficient.
 To minimize the inefficiency, a customization to the \ac{dram} is the addition of a write data mask to the \ac{dram} write path eliminating the additional read.
@@ -951,120 +654,20 @@ Given that these systems cannot effectively utilize \ac{sram}, the main objectiv
 \ac{3dic} technology was exploited, including \ac{3ddram}, because a major theme of this work is that \ac{3dic} provides many benefits, including reduced energy use, lower area requirements, and high bandwidth. 
 It was necessary to show that the proposed system can maintain the required data bandwidth while staying within the physical footprint of the \ac{3ddram}. 
 
-Because its the technology node employed for some recent \acp{gpu} and other \acp{asic} such as \cite{jouppi2017datacenter}, the target technology chosen was 28nm.
-The 28nm standard cell library available to this team did not have register files, therefore the design was synthesized using an available 65nm technology node and then scaled to 28nm.
-Some representative portions of the design were synthesized using the \SI{28}{\nano\meter} libraries to obtain scaling numbers.
-The final scaling numbers are shown in Table \ref{tab:Scaling numbers}.
 
-\begin{figure*}[!htbp]
-  % the [] contains position info e.g. [!t] means here
-  \centering
-  \captionsetup{justification=centering}
-    \begin{minipage}{0.85\textwidth}
-        \vspace{5mm}
-        \begin{adjustbox}{width=1\textwidth}
-            \footnotesize
-            \begin{tabular}{|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1.3cm}|>{\centering}m{1.3cm}|>{\centering}m{1cm}|>{\centering}m{1.3cm}|m{1.3cm}|}\cline{3-8}
-              %\hline
-              %\rowcolor{gray!50}
-              %\multicolumn{5}{|c|}{Power } \\
-              %\hline
-              %\rowcolor{gray!25}  
-         \multicolumn{2}{c|}{}                                          & \multicolumn{3}{c|}{Logic power}                                                                  &  \multicolumn{3}{c|}{Memory power}                                                                                                                                  \\\cline{1-8}
-         Logic Area                  & Memory Area                      & Internal                            & Net switching                  & Leakage                    & Internal                                                                                                              & Net switching                  & Leakage    \\\cline{1-8}
-          \num{2.68}                 & \num{2.78}                       &  \num{5.07}                         & \num{1.21}                     & \num{4.12e-4}              &  \num{5.07}  & NA                             & NA         \\
-              \hline
-            \end{tabular}
-        \end{adjustbox}
-      %\subcaption{Example design area}
-      %\label{tab:Example design area}
-  \end{minipage}
-  \captionsetup{justification=centering, skip=9pt}
-  \vspace{0.0cm}
-  \captionof{table}{\SI{68}{\nano\meter} to \SI{28}{\nano\meter} scaling numbers}
-  \label{tab:Scaling numbers}
-\end{figure*}
+
 
 The primary control and datapaths of the system have been simulated in a system verilog environment. 
 \iffalse
 It has been synthesized using a 65nm technology node.
 \fi
 %The design has been coded . 
-Initial synthesis timing closure at a frequency of \SI{500}{\mega\hertz} is complete.
-Initial place and route for the Manager and PE are shown in Figure \ref{fig:Manager and PE Die layouts}. 
-The area contribution of each block within the Manager and PE can be seen in Table \ref{tab:Area contribution}.
-\begin{table}[h]
-%  \captionsetup{justification=centering, skip=-5pt}
-  \captionsetup{justification=centering, skip=3pt}
-  \caption{Area Contribution}
-  \vspace{3pt}
-  \label{tab:Area contribution}
-  \centering
-    % [lr] ~ left align col 0 and right align col 1
-    % e.g. 4 columns could be lccr
-  \begin{subtable}{0.5\textwidth}
-    \centering
-    \begin{adjustbox}{width=0.75\textwidth}
-      \begin{tabular}{ccc}
-        \toprule
-                            % \multicolumn{4}{c}{3D-\ac{dram} Simulation-based estimates}   \\
-                         &          &                                         \\  %\cline{1-1}
-            Block        &Instances &Percentage                               \\  %\cline{1-1}
-            Name         &          &Contribution                             \\  %\cline{1-1}
-        \hline  % instead of \midrule %midrule doesnt overlap with column lines
-  Memory Controller      & 1&\SI[per-mode=symbol]{15.0}{\percent}  \\ 
-        NoC              & 1&\SI[per-mode=symbol]{ 7.1}{\percent}  \\
-        Read Control     & 2&\SI[per-mode=symbol]{53.1}{\percent}  \\
-        Write Control    & 1&\SI[per-mode=symbol]{ 7.4}{\percent}  \\
-      Instruction Proc   & 1&\SI[per-mode=symbol]{ 1.6}{\percent}  \\
-      Return Data Proc   & 1&\SI[per-mode=symbol]{ 1.6}{\percent}  \\
-        Misc             & 1&\SI[per-mode=symbol]{14.2}{\percent}  \\
-        \bottomrule
-      \end{tabular}
-    \end{adjustbox}
-    \vspace{3pt}
-    \captionsetup{justification=centering, skip=10pt}
-    \caption{Manager}
-    \label{tab:Manager Area Contribution}
-  \end{subtable}
-  \bigskip
-  \begin{subtable}{0.5\textwidth}
-    \centering
-    \begin{adjustbox}{width=0.85\textwidth}
-      \begin{tabular}{ccc}
-        \toprule
-                            % \multicolumn{4}{c}{3D-\ac{dram} Simulation-based estimates}   \\
-                         &          &                                          \\  %\cline{1-1}
-            Block        &Instances & Percentage                               \\  %\cline{1-1}
-            Name         &          & Contribution                             \\  %\cline{1-1}
-        \hline  % instead of \midrule %midrule doesnt overlap with column lines
-     Operation Decode    & 1&\SI[per-mode=symbol]{ 3.4}{\percent}  \\
-   Return Data Control   & 1&\SI[per-mode=symbol]{ 1.5}{\percent}  \\
-    SIMD Control         & 1&\SI[per-mode=symbol]{ 8.1}{\percent}  \\
-        SIMD             & 1&\SI[per-mode=symbol]{19.3}{\percent}  \\
-  Streaming Operations   &32&\SI[per-mode=symbol]{43.3}{\percent}  \\
-  Streaming Op Control   & 1&\SI[per-mode=symbol]{ 2.1}{\percent}  \\
- Local Memory + Control\footnote{A small amount of scratchpad memory was provided between stOps and \ac{simd} but in practice could be much smaller. It is not used in any of the fanin tests.}  & 1&\SI[per-mode=symbol]{17.7}{\percent}  \\ 
-        Misc             & 1&\SI[per-mode=symbol]{ 4.6}{\percent}  \\
-        \bottomrule
-      \end{tabular}
-    \end{adjustbox}
-    \vspace{3pt}
-    \captionsetup{justification=centering, skip=10pt}
-    \caption{PE}
-    \label{tab:PE Area Contribution}
-  \end{subtable}
-  \end{table}
-
-The parasitics were extracted from these layouts and simulated against a group of operations. 
-The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. 
+Timing closure was at a frequency of \SI{500}{\mega\hertz} and a place and route for the Manager and PE are shown in Figure \ref{fig:Manager and PE Die layouts}. 
+The parasitics were extracted from these layouts and simulated against a group of operation based on the expected lower and upper limits of pre-synaptic fanin. 
 These testcases were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
 Additional testcases were employed representing pre-synaptic fanins of 294, 300, 500 and 1000. Both locally connected (CONV) and fully connected (FC) type fanins were tested.
 The results showing sustained average bandwidth can be seen in Table \ref{tab:Bandwidth Estimates}.
 
-The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
-The \ac{dram} accesses were captured and \ac{dram} energy dissipation calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
-These estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz}.
 The estimated overall power along with per block contribution are shown in Table \ref{tab:Simulation-based estimates}.
 
 \begin{table}[h]
